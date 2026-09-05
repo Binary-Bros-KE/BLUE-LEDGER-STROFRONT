@@ -1,3 +1,5 @@
+"use client";
+
 import { Container } from "@/components/shared/Container";
 import { Diamond } from "@/components/shared/icons";
 
