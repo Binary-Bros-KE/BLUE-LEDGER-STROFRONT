@@ -1,0 +1,198 @@
+@import "tailwindcss";
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * TRYLIST "Classic" theme — design tokens (Tailwind v4 CSS-first config).
+ * Spec §1 colours, §2 fonts, §5 breakpoints. Do not drift from these values.
+ * ────────────────────────────────────────────────────────────────────────── */
+@theme {
+  /* Breakpoints — spec §5 (sm is 480, not Tailwind's default 640). */
+  --breakpoint-sm: 480px;
+  --breakpoint-md: 768px;
+  --breakpoint-lg: 1024px;
+  --breakpoint-xl: 1280px;
+
+  /* Type roles — spec §2. Archivo = headings/prices/names; JetBrains Mono = every label. */
+  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-mono: var(--font-jbmono), ui-monospace, "JetBrains Mono", "SFMono-Regular", monospace;
+
+  /* Colour tokens — spec §1. */
+  --color-navy: #141a47;
+  --color-navy-900: #0b0e28;
+  --color-navy-700: #2a3070;
+  --color-navy-600: #3a4185;
+  --color-blue: #2f55e8;
+  --color-amber: #f5b21a;
+  --color-amber-ink: #8a6206;
+  --color-amber-dim: #7a5504;
+  --color-cream: #efeae0;
+  --color-cream-line: #dcd6c8;
+  --color-red: #d8402f;
+  --color-red-900: #8e1f13;
+  --color-green: #17945e;
+  --color-line: #e3dfd6;
+  --color-hatch: #f3f1ec;
+  --color-slate: #5f6382;
+  --color-slate-dim: #8a8fb5;
+  --color-ink-on-navy: #efeae0;
+  --color-body-on-navy: #b6bad8;
+  --color-meta-on-navy: #aeb3ce;
+  --color-faint-on-navy: #6e75a8;
+  --color-on-blue: #c7d2ff;
+  --color-on-blue-body: #dce3ff;
+
+  /* Law #1: ZERO border radius, everywhere. Kill every radius token. */
+  --radius-xs: 0px;
+  --radius-sm: 0px;
+  --radius-md: 0px;
+  --radius-lg: 0px;
+  --radius-xl: 0px;
+  --radius-2xl: 0px;
+  --radius-3xl: 0px;
+  --radius-4xl: 0px;
+}
+
+@layer base {
+  /* Law #1, belt-and-braces: no stray class can sneak a curve in (incl. rounded-full). */
+  *,
+  *::before,
+  *::after {
+    border-radius: 0 !important;
+  }
+
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: #ffffff;
+    color: var(--color-navy);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* Spec §6 — plain links: default blue, hover amber. `:where()` keeps specificity at 0 and the
+   * `:not([class*="text-"])` opt-out lets any explicitly-coloured link (nav items, buttons, tiles)
+   * keep its own Tailwind colour + hover instead of being forced blue/amber. */
+  a {
+    text-decoration: none;
+  }
+  :where(a):not([class*="text-"]) {
+    color: var(--color-blue);
+  }
+  :where(a):not([class*="text-"]):hover {
+    color: var(--color-amber);
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  /* Spec §9 — square focus ring, never rounded. */
+  :focus-visible {
+    outline: 2px solid var(--color-blue);
+    outline-offset: 2px;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+}
+
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Signature patterns — spec §3. Implement once here; components just add the class.
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* Navy hero: 44px engineering grid (36px on mobile). */
+.bg-grid {
+  background-color: #141a47;
+  background-image:
+    linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
+  background-size: 44px 44px;
+}
+@media (max-width: 767px) {
+  .bg-grid {
+    background-size: 36px 36px;
+  }
+}
+
+/* Image placeholder on white — diagonal hatch. */
+.ph-light {
+  background-color: #ffffff;
+  background-image: repeating-linear-gradient(135deg, #f3f1ec 0 6px, #ffffff 6px 12px);
+}
+
+/* Image placeholder on navy. */
+.ph-dark {
+  background-color: #141a47;
+  background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0 6px, transparent 6px 12px);
+}
+
+/* The ONE shadow in the system — a hard amber offset block. Never blur, never rgba. */
+.blk {
+  box-shadow: 5px 5px 0 #f5b21a;
+}
+.blk-sm {
+  box-shadow: 4px 4px 0 #f5b21a;
+}
+/* Spec §6 — .blk CTAs on :active translate 2px and shrink the shadow. */
+.blk:active,
+.blk-sm:active {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 #f5b21a;
+}
+
+/* Cart drawer slide-in — spec §5/§4. No radius, no blur. */
+@keyframes drawer-in {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes sheet-in {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+@keyframes overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+.animate-drawer {
+  animation: drawer-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.animate-sheet {
+  animation: sheet-in 220ms cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+.animate-overlay {
+  animation: overlay-in 160ms ease;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-drawer,
+  .animate-sheet,
+  .animate-overlay {
+    animation: none;
+  }
+}
+
+/* Utility: hide scrollbars on the mobile category ribbon (spec §4 CategoryRibbon). */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
