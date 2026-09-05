@@ -1,20 +1,23 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import { FiUser, FiX } from "@/components/shared/icons";
-import { CATEGORY_RIBBON } from "@/lib/products";
+import type { Category } from "@/lib/products";
+import { slugify } from "@/lib/slug";
 import { Logo } from "./Logo";
 
-// Not in the spec's component inventory, but spec §0/§6 call for a "mobile menu" behind the
-// Header's menu button. Kept minimal and on-brand — navy full-screen, category links, sign-in.
+// Behind the Header's menu button. Navy full-screen, real category links, sign-in.
 export function MobileMenu({
   open,
   onClose,
   storeName = "TRYLIST",
+  categories,
 }: {
   open: boolean;
   onClose: () => void;
   storeName?: string;
+  categories: Category[];
 }) {
   useEffect(() => {
     if (!open) return;
@@ -32,6 +35,11 @@ export function MobileMenu({
 
   if (!open) return null;
 
+  const links = [
+    { label: "Shop all", href: "/products" },
+    ...categories.map((c) => ({ label: c.name, href: `/products/${slugify(c.name)}` })),
+  ];
+
   return (
     <div className="fixed inset-0 z-50 flex flex-col bg-navy p-6 lg:hidden">
       <div className="flex items-center justify-between">
@@ -46,18 +54,18 @@ export function MobileMenu({
         </button>
       </div>
 
-      <nav className="mt-8 flex flex-col">
-        {CATEGORY_RIBBON.map((label, i) => (
-          <a
-            key={label}
-            href="#"
+      <nav className="mt-8 flex flex-col overflow-y-auto">
+        {links.map((link, i) => (
+          <Link
+            key={link.href + i}
+            href={link.href}
             onClick={onClose}
             className={`border-b border-navy-700 py-4 font-mono text-[13px] uppercase tracking-[1.6px] ${
               i === 0 ? "font-bold text-amber" : "text-ink-on-navy"
             }`}
           >
-            {label}
-          </a>
+            {link.label}
+          </Link>
         ))}
       </nav>
 

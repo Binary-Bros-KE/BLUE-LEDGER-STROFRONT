@@ -1,7 +1,9 @@
+import Link from "next/link";
 import { Container } from "@/components/shared/Container";
 import { Placeholder } from "@/components/shared/Placeholder";
 import { SectionHead } from "@/components/shared/SectionHead";
 import { FiArrowRight } from "@/components/shared/icons";
+import { slugify } from "@/lib/slug";
 import type { Category } from "@/lib/products";
 
 // Spec §4 — white, 56px 40px. 5 columns, 18px gap. One inverted navy tile. Mobile: 2 columns,
@@ -18,20 +20,20 @@ export function CategoryGrid({ categories }: { categories: Category[] }) {
           eyebrow="Browse by category"
           title="Start where the work is."
           right={
-            <a
-              href="#"
+            <Link
+              href="/products"
               className="flex items-center gap-1 border-b-[1.5px] border-blue pb-0.5 font-mono text-[11px] uppercase tracking-[1.6px] text-blue"
             >
               All {categories.length} categories <FiArrowRight size={13} />
-            </a>
+            </Link>
           }
         />
 
         <div className="mt-9 grid grid-cols-2 gap-[18px] md:grid-cols-3 lg:grid-cols-5">
           {shown.map((cat) => (
-            <a
+            <Link
               key={cat.id}
-              href="#"
+              href={`/products/${slugify(cat.name)}`}
               className={`flex flex-col border transition-colors ${
                 cat.inverted
                   ? "border-navy bg-navy hover:border-navy"
@@ -55,7 +57,7 @@ export function CategoryGrid({ categories }: { categories: Category[] }) {
                   {cat.count}
                 </span>
               </div>
-            </a>
+            </Link>
           ))}
         </div>
       </Container>

@@ -32,8 +32,13 @@ export type Product = {
   badge?: Badge;
   /** hatch-placeholder caption used until a real photo exists */
   imageCaption: string;
-  /** real image URL (from Product.onlineImageUrls) once the P3 upload pipeline lands */
-  imageUrl?: string;
+  /** real image URLs (from Product.onlineImageUrls) once the P3 upload pipeline lands */
+  images?: string[];
+  /** the product detail page needs a bit more than the card does */
+  description?: string | null;
+  unitOfMeasure?: string | null;
+  wholesalePriceCents?: number | null;
+  wholesaleMinQuantity?: number;
 };
 
 export type Category = {

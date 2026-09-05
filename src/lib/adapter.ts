@@ -37,7 +37,11 @@ export function toThemeProduct(item: CatalogItem): Product {
     // TODO(catalog): no NEW/BUNDLE/TOP-RATED product flags in the API yet.
     badge: undefined,
     imageCaption: `[ ${categoryLabel || "PRODUCT"} ]`,
-    imageUrl: item.images[0]?.url,
+    images: item.images.map((i) => i.url),
+    description: item.description,
+    unitOfMeasure: item.unitOfMeasure,
+    wholesalePriceCents: item.wholesalePriceCents,
+    wholesaleMinQuantity: item.wholesaleMinQuantity,
   };
 }
 
