@@ -1,18 +1,10 @@
 "use client";
 
 import { Container } from "@/components/shared/Container";
-import {
-  FiChevronDown,
-  FiHeart,
-  FiMenu,
-  FiSearch,
-  FiShoppingCart,
-  FiUser,
-} from "@/components/shared/icons";
+import { FiHeart, FiMenu, FiShoppingCart, FiUser } from "@/components/shared/icons";
 import { useMoney } from "@/lib/currency";
 import { Logo } from "./Logo";
-
-const SEARCH_PLACEHOLDER = 'Search 2,400+ products — "thermal printer"';
+import { SearchBox } from "./SearchBox";
 
 // Spec §4 — white, 18px 40px, bottom hairline. Grid: logo · search · actions.
 export function Header({
@@ -40,28 +32,7 @@ export function Header({
         <div className="hidden grid-cols-[auto_1fr_auto] items-center gap-6 py-[18px] lg:grid">
           <Logo name={storeName} />
 
-          <form className="flex h-11 border-[1.5px] border-navy" role="search" onSubmit={(e) => e.preventDefault()}>
-            <button
-              type="button"
-              className="flex w-[150px] flex-none items-center justify-between gap-1 border-r-[1.5px] border-navy px-4 font-mono text-[12px] uppercase tracking-[1.4px] text-navy"
-            >
-              All categories
-              <FiChevronDown size={12} />
-            </button>
-            <input
-              type="text"
-              placeholder={SEARCH_PLACEHOLDER}
-              aria-label="Search products"
-              className="min-w-0 flex-1 bg-white px-3 font-mono text-[13px] text-navy outline-none placeholder:text-slate"
-            />
-            <button
-              type="submit"
-              aria-label="Search"
-              className="grid w-[52px] flex-none place-items-center bg-navy text-amber"
-            >
-              <FiSearch size={18} />
-            </button>
-          </form>
+          <SearchBox variant="bar" />
 
           <div className="flex items-center gap-4">
             <button type="button" className="flex items-center gap-2 text-navy">
@@ -143,17 +114,7 @@ export function Header({
             </div>
           </div>
 
-          <form className="flex h-11 border-[1.5px] border-navy pb-0" role="search" onSubmit={(e) => e.preventDefault()}>
-            <input
-              type="text"
-              placeholder="Search products…"
-              aria-label="Search products"
-              className="min-w-0 flex-1 bg-white px-3 font-mono text-[13px] text-navy outline-none placeholder:text-slate"
-            />
-            <button type="submit" aria-label="Search" className="grid w-11 flex-none place-items-center bg-navy text-amber">
-              <FiSearch size={16} />
-            </button>
-          </form>
+          <SearchBox variant="compact" />
           <div className="h-3" />
         </div>
       </Container>
