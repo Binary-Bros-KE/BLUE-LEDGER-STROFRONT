@@ -33,7 +33,7 @@ export default async function Page() {
 
   return (
     <StoreChrome {...shell}>
-      <HomeSections products={products} categories={shell.categories} />
+      <HomeSections products={products} categories={shell.categories} theme={shell.theme} />
     </StoreChrome>
   );
 }

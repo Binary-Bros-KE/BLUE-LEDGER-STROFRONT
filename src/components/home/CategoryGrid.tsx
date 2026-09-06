@@ -8,7 +8,15 @@ import type { Category } from "@/lib/products";
 
 // Spec §4 — white, 56px 40px. 5 columns, 18px gap. One inverted navy tile. Mobile: 2 columns,
 // no thumbs (padded name/count rows), navy tile kept.
-export function CategoryGrid({ categories }: { categories: Category[] }) {
+// `images` (web_stores.themeJson.categoryImages, keyed by category id) replaces the hatch
+// placeholder on a tile when set.
+export function CategoryGrid({
+  categories,
+  images = {},
+}: {
+  categories: Category[];
+  images?: Record<string, string>;
+}) {
   if (categories.length === 0) return null;
   const shown = categories.slice(0, 5);
 
@@ -40,11 +48,20 @@ export function CategoryGrid({ categories }: { categories: Category[] }) {
                   : "border-line bg-white hover:border-navy"
               }`}
             >
-              <Placeholder
-                caption={cat.caption}
-                dark={cat.inverted}
-                className="hidden h-[118px] md:flex"
-              />
+              {images[cat.id] ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                  src={images[cat.id]}
+                  alt=""
+                  className="hidden h-[118px] w-full object-cover md:block"
+                />
+              ) : (
+                <Placeholder
+                  caption={cat.caption}
+                  dark={cat.inverted}
+                  className="hidden h-[118px] md:flex"
+                />
+              )}
               <div className="flex items-center justify-between gap-2 p-3.5">
                 <span className={`font-sans text-[15px] font-extrabold ${cat.inverted ? "text-white" : "text-navy"}`}>
                   {cat.name}

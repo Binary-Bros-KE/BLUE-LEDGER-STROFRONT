@@ -11,6 +11,7 @@ import { TopBar } from "@/components/layout/TopBar";
 import { CartProvider, useCart } from "@/lib/cart";
 import { CurrencyProvider } from "@/lib/currency";
 import type { Category } from "@/lib/products";
+import type { TrylistTheme } from "@/lib/theme";
 
 export type StoreShell = {
   storeName: string;
@@ -18,6 +19,8 @@ export type StoreShell = {
   address?: string | null;
   phone?: string | null;
   categories: Category[];
+  /** Trylist theme config (hero copy/images, story rows, category images) — from web_stores.themeJson. */
+  theme: TrylistTheme;
   /** true when no live store resolved and we're rendering the Trylist sample */
   preview?: boolean;
 };

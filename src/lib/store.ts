@@ -2,6 +2,7 @@ import type { StoreShell } from "@/components/StoreChrome";
 import { toThemeCategory } from "./adapter";
 import { CATEGORIES as SAMPLE_CATEGORIES } from "./products";
 import { getCategories, getStore, ShopApiError } from "./shop-api";
+import { EMPTY_THEME, parseTheme } from "./theme";
 
 /**
  * Resolves the header/footer/chrome data for the current request's tenant. On failure (no live
@@ -19,6 +20,7 @@ export async function loadShell(): Promise<{ shell: StoreShell; preview: boolean
         address: store.contact.address,
         phone: store.contact.phone,
         categories: categories.map(toThemeCategory),
+        theme: parseTheme(store.theme),
       },
       preview: false,
     };
@@ -30,6 +32,7 @@ export async function loadShell(): Promise<{ shell: StoreShell; preview: boolean
         storeName: "TRYLIST",
         currency: "KSH",
         categories: SAMPLE_CATEGORIES,
+        theme: EMPTY_THEME,
         preview: true,
       },
       preview: true,

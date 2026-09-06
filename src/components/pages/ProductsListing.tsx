@@ -16,6 +16,7 @@ export function ProductsListing({
   basePath,
   categories,
   activeCategorySlug,
+  heroImage,
 }: {
   heading: string;
   trail: { label: string; href?: string }[];
@@ -26,17 +27,36 @@ export function ProductsListing({
   basePath: string;
   categories: Category[];
   activeCategorySlug?: string;
+  /** themeJson.categoryImages[categoryId] — a background image behind the header band. */
+  heroImage?: string;
 }) {
   return (
     <>
-      {/* header band */}
-      <div className="border-b border-line bg-cream">
-        <Container className="py-10">
+      {/* header band — plain cream, or a category background image with a navy scrim */}
+      <div
+        className={`relative isolate overflow-hidden border-b border-line ${heroImage ? "bg-navy" : "bg-cream"}`}
+      >
+        {heroImage ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={heroImage} alt="" className="absolute inset-0 -z-10 size-full object-cover" />
+            <div className="absolute inset-0 -z-10 bg-navy/68" />
+          </>
+        ) : null}
+        <Container className={`py-10 ${heroImage ? "text-white [&_a]:text-white/75 [&_a:hover]:text-white" : ""}`}>
           <Breadcrumb trail={trail} />
-          <h1 className="mt-3 font-sans text-[28px] font-black leading-[1.05] tracking-[-1px] text-navy sm:text-[36px] lg:text-[44px]">
+          <h1
+            className={`mt-3 font-sans text-[28px] font-black leading-[1.05] tracking-[-1px] sm:text-[36px] lg:text-[44px] ${
+              heroImage ? "text-white" : "text-navy"
+            }`}
+          >
             {heading}
           </h1>
-          <p className="mt-2 font-mono text-[11px] uppercase tracking-[1.4px] text-slate">
+          <p
+            className={`mt-2 font-mono text-[11px] uppercase tracking-[1.4px] ${
+              heroImage ? "text-white/70" : "text-slate"
+            }`}
+          >
             {total} {total === 1 ? "product" : "products"}
           </p>
         </Container>
