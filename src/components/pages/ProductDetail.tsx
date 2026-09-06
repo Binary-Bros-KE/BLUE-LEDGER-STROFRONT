@@ -21,10 +21,13 @@ export function ProductDetail({
   product,
   related,
   categoryName,
+  headerImage,
 }: {
   product: Product;
   related: Product[];
   categoryName: string | null;
+  /** Background for the breadcrumb band — the product's category image, else the theme default. */
+  headerImage?: string;
 }) {
   const fmt = useMoney();
   const { favourites, toggleFavourite, addToCart } = useCart();
@@ -52,8 +55,18 @@ export function ProductDetail({
 
   return (
     <>
-      <div className="border-b border-line bg-cream">
-        <Container className="py-8">
+      {/* breadcrumb band — plain cream, or the category background with a navy scrim */}
+      <div
+        className={`relative isolate overflow-hidden border-b border-line ${headerImage ? "bg-navy" : "bg-cream"}`}
+      >
+        {headerImage ? (
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={headerImage} alt="" className="absolute inset-0 -z-10 size-full object-cover" />
+            <div className="absolute inset-0 -z-10 bg-navy/68" />
+          </>
+        ) : null}
+        <Container className={`py-8 ${headerImage ? "text-white [&_a]:text-white/75 [&_a:hover]:text-white" : ""}`}>
           <Breadcrumb
             trail={[
               { label: "Home", href: "/" },

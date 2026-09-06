@@ -105,7 +105,15 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(item, shell.currency, canonical)) }}
       />
-      <ProductDetail product={product} related={related} categoryName={item.categoryName} />
+      <ProductDetail
+        product={product}
+        related={related}
+        categoryName={item.categoryName}
+        headerImage={
+          (item.categoryId ? shell.theme.categoryImages[item.categoryId] : undefined) ||
+          shell.theme.headerImageUrl
+        }
+      />
     </StoreChrome>
   );
 }

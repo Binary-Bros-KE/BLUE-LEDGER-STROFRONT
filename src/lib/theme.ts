@@ -69,6 +69,9 @@ export type TrylistTheme = {
   };
   story: ThemeStoryRow[];
   categoryImages: Record<string, string>;
+  /** Fallback background for the page-header band (/products, and any category / product-detail
+   * header whose category has no image). */
+  headerImageUrl?: string;
   /** Curated home rows — each pulls one category's products. Empty = one default product grid. */
   productSections: ThemeProductSection[];
   dealTile: ThemeDealTile;
@@ -164,6 +167,7 @@ export function parseTheme(raw: unknown): TrylistTheme {
         return url ? [[k, url] as const] : [];
       }),
     ),
+    headerImageUrl: str(o.headerImageUrl),
     productSections: (Array.isArray(o.productSections) ? o.productSections : [])
       .slice(0, 6)
       .map((s): ThemeProductSection => {

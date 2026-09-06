@@ -57,6 +57,7 @@ export default async function ProductsPage({
         totalPages={Math.max(1, Math.ceil(total / PAGE_SIZE))}
         basePath={q ? `/products?q=${encodeURIComponent(q)}` : "/products"}
         categories={shell.categories}
+        heroImage={shell.theme.headerImageUrl}
       />
     </StoreChrome>
   );

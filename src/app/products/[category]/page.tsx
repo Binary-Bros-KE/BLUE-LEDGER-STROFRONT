@@ -57,7 +57,7 @@ export default async function CategoryPage({
           basePath={`/products/${slug}`}
           categories={shell.categories}
           activeCategorySlug={slug}
-          heroImage={shell.theme.categoryImages[match.id]}
+          heroImage={shell.theme.categoryImages[match.id] || shell.theme.headerImageUrl}
         />
       </StoreChrome>
     );
@@ -89,7 +89,7 @@ export default async function CategoryPage({
         basePath={`/products/${slug}`}
         categories={shell.categories}
         activeCategorySlug={slug}
-        heroImage={shell.theme.categoryImages[category.id]}
+        heroImage={shell.theme.categoryImages[category.id] || shell.theme.headerImageUrl}
       />
     </StoreChrome>
   );
