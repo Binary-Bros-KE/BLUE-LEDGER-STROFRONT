@@ -5,6 +5,7 @@ import Link from "next/link";
 import { QtyStepper } from "@/components/cart/QtyStepper";
 import { FavouriteButton } from "@/components/product/FavouriteButton";
 import { ProductCard } from "@/components/product/ProductCard";
+import { Carousel } from "@/components/shared/Carousel";
 import { Rating } from "@/components/product/Rating";
 import { StockLine } from "@/components/product/StockLine";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
@@ -223,10 +224,12 @@ export function ProductDetail({
                 </Link>
               )}
             </div>
-            <div className="mt-8 grid grid-cols-2 gap-3 md:grid-cols-3 lg:grid-cols-4 lg:gap-5">
-              {related.map((p) => (
-                <ProductCard key={p.id} product={p} />
-              ))}
+            <div className="mt-8">
+              <Carousel perView="2-3-4" ariaLabel="Related products">
+                {related.map((p) => (
+                  <ProductCard key={p.id} product={p} />
+                ))}
+              </Carousel>
             </div>
           </Container>
         </section>

@@ -84,10 +84,10 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   let related: Product[] = [];
   if (item.categoryId) {
     try {
-      const catalog = await getCatalog({ categoryId: item.categoryId, pageSize: 5 });
+      const catalog = await getCatalog({ categoryId: item.categoryId, pageSize: 13 });
       related = catalog.products
         .filter((p) => p.id !== item.id)
-        .slice(0, 4)
+        .slice(0, 12)
         .map(toThemeProduct);
     } catch {
       related = [];
