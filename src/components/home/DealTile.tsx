@@ -32,7 +32,7 @@ export function DealTile({ dealTile = {} }: { dealTile?: ThemeDealTile }) {
     : null;
 
   return (
-    <div className="flex flex-col gap-3 bg-red p-6 text-white lg:flex-1">
+    <div className="relative flex flex-col gap-3 bg-red p-6 text-white lg:flex-1">
       <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.6px] text-white/85">
         <FiZap size={11} /> Deal of the week
       </span>
@@ -63,14 +63,14 @@ export function DealTile({ dealTile = {} }: { dealTile?: ThemeDealTile }) {
       </Link>
 
       {dealTile.imageUrl ? (
-        <div className="mt-auto flex justify-end pt-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img
-            src={dealTile.imageUrl}
-            alt=""
-            className="size-20 flex-none border border-white/20 object-cover lg:size-24"
-          />
-        </div>
+        // Client request: absolutely positioned in the corner (not its own row) so it sits at the
+        // same level as the copy above it instead of pushing the tile taller.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={dealTile.imageUrl}
+          alt=""
+          className="absolute bottom-4 right-4 size-28 border border-white/20 object-cover lg:size-36"
+        />
       ) : null}
     </div>
   );

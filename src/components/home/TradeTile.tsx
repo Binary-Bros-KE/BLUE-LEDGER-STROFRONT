@@ -21,7 +21,7 @@ export function TradeTile({ tradeTile = {} }: { tradeTile?: ThemeTradeTile }) {
   };
 
   return (
-    <div className="hidden flex-col gap-3 bg-cream p-6 lg:flex lg:flex-1">
+    <div className="relative hidden flex-col gap-3 bg-cream p-6 lg:flex lg:flex-1">
       <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.6px] text-green">
         <Diamond size={9} /> {categoryLabel}
       </span>
@@ -35,10 +35,14 @@ export function TradeTile({ tradeTile = {} }: { tradeTile?: ThemeTradeTile }) {
       </a>
 
       {tradeTile.imageUrl ? (
-        <div className="mt-auto flex justify-end pt-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={tradeTile.imageUrl} alt="" className="size-20 flex-none border border-navy/10 object-cover" />
-        </div>
+        // Client request: absolutely positioned in the corner (not its own row) so it sits at the
+        // same level as the copy above it instead of pushing the tile taller.
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={tradeTile.imageUrl}
+          alt=""
+          className="absolute bottom-4 right-4 size-28 border border-navy/10 object-cover lg:size-36"
+        />
       ) : null}
     </div>
   );
