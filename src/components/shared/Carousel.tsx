@@ -1,17 +1,18 @@
 "use client";
 
-import { useCallback, useEffect, useRef, useState, type ReactNode } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import { FiArrowRight } from "@/components/shared/icons";
 
 /**
  * Reusable horizontal carousel — no dependency.
  *  - `perView` presets pick how many slides are fully visible per breakpoint (literal class
  *    strings so Tailwind's JIT keeps them).
- *  - When `autoScroll` and there are enough slides, it becomes a seamless infinite marquee: the
- *    slides are rendered twice and the scroll position wraps by one set-width every frame, so the
- *    loop is invisible. Pauses on hover / focus / drag, and respects prefers-reduced-motion.
- *  - Drag to scrub with a mouse; native touch swipe + momentum on phones. `lg` arrows nudge one
- *    slide.
+ *  - When `autoScroll` and there are enough slides it's a seamless infinite marquee: slides are
+ *    rendered twice and the scroll position wraps by one set-width, so the loop is invisible.
+ *    Position is driven by a JS accumulator (not `scrollLeft +=`, which some browsers truncate
+ *    per frame so it never moves). Pauses while the pointer is over the track, on drag, on
+ *    keyboard focus, when the tab is hidden, and under prefers-reduced-motion.
+ *  - Mouse drag-to-scrub; native touch swipe + momentum on phones. `lg` arrows nudge one slide.
  */
 type PerView = "2-3-4" | "2-2-3" | "1-2-4" | "3-4-6";
 
@@ -28,8 +29,8 @@ export function Carousel({
   perView = "2-3-4",
   ariaLabel,
   autoScroll = true,
-  /** marquee speed in px per 60fps-frame */
-  speed = 0.45,
+  /** marquee speed in px/second */
+  speed = 32,
 }: {
   children: ReactNode[];
   perView?: PerView;
@@ -40,6 +41,7 @@ export function Carousel({
   const trackRef = useRef<HTMLDivElement>(null);
   const pausedRef = useRef(false);
   const dragRef = useRef<{ startX: number; startScroll: number } | null>(null);
+  const posRef = useRef(0);
   const [reduced, setReduced] = useState(false);
 
   const loop = autoScroll && children.length > 2;
@@ -52,39 +54,39 @@ export function Carousel({
     return () => m.removeEventListener("change", apply);
   }, []);
 
-  /** Keep scrollLeft inside [0, half) so the duplicated second set makes the wrap seamless. */
-  const wrap = useCallback(() => {
-    const el = trackRef.current;
-    if (!el || !loop) return;
-    const half = el.scrollWidth / 2;
-    if (half <= 0) return;
-    if (el.scrollLeft >= half) el.scrollLeft -= half;
-    else if (el.scrollLeft < 0) el.scrollLeft += half;
-  }, [loop]);
-
-  // Marquee: advance + wrap every frame (wrap runs even while paused so drag/arrows loop too).
+  // rAF marquee. posRef is the source of truth; we only ever WRITE scrollLeft while auto-scrolling
+  // and RESYNC from it whenever something else (drag / touch / arrows) moved the track.
   useEffect(() => {
     if (!loop || reduced) return;
     const el = trackRef.current;
     if (!el) return;
     let raf = 0;
     let last = performance.now();
+    posRef.current = el.scrollLeft;
+
     const tick = (now: number) => {
-      const dt = now - last;
+      const dt = Math.min((now - last) / 1000, 0.05);
       last = now;
-      const active = !pausedRef.current && !dragRef.current && !document.hidden;
-      if (active) el.scrollLeft += speed * Math.min(dt / 16.67, 3);
-      wrap();
+      const half = el.scrollWidth / 2;
+      const running = !pausedRef.current && !dragRef.current && !document.hidden;
+
+      if (running && half > 0) {
+        posRef.current += speed * dt;
+        if (posRef.current >= half) posRef.current -= half;
+        el.scrollLeft = posRef.current;
+      } else {
+        // paused / dragging / arrow-nudging — follow the real position + keep the loop bounds
+        posRef.current = el.scrollLeft;
+        if (half > 0) {
+          if (posRef.current >= half) el.scrollLeft = posRef.current -= half;
+          else if (posRef.current < 0) el.scrollLeft = posRef.current += half;
+        }
+      }
       raf = requestAnimationFrame(tick);
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [loop, reduced, speed, wrap, children.length]);
-
-  const onScroll = useCallback(() => {
-    if (!loop) return; // snap mode handles its own bounds
-    if (!dragRef.current) wrap();
-  }, [loop, wrap]);
+  }, [loop, reduced, speed, children.length]);
 
   const onPointerDown = (e: React.PointerEvent) => {
     if (e.pointerType !== "mouse") return; // let native scroll handle touch/pen
@@ -98,7 +100,6 @@ export function Carousel({
     const el = trackRef.current;
     if (!d || !el) return;
     el.scrollLeft = d.startScroll - (e.clientX - d.startX);
-    wrap();
   };
   const endDrag = (e: React.PointerEvent) => {
     const el = trackRef.current;
@@ -109,8 +110,14 @@ export function Carousel({
   const nudge = (dir: -1 | 1) => {
     const el = trackRef.current;
     if (!el) return;
-    const step = el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? el.clientWidth * 0.8;
-    el.scrollBy({ left: dir * (step + 12), behavior: "smooth" });
+    const step = (el.querySelector<HTMLElement>(":scope > *")?.offsetWidth ?? el.clientWidth * 0.8) + 12;
+    if (loop) {
+      // move + let the rAF re-clamp on its next frame
+      el.scrollLeft += dir * step;
+      posRef.current = el.scrollLeft;
+    } else {
+      el.scrollBy({ left: dir * step, behavior: "smooth" });
+    }
   };
 
   const pause = () => {
@@ -121,19 +128,14 @@ export function Carousel({
   };
 
   return (
-    <div
-      className="group/carousel relative"
-      onMouseEnter={pause}
-      onMouseLeave={resume}
-      onFocusCapture={pause}
-      onBlurCapture={resume}
-    >
+    <div className="group/carousel relative" onFocusCapture={pause} onBlurCapture={resume}>
       <div
         ref={trackRef}
         className={`no-scrollbar flex gap-3 overflow-x-auto ${loop ? "cursor-grab active:cursor-grabbing" : "snap-x snap-mandatory scroll-smooth"}`}
         role="group"
         aria-label={ariaLabel}
-        onScroll={onScroll}
+        onMouseEnter={pause}
+        onMouseLeave={resume}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={endDrag}
