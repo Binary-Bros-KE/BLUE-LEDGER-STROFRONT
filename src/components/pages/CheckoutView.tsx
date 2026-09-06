@@ -30,7 +30,7 @@ const inputClass =
 
 export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
   const fmt = useMoney();
-  const { lines, setQty, removeLine } = useCart();
+  const { lines, setQty, removeLine, hydrated } = useCart();
 
   const [name, setName] = useState("");
   const [phone, setPhone] = useState("");
@@ -83,6 +83,15 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
             Keep shopping <FiArrowRight size={13} />
           </Link>
         </div>
+      </Container>
+    );
+  }
+
+  // ── waiting on the localStorage read (first client paint) ─────────────────
+  if (!hydrated) {
+    return (
+      <Container className="py-16">
+        <div className="mx-auto h-[220px] max-w-[460px] animate-pulse border border-line bg-cream/40" />
       </Container>
     );
   }

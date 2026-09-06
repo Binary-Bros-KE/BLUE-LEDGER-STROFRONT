@@ -8,7 +8,7 @@ import { Header } from "@/components/layout/Header";
 import { MobileMenu } from "@/components/layout/MobileMenu";
 import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { TopBar } from "@/components/layout/TopBar";
-import { CartProvider, useCart } from "@/lib/cart";
+import { useCart } from "@/lib/cart";
 import { CurrencyProvider } from "@/lib/currency";
 import type { Category } from "@/lib/products";
 import type { TrylistTheme } from "@/lib/theme";
@@ -31,11 +31,11 @@ export type StoreShell = {
  * Page-specific content is `children`.
  */
 export function StoreChrome({ children, ...shell }: StoreShell & { children: ReactNode }) {
+  // The cart provider is mounted once at the app root (app/layout.tsx → CartRoot) so it survives
+  // navigation; this only re-scopes the currency (per-tenant, prop-driven).
   return (
     <CurrencyProvider currency={shell.currency}>
-      <CartProvider>
-        <ChromeInner {...shell}>{children}</ChromeInner>
-      </CartProvider>
+      <ChromeInner {...shell}>{children}</ChromeInner>
     </CurrencyProvider>
   );
 }

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { Archivo, JetBrains_Mono } from "next/font/google";
+import { CartRoot } from "@/components/CartRoot";
 import "./globals.css";
 
 // Spec §2 — the two (and only two) type roles.
@@ -27,7 +28,9 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en" className={`${archivo.variable} ${jbmono.variable}`}>
-      <body className="bg-white text-navy">{children}</body>
+      <body className="bg-white text-navy">
+        <CartRoot>{children}</CartRoot>
+      </body>
     </html>
   );
 }
