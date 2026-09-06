@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { DEV_STORE_DOMAIN, SHOP_API_URL } from "./env";
-import type { CatalogItem, CatalogPage, ShopCategory, StorePayload } from "./types";
+import type { CatalogItem, CatalogPage, DeliveryOption, ShopCategory, StorePayload } from "./types";
 
 export class ShopApiError extends Error {
   status: number;
@@ -67,4 +67,8 @@ export function getProduct(id: string): Promise<CatalogItem> {
 
 export function getCategories(): Promise<ShopCategory[]> {
   return shopFetch<ShopCategory[]>("/shop/categories");
+}
+
+export function getDeliveryMethods(): Promise<DeliveryOption[]> {
+  return shopFetch<DeliveryOption[]>("/shop/delivery");
 }

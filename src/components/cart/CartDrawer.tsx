@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import Link from "next/link";
 import type { CartLine } from "@/lib/products";
 import { FiPlay, FiShoppingCart, FiX } from "@/components/shared/icons";
 import { CartLineItem } from "./CartLineItem";
@@ -100,12 +101,13 @@ export function CartDrawer({
         {/* 4 — actions */}
         <div className="flex flex-col gap-2 bg-white p-4">
           {!empty ? (
-            <button
-              type="button"
+            <Link
+              href="/checkout"
+              onClick={onClose}
               className="blk flex items-center justify-center gap-2 bg-blue py-3 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-white"
             >
               <FiPlay size={11} /> Checkout
-            </button>
+            </Link>
           ) : null}
           <button
             type="button"

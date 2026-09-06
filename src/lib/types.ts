@@ -39,6 +39,13 @@ export type CatalogItem = {
 
 export type ShopCategory = { id: string; name: string; count: number };
 
+export type DeliveryOption = {
+  id: string;
+  name: string;
+  description: string | null;
+  priceCents: number;
+};
+
 export type CatalogPage = {
   page: number;
   pageSize: number;
