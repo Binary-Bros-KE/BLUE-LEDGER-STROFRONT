@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { Archivo, JetBrains_Mono } from "next/font/google";
 import { CartRoot } from "@/components/CartRoot";
+import { getStore } from "@/lib/shop-api";
+import { parseTheme } from "@/lib/theme";
 import "./globals.css";
 
 // Spec §2 — the two (and only two) type roles.
@@ -18,12 +20,17 @@ const jbmono = JetBrains_Mono({
   display: "swap",
 });
 
-// Per-store title/description are set by `generateMetadata()` in app/page.tsx from the live
-// `/shop/store` response — the whole reason the storefront is Next.js and not a SPA. This is only
-// the fallback.
-export const metadata: Metadata = {
-  title: "Shop",
-};
+// Per-store title/description are set by `generateMetadata()` on each page. Here we resolve the
+// site-wide favicon from the tenant's uploaded brand logo (themeJson.brand.logoImageUrl).
+export async function generateMetadata(): Promise<Metadata> {
+  try {
+    const store = await getStore();
+    const logo = parseTheme(store.theme).brand.logoImageUrl;
+    return { title: "Shop", ...(logo ? { icons: { icon: logo, apple: logo } } : {}) };
+  } catch {
+    return { title: "Shop" };
+  }
+}
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (

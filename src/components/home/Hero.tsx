@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { ContactButton } from "@/components/contact/ContactButton";
 import { Placeholder } from "@/components/shared/Placeholder";
 import { Diamond, FiPlay } from "@/components/shared/icons";
 import type { TrylistTheme } from "@/lib/theme";
@@ -30,11 +31,15 @@ export function Hero({
     label: hero.primaryCta?.label?.trim() || "Shop the catalogue",
     href: hero.primaryCta?.href?.trim() || "/products",
   };
+  const secondaryHref = hero.secondaryCta?.href?.trim();
   const secondary = {
     label: hero.secondaryCta?.label?.trim() || "Talk to sales",
-    href: hero.secondaryCta?.href?.trim() || "#",
+    // no real link configured → the button opens the Contact pop-up
+    href: secondaryHref && secondaryHref !== "#" ? secondaryHref : null,
   };
   const usingDefaultHeadline = !hero.headline?.trim();
+  const secondaryClass =
+    "inline-flex items-center justify-center border-[1.5px] border-cream px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[1.6px] text-cream transition-colors hover:bg-cream hover:text-navy";
 
   return (
     <section className="grid grid-cols-1 lg:grid-cols-[1fr_372px]">
@@ -82,12 +87,13 @@ export function Hero({
               >
                 <FiPlay size={11} /> {primary.label}
               </Link>
-              <Link
-                href={secondary.href}
-                className="inline-flex items-center justify-center border-[1.5px] border-cream px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[1.6px] text-cream transition-colors hover:bg-cream hover:text-navy"
-              >
-                {secondary.label}
-              </Link>
+              {secondary.href ? (
+                <Link href={secondary.href} className={secondaryClass}>
+                  {secondary.label}
+                </Link>
+              ) : (
+                <ContactButton className={secondaryClass}>{secondary.label}</ContactButton>
+              )}
             </div>
 
             <div className="mt-auto pt-10">

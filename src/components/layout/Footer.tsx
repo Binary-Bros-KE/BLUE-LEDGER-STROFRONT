@@ -1,3 +1,4 @@
+import { ContactButton } from "@/components/contact/ContactButton";
 import { Container } from "@/components/shared/Container";
 import { Logo } from "./Logo";
 
@@ -43,14 +44,13 @@ export function Footer({
             </p>
             <div className="flex gap-2">
               {SOCIALS.map((s) => (
-                <a
+                <ContactButton
                   key={s}
-                  href="#"
-                  aria-label={s}
+                  ariaLabel={`${s} — contact us`}
                   className="grid size-8 place-items-center border border-navy-600 font-mono text-[10px] font-bold uppercase tracking-[1px] text-body-on-navy transition-colors hover:border-amber hover:text-amber"
                 >
                   {s}
-                </a>
+                </ContactButton>
               ))}
             </div>
           </div>
@@ -62,16 +62,24 @@ export function Footer({
                 {col.head}
               </span>
               <ul className="flex flex-col gap-0">
-                {col.links.map((link) => (
-                  <li key={link}>
-                    <a
-                      href="#"
-                      className="font-mono text-[11px] leading-[2] text-body-on-navy transition-colors hover:text-white"
-                    >
-                      {link}
-                    </a>
-                  </li>
-                ))}
+                {col.links.map((link) =>
+                  link === "Contact us" ? (
+                    <li key={link}>
+                      <ContactButton className="font-mono text-[11px] leading-[2] text-body-on-navy transition-colors hover:text-white">
+                        {link}
+                      </ContactButton>
+                    </li>
+                  ) : (
+                    <li key={link}>
+                      <a
+                        href="#"
+                        className="font-mono text-[11px] leading-[2] text-body-on-navy transition-colors hover:text-white"
+                      >
+                        {link}
+                      </a>
+                    </li>
+                  ),
+                )}
               </ul>
             </div>
           ))}

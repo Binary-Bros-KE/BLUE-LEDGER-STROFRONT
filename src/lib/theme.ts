@@ -4,6 +4,20 @@
 
 export type ThemeCta = { label?: string; href?: string };
 
+export type ThemeBrand = { logoImageUrl?: string; nameLine1?: string; nameLine2?: string };
+
+export type ThemeTopBar = { announcement?: string };
+
+export type ThemeContact = {
+  whatsappSalesLabel?: string;
+  whatsappSalesNumber?: string;
+  whatsappSupportLabel?: string;
+  whatsappSupportNumber?: string;
+  email?: string;
+  instagram?: string;
+  facebook?: string;
+};
+
 export type ThemeStoryRow = {
   imageUrl?: string;
   title?: string;
@@ -42,6 +56,9 @@ export type ThemeTradeTile = {
 };
 
 export type TrylistTheme = {
+  brand: ThemeBrand;
+  topBar: ThemeTopBar;
+  contact: ThemeContact;
   hero: {
     headline?: string;
     sub?: string;
@@ -59,6 +76,9 @@ export type TrylistTheme = {
 };
 
 export const EMPTY_THEME: TrylistTheme = {
+  brand: {},
+  topBar: {},
+  contact: {},
   hero: {},
   story: [],
   categoryImages: {},
@@ -96,8 +116,26 @@ export function parseTheme(raw: unknown): TrylistTheme {
   >;
   const dealTileRaw = (o.dealTile && typeof o.dealTile === "object" ? o.dealTile : {}) as Record<string, unknown>;
   const tradeTileRaw = (o.tradeTile && typeof o.tradeTile === "object" ? o.tradeTile : {}) as Record<string, unknown>;
+  const brandRaw = (o.brand && typeof o.brand === "object" ? o.brand : {}) as Record<string, unknown>;
+  const topBarRaw = (o.topBar && typeof o.topBar === "object" ? o.topBar : {}) as Record<string, unknown>;
+  const contactRaw = (o.contact && typeof o.contact === "object" ? o.contact : {}) as Record<string, unknown>;
 
   return {
+    brand: {
+      logoImageUrl: str(brandRaw.logoImageUrl),
+      nameLine1: str(brandRaw.nameLine1),
+      nameLine2: str(brandRaw.nameLine2),
+    },
+    topBar: { announcement: str(topBarRaw.announcement) },
+    contact: {
+      whatsappSalesLabel: str(contactRaw.whatsappSalesLabel),
+      whatsappSalesNumber: str(contactRaw.whatsappSalesNumber),
+      whatsappSupportLabel: str(contactRaw.whatsappSupportLabel),
+      whatsappSupportNumber: str(contactRaw.whatsappSupportNumber),
+      email: str(contactRaw.email),
+      instagram: str(contactRaw.instagram),
+      facebook: str(contactRaw.facebook),
+    },
     hero: {
       headline: str(heroRaw.headline),
       sub: str(heroRaw.sub),

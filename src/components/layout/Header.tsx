@@ -3,12 +3,14 @@
 import { Container } from "@/components/shared/Container";
 import { FiHeart, FiMenu, FiShoppingCart, FiUser } from "@/components/shared/icons";
 import { useMoney } from "@/lib/currency";
+import type { ThemeBrand } from "@/lib/theme";
 import { Logo } from "./Logo";
 import { SearchBox } from "./SearchBox";
 
 // Spec §4 — white, 18px 40px, bottom hairline. Grid: logo · search · actions.
 export function Header({
   storeName,
+  brand,
   favCount,
   cartCount,
   cartTotalCents,
@@ -17,6 +19,7 @@ export function Header({
   onFavClick,
 }: {
   storeName: string;
+  brand?: ThemeBrand;
   favCount: number;
   cartCount: number;
   cartTotalCents: number;
@@ -25,12 +28,18 @@ export function Header({
   onFavClick: () => void;
 }) {
   const fmt = useMoney();
+  const logoProps = {
+    name: storeName,
+    logoUrl: brand?.logoImageUrl,
+    line1: brand?.nameLine1,
+    line2: brand?.nameLine2,
+  };
   return (
     <div className="border-b border-line bg-white">
       <Container>
         {/* ── desktop ──────────────────────────────────────────────────────── */}
         <div className="hidden grid-cols-[auto_1fr_auto] items-center gap-6 py-[18px] lg:grid">
-          <Logo name={storeName} />
+          <Logo {...logoProps} />
 
           <SearchBox variant="bar" />
 
@@ -75,7 +84,7 @@ export function Header({
         {/* ── mobile ───────────────────────────────────────────────────────── */}
         <div className="lg:hidden">
           <div className="flex items-center justify-between py-3">
-            <Logo name={storeName} size={30} />
+            <Logo {...logoProps} size={30} />
             <div className="flex items-center gap-2">
               <button
                 type="button"

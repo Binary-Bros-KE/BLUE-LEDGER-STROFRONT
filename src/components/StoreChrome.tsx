@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { CartDrawer } from "@/components/cart/CartDrawer";
+import { ContactProvider } from "@/components/contact/ContactModal";
 import { CategoryRibbon } from "@/components/layout/CategoryRibbon";
 import { Footer } from "@/components/layout/Footer";
 import { Header } from "@/components/layout/Header";
@@ -35,7 +36,9 @@ export function StoreChrome({ children, ...shell }: StoreShell & { children: Rea
   // navigation; this only re-scopes the currency (per-tenant, prop-driven).
   return (
     <CurrencyProvider currency={shell.currency}>
-      <ChromeInner {...shell}>{children}</ChromeInner>
+      <ContactProvider contact={shell.theme.contact} fallbackPhone={shell.phone}>
+        <ChromeInner {...shell}>{children}</ChromeInner>
+      </ContactProvider>
     </CurrencyProvider>
   );
 }
@@ -46,6 +49,7 @@ function ChromeInner({
   address,
   phone,
   categories,
+  theme,
   preview,
 }: StoreShell & { children: ReactNode }) {
   const cart = useCart();
@@ -58,12 +62,13 @@ function ChromeInner({
         </div>
       ) : null}
 
-      <TopBar />
+      <TopBar announcement={theme.topBar.announcement} />
 
       {/* Spec §5 — Header + CategoryRibbon stick on desktop. */}
       <div className="z-40 lg:sticky lg:top-0">
         <Header
           storeName={storeName}
+          brand={theme.brand}
           favCount={cart.favourites.size}
           cartCount={cart.count}
           cartTotalCents={cart.totalCents}
