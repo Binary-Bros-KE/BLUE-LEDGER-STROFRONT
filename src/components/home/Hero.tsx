@@ -104,7 +104,9 @@ export function Hero({
           </div>
 
           {/* hero shot */}
-          <div className="flex min-h-[150px] flex-1 border border-navy-600 lg:min-h-0">
+          <div
+            className={`flex min-h-[150px] flex-1 lg:min-h-0 ${hero.shotImageUrl ? "" : "border border-navy-600"}`}
+          >
             {hero.shotImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={hero.shotImageUrl} alt="" className="size-full flex-1 object-cover" />
