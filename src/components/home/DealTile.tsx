@@ -69,7 +69,7 @@ export function DealTile({ dealTile = {} }: { dealTile?: ThemeDealTile }) {
         <img
           src={dealTile.imageUrl}
           alt=""
-          className="absolute bottom-4 right-4 size-28 border border-white/20 object-cover lg:size-36"
+          className="absolute bottom-4 right-4 size-28 object-cover lg:size-36"
         />
       ) : null}
     </div>

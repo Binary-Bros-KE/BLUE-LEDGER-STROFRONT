@@ -41,7 +41,7 @@ export function TradeTile({ tradeTile = {} }: { tradeTile?: ThemeTradeTile }) {
         <img
           src={tradeTile.imageUrl}
           alt=""
-          className="absolute bottom-4 right-4 size-28 border border-navy/10 object-cover lg:size-36"
+          className="absolute bottom-4 right-4 size-28 object-cover lg:size-36"
         />
       ) : null}
     </div>
