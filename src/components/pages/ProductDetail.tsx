@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { QtyStepper } from "@/components/cart/QtyStepper";
 import { FavouriteButton } from "@/components/product/FavouriteButton";
@@ -29,6 +29,18 @@ export function ProductDetail({
   const { favourites, toggleFavourite, addToCart } = useCart();
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
+  const [added, setAdded] = useState(false);
+  const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (addedTimer.current) clearTimeout(addedTimer.current);
+  }, []);
+
+  function handleAdd() {
+    addToCart(product, qty);
+    setAdded(true);
+    if (addedTimer.current) clearTimeout(addedTimer.current);
+    addedTimer.current = setTimeout(() => setAdded(false), 1600);
+  }
 
   const soldOut = product.stockState === "out_of_stock";
   const favourite = favourites.has(product.id);
@@ -147,13 +159,18 @@ export function ProductDetail({
                 )}
                 <button
                   type="button"
-                  onClick={() => (soldOut ? undefined : addToCart(product, qty))}
+                  onClick={() => (soldOut ? undefined : handleAdd())}
+                  aria-live="polite"
                   className={`blk inline-flex h-12 items-center justify-center gap-2 px-8 font-mono text-[12px] font-bold uppercase tracking-[1.6px] transition-colors ${
-                    soldOut ? "border-[1.5px] border-slate-dim text-slate-dim" : "bg-navy text-white hover:bg-blue"
+                    soldOut
+                      ? "border-[1.5px] border-slate-dim text-slate-dim"
+                      : added
+                        ? "bg-green text-white"
+                        : "bg-navy text-white hover:bg-blue"
                   }`}
                 >
                   {!soldOut && <FiPlay size={11} />}
-                  {soldOut ? "Notify me" : "Add to cart"}
+                  {soldOut ? "Notify me" : added ? "Added!" : "Add to cart"}
                 </button>
                 <FavouriteButton
                   active={favourite}

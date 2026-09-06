@@ -1,5 +1,6 @@
 "use client";
 
+import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
@@ -24,6 +25,19 @@ export function ProductCard({ product }: { product: Product }) {
   const soldOut = product.stockState === "out_of_stock";
   const image = product.images?.[0];
   const href = `/product/${encodeURIComponent(product.id)}`;
+
+  const [added, setAdded] = useState(false);
+  const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  useEffect(() => () => {
+    if (addedTimer.current) clearTimeout(addedTimer.current);
+  }, []);
+
+  function handleAdd() {
+    addToCart(product);
+    setAdded(true);
+    if (addedTimer.current) clearTimeout(addedTimer.current);
+    addedTimer.current = setTimeout(() => setAdded(false), 1600);
+  }
 
   return (
     <article className="group flex flex-col border border-line bg-white transition-colors duration-[140ms] hover:border-navy">
@@ -80,14 +94,17 @@ export function ProductCard({ product }: { product: Product }) {
         <div className="mt-1 flex items-stretch gap-2">
           <button
             type="button"
-            onClick={() => addToCart(product)}
+            onClick={handleAdd}
+            aria-live="polite"
             className={`flex h-11 flex-1 items-center justify-center px-3 font-mono text-[11px] font-bold uppercase tracking-[1.4px] transition-colors duration-[140ms] ${
               soldOut
                 ? "border-[1.5px] border-slate-dim text-slate-dim"
-                : "bg-navy text-white group-hover:bg-blue"
+                : added
+                  ? "bg-green text-white"
+                  : "bg-navy text-white group-hover:bg-blue"
             }`}
           >
-            {soldOut ? "NOTIFY ME" : "ADD TO CART"}
+            {soldOut ? "NOTIFY ME" : added ? "Added!" : "ADD TO CART"}
           </button>
 
           <Link

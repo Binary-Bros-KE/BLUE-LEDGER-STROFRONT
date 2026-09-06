@@ -52,7 +52,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
         },
       ];
     });
-    setCartOpen(true);
+    // Deliberately does NOT open the cart — the product card gives its own inline "Added!"
+    // confirmation. The shopper opens the cart when they're ready.
   }, []);
 
   const setQty = useCallback((id: string, qty: number) => {
