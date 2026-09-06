@@ -32,6 +32,8 @@ export type CatalogItem = {
   wholesaleMinQuantity: number;
   categoryId: string | null;
   categoryName: string | null;
+  /** Every category this product shows under online — POS categoryId + online-only extras. */
+  categoryIds: string[];
   unitOfMeasure: string | null;
   images: ProductImage[];
   stock: StockBadge;
