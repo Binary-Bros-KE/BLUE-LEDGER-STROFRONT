@@ -63,7 +63,7 @@ export function ProductCard({ product }: { product: Product }) {
             <img
               src={image}
               alt={product.name}
-              className="ph-light h-[110px] w-full object-cover lg:h-[172px]"
+              className="ph-light h-[110px] w-full object-contain p-2 lg:h-[172px]"
               loading="lazy"
             />
           ) : (
