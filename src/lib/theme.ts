@@ -12,6 +12,12 @@ export type ThemeStoryRow = {
   ctaHref?: string;
 };
 
+export type ThemeProductSection = {
+  title: string;
+  categoryId: string;
+  ctaLabel?: string;
+};
+
 export type TrylistTheme = {
   hero: {
     headline?: string;
@@ -23,9 +29,16 @@ export type TrylistTheme = {
   };
   story: ThemeStoryRow[];
   categoryImages: Record<string, string>;
+  /** Curated home rows — each pulls one category's products. Empty = one default product grid. */
+  productSections: ThemeProductSection[];
 };
 
-export const EMPTY_THEME: TrylistTheme = { hero: {}, story: [], categoryImages: {} };
+export const EMPTY_THEME: TrylistTheme = {
+  hero: {},
+  story: [],
+  categoryImages: {},
+  productSections: [],
+};
 
 function str(v: unknown): string | undefined {
   return typeof v === "string" && v.trim() ? v : undefined;
@@ -80,5 +93,13 @@ export function parseTheme(raw: unknown): TrylistTheme {
         return url ? [[k, url] as const] : [];
       }),
     ),
+    productSections: (Array.isArray(o.productSections) ? o.productSections : [])
+      .slice(0, 6)
+      .map((s): ThemeProductSection => {
+        const ss = (s && typeof s === "object" ? s : {}) as Record<string, unknown>;
+        return { title: str(ss.title) ?? "", categoryId: str(ss.categoryId) ?? "", ctaLabel: str(ss.ctaLabel) };
+      })
+      // a section is only usable if it names both a title and a category
+      .filter((s) => Boolean(s.title && s.categoryId)),
   };
 }
