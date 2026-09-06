@@ -24,10 +24,11 @@ const CartContext = createContext<CartContextValue | null>(null);
 
 /**
  * Cart + favourites + drawer/menu open-state, shared across every page via <StoreChrome>.
- * All in-memory for now (spec §0/§6) — persistence and a real checkout are the next milestone.
+ * Starts empty always — real items come from the shopper adding products. All in-memory for now
+ * (spec §0/§6); persistence and a real checkout are the next milestone.
  */
-export function CartProvider({ children, seedLines = [] }: { children: ReactNode; seedLines?: CartLine[] }) {
-  const [lines, setLines] = useState<CartLine[]>(seedLines);
+export function CartProvider({ children }: { children: ReactNode }) {
+  const [lines, setLines] = useState<CartLine[]>([]);
   const [favourites, setFavourites] = useState<Set<string>>(() => new Set());
   const [cartOpen, setCartOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -42,7 +43,13 @@ export function CartProvider({ children, seedLines = [] }: { children: ReactNode
       if (existing) return prev.map((l) => (l.id === product.id ? { ...l, qty: l.qty + qty } : l));
       return [
         ...prev,
-        { id: product.id, name: product.name.split(" — ")[0], unitPriceCents: product.priceCents, qty },
+        {
+          id: product.id,
+          name: product.name.split(" — ")[0],
+          image: product.images?.[0],
+          unitPriceCents: product.priceCents,
+          qty,
+        },
       ];
     });
     setCartOpen(true);

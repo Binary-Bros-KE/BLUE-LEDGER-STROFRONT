@@ -55,6 +55,8 @@ export type CartLine = {
   name: string;
   spec?: string;
   lowStockNote?: string;
+  /** first product image, if any — shown as the line thumbnail */
+  image?: string;
   unitPriceCents: number;
   qty: number;
 };

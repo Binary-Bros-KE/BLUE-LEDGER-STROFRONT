@@ -1,6 +1,6 @@
 import type { StoreShell } from "@/components/StoreChrome";
 import { toThemeCategory } from "./adapter";
-import { CATEGORIES as SAMPLE_CATEGORIES, PRODUCTS as SAMPLE_PRODUCTS } from "./products";
+import { CATEGORIES as SAMPLE_CATEGORIES } from "./products";
 import { getCategories, getStore, ShopApiError } from "./shop-api";
 
 /**
@@ -31,12 +31,6 @@ export async function loadShell(): Promise<{ shell: StoreShell; preview: boolean
         currency: "KSH",
         categories: SAMPLE_CATEGORIES,
         preview: true,
-        seedLines: SAMPLE_PRODUCTS.slice(0, 3).map((p, i) => ({
-          id: p.id,
-          name: p.name.split(" — ")[0],
-          unitPriceCents: p.priceCents,
-          qty: i === 1 ? 2 : 1,
-        })),
       },
       preview: true,
     };

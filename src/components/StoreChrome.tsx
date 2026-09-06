@@ -10,7 +10,7 @@ import { MobileTabBar } from "@/components/layout/MobileTabBar";
 import { TopBar } from "@/components/layout/TopBar";
 import { CartProvider, useCart } from "@/lib/cart";
 import { CurrencyProvider } from "@/lib/currency";
-import type { CartLine, Category } from "@/lib/products";
+import type { Category } from "@/lib/products";
 
 export type StoreShell = {
   storeName: string;
@@ -20,8 +20,6 @@ export type StoreShell = {
   categories: Category[];
   /** true when no live store resolved and we're rendering the Trylist sample */
   preview?: boolean;
-  /** preview mode seeds a sample cart so the drawer can be seen */
-  seedLines?: CartLine[];
 };
 
 /**
@@ -32,7 +30,7 @@ export type StoreShell = {
 export function StoreChrome({ children, ...shell }: StoreShell & { children: ReactNode }) {
   return (
     <CurrencyProvider currency={shell.currency}>
-      <CartProvider seedLines={shell.seedLines}>
+      <CartProvider>
         <ChromeInner {...shell}>{children}</ChromeInner>
       </CartProvider>
     </CurrencyProvider>
