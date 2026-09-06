@@ -13,10 +13,10 @@ export function TopBar({ announcement }: { announcement?: string }) {
 
   return (
     <div className="bg-navy">
-      <Container className="flex items-center justify-between gap-4 py-2.5 font-mono text-[12px] uppercase tracking-[1.4px] text-[#c9cce6]">
+      <Container className="flex items-center justify-between gap-4 py-1 font-mono text-[11px] uppercase tracking-[1.4px] text-[#c9cce6] sm:py-2.5 sm:text-[12px]">
         {/* mobile */}
-        <div className="flex flex-1 items-center justify-center gap-2 sm:hidden">
-          <Diamond size={9} className="text-amber" />
+        <div className="flex flex-1 items-center justify-center gap-1.5 py-0.5 sm:hidden">
+          <Diamond size={8} className="text-amber" />
           <span className="text-amber">{text}</span>
         </div>
 
