@@ -15,7 +15,15 @@ const DEFAULT_HEADLINE = "BUILT FOR\nTHE SHOP\nFLOOR";
 const DEFAULT_SUB =
   "Laptops, POS hardware, printers and networking kit — stocked in Nairobi, delivered countrywide, and set up by people who actually run tills.";
 
-export function Hero({ hero = {} }: { hero?: TrylistTheme["hero"] }) {
+export function Hero({
+  hero = {},
+  dealTile,
+  tradeTile
+}: {
+  hero?: TrylistTheme["hero"];
+  dealTile?: TrylistTheme["dealTile"];
+  tradeTile?: TrylistTheme["tradeTile"];
+}) {
   const headline = hero.headline?.trim() || DEFAULT_HEADLINE;
   const sub = hero.sub?.trim() || DEFAULT_SUB;
   const primary = {
@@ -103,8 +111,8 @@ export function Hero({ hero = {} }: { hero?: TrylistTheme["hero"] }) {
 
       {/* RIGHT rail — on mobile these fall into normal flow below the panel above */}
       <div className="flex flex-col">
-        <DealTile />
-        <TradeTile />
+        <DealTile dealTile={dealTile} />
+        <TradeTile tradeTile={tradeTile} />
       </div>
     </section>
   );

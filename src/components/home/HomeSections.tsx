@@ -35,7 +35,7 @@ export function HomeSections({
 
   return (
     <>
-      <Hero hero={theme.hero} />
+      <Hero hero={theme.hero} dealTile={theme.dealTile} tradeTile={theme.tradeTile} />
       <TrustBar />
       <CategoryGrid categories={categories} images={theme.categoryImages} />
 
