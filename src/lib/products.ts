@@ -39,6 +39,11 @@ export type Product = {
   unitOfMeasure?: string | null;
   wholesalePriceCents?: number | null;
   wholesaleMinQuantity?: number;
+  /** rich detail-page content — quick specs + ordered paragraph/specs/notes blocks */
+  content?: {
+    quickSpecs: string[];
+    blocks: { type: "paragraph" | "specs" | "notes"; heading: string | null; body: string | null; items: string[] }[];
+  };
 };
 
 export type Category = {

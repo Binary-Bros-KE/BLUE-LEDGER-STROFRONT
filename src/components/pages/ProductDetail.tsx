@@ -152,6 +152,25 @@ export function ProductDetail({
                 </p>
               ) : null}
 
+              {product.content && product.content.quickSpecs.length > 0 ? (
+                <section className="mt-6" aria-label="Quick specifications">
+                  <h2 className="font-mono text-[11px] font-bold uppercase tracking-[2px] text-slate">
+                    Quick specs
+                  </h2>
+                  <ul className="mt-3 max-w-[46ch] space-y-1.5">
+                    {product.content.quickSpecs.map((s, i) => (
+                      <li
+                        key={i}
+                        className="flex gap-2.5 font-sans text-[13px] leading-[1.6] text-navy/80"
+                      >
+                        <span aria-hidden="true" className="mt-[7px] size-1.5 flex-none bg-amber" />
+                        {s}
+                      </li>
+                    ))}
+                  </ul>
+                </section>
+              ) : null}
+
               {/* actions */}
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 {!soldOut && (
@@ -212,6 +231,45 @@ export function ProductDetail({
           </Container>
         </section>
       )}
+
+      {product.content && product.content.blocks.length > 0 ? (
+        <section className="border-t border-line bg-cream py-14" aria-label="Product details">
+          <Container>
+            <div className="mx-auto max-w-[720px] space-y-10">
+              {product.content.blocks.map((b, i) => (
+                <article key={i}>
+                  {b.heading ? (
+                    <h2 className="font-sans text-[20px] font-black leading-[1.15] tracking-[-0.4px] text-navy md:text-[24px]">
+                      {b.heading}
+                    </h2>
+                  ) : null}
+                  {b.type === "specs" ? (
+                    <ul className={`${b.heading ? "mt-4" : ""} space-y-2`}>
+                      {b.items.map((s, j) => (
+                        <li
+                          key={j}
+                          className="flex gap-3 border-b border-cream-line pb-2 font-sans text-[14px] leading-[1.6] text-navy/80 last:border-b-0"
+                        >
+                          <span aria-hidden="true" className="mt-[8px] size-1.5 flex-none bg-blue" />
+                          {s}
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <p
+                      className={`${b.heading ? "mt-4" : ""} font-sans text-[14px] leading-[1.9] whitespace-pre-line ${
+                        b.type === "notes" ? "text-navy/60 italic" : "text-navy/80"
+                      }`}
+                    >
+                      {b.body}
+                    </p>
+                  )}
+                </article>
+              ))}
+            </div>
+          </Container>
+        </section>
+      ) : null}
     </>
   );
 }

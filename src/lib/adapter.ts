@@ -42,6 +42,7 @@ export function toThemeProduct(item: CatalogItem): Product {
     unitOfMeasure: item.unitOfMeasure,
     wholesalePriceCents: item.wholesalePriceCents,
     wholesaleMinQuantity: item.wholesaleMinQuantity,
+    content: item.content,
   };
 }
 

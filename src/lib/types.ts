@@ -22,6 +22,18 @@ export type StorePayload = {
 
 export type ProductImage = { url: string; thumbUrl?: string };
 
+export type OnlineContentBlock = {
+  type: "paragraph" | "specs" | "notes";
+  heading: string | null;
+  body: string | null;
+  items: string[];
+};
+
+export type OnlineContent = {
+  quickSpecs: string[];
+  blocks: OnlineContentBlock[];
+};
+
 export type CatalogItem = {
   id: string;
   name: string;
@@ -36,6 +48,7 @@ export type CatalogItem = {
   categoryIds: string[];
   unitOfMeasure: string | null;
   images: ProductImage[];
+  content: OnlineContent;
   stock: StockBadge;
 };
 
