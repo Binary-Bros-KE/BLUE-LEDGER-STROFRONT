@@ -60,8 +60,8 @@ export function Hero({
         <div className="flex flex-col gap-9 lg:flex-row lg:items-stretch lg:gap-10">
           {/* copy column */}
           <div className="flex max-w-[520px] flex-col">
-            <span className="inline-flex w-fit items-center gap-1 font-mono text-[6px] uppercase tracking-[1px] text-amber">
-              <Diamond size={5} /> Authorised dealer · 12-month warranty
+            <span className="inline-flex w-fit items-center gap-1 font-mono text-[8px] uppercase tracking-[1px] text-amber">
+              <Diamond size={6} /> Authorised dealer · 12-month warranty
             </span>
 
             <h1 className="mt-6 font-sans text-[40px] font-black leading-[0.95] tracking-[-1.4px] text-ink-on-navy [text-wrap:balance] whitespace-pre-line sm:text-[52px] lg:text-[62px] lg:tracking-[-2px]">
