@@ -276,7 +276,7 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
                 <div key={line.id} className="flex gap-3 border-b border-cream py-3 last:border-b-0">
                   {line.image ? (
                     // eslint-disable-next-line @next/next/no-img-element
-                    <img src={line.image} alt="" className="size-12 flex-none border border-line object-cover" />
+                    <img src={line.image} alt="" className="size-12 flex-none border border-line bg-white object-contain p-1" />
                   ) : (
                     <Placeholder caption="[ IMG ]" className="size-12 flex-none border border-line" />
                   )}

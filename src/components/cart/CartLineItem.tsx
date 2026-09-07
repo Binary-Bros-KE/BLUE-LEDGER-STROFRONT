@@ -25,7 +25,7 @@ export function CartLineItem({
         <img
           src={line.image}
           alt=""
-          className="size-14 flex-none border border-line object-cover"
+          className="size-14 flex-none border border-line bg-white object-contain p-1"
         />
       ) : (
         <Placeholder caption="[ IMG ]" className="size-14 flex-none border border-line" />
