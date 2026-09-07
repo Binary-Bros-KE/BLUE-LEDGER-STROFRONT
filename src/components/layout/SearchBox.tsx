@@ -7,7 +7,13 @@ import type { SearchResults } from "@/app/api/search/route";
 import { FiChevronDown, FiGrid, FiSearch, FiX } from "@/components/shared/icons";
 import { useMoney } from "@/lib/currency";
 
-export function SearchBox({ variant = "bar" }: { variant?: "bar" | "compact" }) {
+export function SearchBox({
+  variant = "bar",
+  autoFocus = false,
+}: {
+  variant?: "bar" | "compact";
+  autoFocus?: boolean;
+}) {
   const router = useRouter();
   const fmt = useMoney();
   const [q, setQ] = useState("");
@@ -109,6 +115,8 @@ export function SearchBox({ variant = "bar" }: { variant?: "bar" | "compact" }) 
           </span>
         )}
         <input
+          // eslint-disable-next-line jsx-a11y/no-autofocus
+          autoFocus={autoFocus}
           value={q}
           onChange={(e) => {
             setQ(e.target.value);

@@ -83,7 +83,7 @@ function ChromeInner({
 
       <Footer storeName={storeName} address={address} phone={phone} />
 
-      <MobileTabBar favCount={cart.favourites.size} cartCount={cart.count} onCartClick={cart.openCart} />
+      <MobileTabBar cartCount={cart.count} onCartClick={cart.openCart} />
 
       <CartDrawer
         open={cart.cartOpen}
