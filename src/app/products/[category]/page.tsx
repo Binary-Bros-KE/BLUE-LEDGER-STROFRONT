@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { StoreChrome } from "@/components/StoreChrome";
-import { ProductsListing } from "@/components/pages/ProductsListing";
 import { toThemeProduct } from "@/lib/adapter";
 import { CATEGORIES as SAMPLE_CATEGORIES, PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
 import { getCatalog, getCategories } from "@/lib/shop-api";
 import { slugify } from "@/lib/slug";
 import { loadShell } from "@/lib/store";
+import { getTemplate } from "@/templates/registry";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +37,7 @@ export default async function CategoryPage({
   const page = Math.max(1, Number(pageParam) || 1);
 
   const { shell, preview } = await loadShell();
+  const T = getTemplate(shell.templateId);
 
   // Preview mode: match against the sample categories, filter the sample products by name.
   if (preview) {
@@ -46,8 +46,8 @@ export default async function CategoryPage({
     const filtered = SAMPLE_PRODUCTS.filter((p) => slugify(p.category.split(" · ")[0]) === slug);
     const products = filtered.length ? filtered : SAMPLE_PRODUCTS;
     return (
-      <StoreChrome {...shell}>
-        <ProductsListing
+      <T.Chrome {...shell}>
+        <T.Listing
           heading={match.name}
           trail={[{ label: "Home", href: "/" }, { label: "Products", href: "/products" }, { label: match.name }]}
           products={products}
@@ -59,7 +59,7 @@ export default async function CategoryPage({
           activeCategorySlug={slug}
           heroImage={shell.theme.categoryImages[match.id] || shell.theme.headerImageUrl}
         />
-      </StoreChrome>
+      </T.Chrome>
     );
   }
 
@@ -78,8 +78,8 @@ export default async function CategoryPage({
   }
 
   return (
-    <StoreChrome {...shell}>
-      <ProductsListing
+    <T.Chrome {...shell}>
+      <T.Listing
         heading={category.name}
         trail={[{ label: "Home", href: "/" }, { label: "Products", href: "/products" }, { label: category.name }]}
         products={products}
@@ -91,6 +91,6 @@ export default async function CategoryPage({
         activeCategorySlug={slug}
         heroImage={shell.theme.categoryImages[category.id] || shell.theme.headerImageUrl}
       />
-    </StoreChrome>
+    </T.Chrome>
   );
 }

@@ -21,7 +21,7 @@ export function CategoryRibbon({ categories }: { categories: Category[] }) {
             <Link
               key={item.href + i}
               href={item.href}
-              className={`text-navy transition-opacity hover:opacity-60 ${i === 0 ? "font-bold" : "font-normal"}`}
+              className={`text-on-accent transition-opacity hover:opacity-60 ${i === 0 ? "font-bold" : "font-normal"}`}
             >
               {item.label}
             </Link>
@@ -29,7 +29,7 @@ export function CategoryRibbon({ categories }: { categories: Category[] }) {
         </nav>
         <Link
           href="/products"
-          className="flex items-center gap-1 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-[#b3271a] transition-opacity hover:opacity-70"
+          className="flex items-center gap-1 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-on-accent-emphasis transition-opacity hover:opacity-70"
         >
           All products <FiArrowRight size={13} />
         </Link>
@@ -40,7 +40,7 @@ export function CategoryRibbon({ categories }: { categories: Category[] }) {
           <Link
             key={item.href + i}
             href={item.href}
-            className={`flex-none font-mono text-[10px] uppercase tracking-[1.6px] text-navy ${i === 0 ? "font-bold" : ""}`}
+            className={`flex-none font-mono text-[10px] uppercase tracking-[1.6px] text-on-accent ${i === 0 ? "font-bold" : ""}`}
           >
             {item.label}
           </Link>

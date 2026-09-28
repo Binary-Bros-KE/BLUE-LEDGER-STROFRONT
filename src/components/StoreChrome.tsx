@@ -22,6 +22,8 @@ export type StoreShell = {
   categories: Category[];
   /** Trylist theme config (hero copy/images, story rows, category images) — from web_stores.themeJson. */
   theme: TrylistTheme;
+  /** web_stores.templateId (admin-set) — routes pick the template module off this */
+  templateId?: string | null;
   /** true when no live store resolved and we're rendering the Trylist sample */
   preview?: boolean;
 };

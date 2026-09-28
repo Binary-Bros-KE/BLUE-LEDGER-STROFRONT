@@ -21,7 +21,7 @@ export function StoryRows({ rows }: { rows: ThemeStoryRow[] }) {
                 key={i}
                 className={`grid items-center gap-8 lg:grid-cols-2 lg:gap-14 ${flip ? "lg:[&>*:first-child]:order-2" : ""}`}
               >
-                <div className="border border-line bg-white shadow-[6px_6px_0_var(--color-amber)]">
+                <div className="border border-line bg-white shadow-[6px_6px_0_var(--brand-accent)]">
                   {row.imageUrl ? (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={row.imageUrl} alt="" className="aspect-[4/3] w-full object-cover" />

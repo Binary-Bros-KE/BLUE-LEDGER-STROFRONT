@@ -61,7 +61,7 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
   if (placed) {
     return (
       <Container className="py-16">
-        <div className="mx-auto max-w-[560px] border-[1.5px] border-navy bg-white p-8 text-center shadow-[6px_6px_0_var(--color-amber)]">
+        <div className="mx-auto max-w-[560px] border-[1.5px] border-navy bg-white p-8 text-center shadow-[6px_6px_0_var(--brand-accent)]">
           <div className="mx-auto grid size-12 place-items-center bg-green text-[22px] font-black text-white">
             ✓
           </div>
@@ -330,7 +330,7 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
               <button
                 type="button"
                 onClick={placeOrder}
-                className="blk flex w-full items-center justify-center gap-2 bg-blue py-3.5 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-white"
+                className="blk flex w-full items-center justify-center gap-2 bg-blue py-3.5 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-on-primary"
               >
                 <FiPlay size={11} /> Complete order
               </button>

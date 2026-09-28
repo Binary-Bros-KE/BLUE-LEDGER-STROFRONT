@@ -199,7 +199,7 @@ export function ProductDetail({
                       ? "border-[1.5px] border-slate-dim text-slate-dim"
                       : added
                         ? "bg-green text-white"
-                        : "bg-navy text-white hover:bg-blue"
+                        : "bg-navy text-white hover:bg-blue hover:text-on-primary"
                   }`}
                 >
                   {!soldOut && <FiPlay size={11} />}

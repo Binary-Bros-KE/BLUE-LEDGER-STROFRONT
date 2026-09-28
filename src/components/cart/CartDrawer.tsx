@@ -104,7 +104,7 @@ export function CartDrawer({
             <Link
               href="/checkout"
               onClick={onClose}
-              className="blk flex items-center justify-center gap-2 bg-blue py-3 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-white"
+              className="blk flex items-center justify-center gap-2 bg-blue py-3 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-on-primary"
             >
               <FiPlay size={11} /> Checkout
             </Link>

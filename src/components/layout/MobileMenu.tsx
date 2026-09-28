@@ -71,7 +71,7 @@ export function MobileMenu({
 
       <a
         href="#"
-        className="mt-auto flex items-center justify-center gap-2 bg-blue py-4 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-white"
+        className="mt-auto flex items-center justify-center gap-2 bg-blue py-4 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-on-primary"
       >
         <FiUser size={13} /> Sign in
       </a>

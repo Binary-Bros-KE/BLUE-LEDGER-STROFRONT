@@ -50,7 +50,7 @@ export function Logo({
         </span>
       ) : (
         <span
-          className="grid flex-none place-items-center bg-blue font-sans font-black leading-none text-white"
+          className="grid flex-none place-items-center bg-blue font-sans font-black leading-none text-on-primary"
           style={{ width: size, height: size, fontSize: size * 0.53 }}
         >
           {mark}

@@ -63,7 +63,7 @@ const TILES: Tile[] = [
 const GROUND: Record<Ground, { box: string; heading: string; body: string }> = {
   navy: { box: "bg-navy", heading: "text-ink-on-navy", body: "text-body-on-navy" },
   white: { box: "bg-white border border-line", heading: "text-navy", body: "text-slate" },
-  amber: { box: "bg-amber", heading: "text-navy", body: "text-navy/75" },
+  amber: { box: "bg-amber", heading: "text-on-accent", body: "text-on-accent/75" },
 };
 
 export function Features() {

@@ -1,6 +1,6 @@
 import { FaStar } from "@/components/shared/icons";
 
-// Spec §4 — ★★★★★ at 10px in amber-ink (#8A6206), then `4.6 · 128 reviews` in slate mono 10px.
+// Spec §4 — ★★★★★ at 10px in amber-ink (accent ink), then `4.6 · 128 reviews` in slate mono 10px.
 export function Rating({ rating, reviews, muted = false }: { rating: number; reviews: number; muted?: boolean }) {
   const filled = Math.round(rating);
   return (

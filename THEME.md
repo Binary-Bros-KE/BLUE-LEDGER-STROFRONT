@@ -1,15 +1,65 @@
-# Storefront themes
+# Storefront templates
 
-The storefront is one deployment for every tenant. **How a shop looks is a theme** —
-WordPress-style: the SERVER `/shop` API is the stable data + action layer; a theme
-decides the markup and style. Themes ship one at a time.
+The storefront is one deployment for every tenant. **How a shop looks is a template** —
+WordPress-style: the SERVER `/shop` API is the stable data + action layer; a template
+decides the markup and style. Templates ship one at a time.
 
-## Theme 1 — "Classic" (Trylist)
+## Who controls what
 
-Built to `TRYLIST-BUILD-SPEC.md` + the reference screenshots. Currently the whole
-app **is** this theme (`src/app/page.tsx` → `<ClassicStorefront>`). When theme 2
-lands, the shared shell moves up and each theme becomes a module selected by
-`web_stores.themeJson.theme`.
+| Layer | Stored in | Edited by |
+|---|---|---|
+| **Template** (which design) | `web_stores.templateId` | Blue Ledger admin — dashboard → tenant → Online Store → *Change look* |
+| **Brand colours** (3 picks) | `web_stores.themeColorsJson` | Blue Ledger admin — same modal |
+| **Content** (logo, hero copy/images, contact, story rows…) | `web_stores.themeJson` | Shop owner — POS "Online Store" tab |
+
+The POS endpoints (`/shop-admin/*`) cannot write `templateId` / `themeColorsJson`; only the
+SUPER_ADMIN `PATCH /tenants/:id/shop` can.
+
+## The standard colour system (every template)
+
+An admin picks at most three colours; everything else is derived by `src/lib/palette.ts`:
+
+- **primary** — the action colour: buttons, links, prices, highlights
+- **secondary** — the *dark* structural colour: header/footer/hero bands, heading + body ink.
+  Always forced to ≥ 10:1 against white, so light text on it and it as text both stay readable.
+- **accent** — the pop colour: badges, stars, countdowns, CTA shadows, hover states
+
+Derived tokens (hover, soft tint, readable-on-white "ink", text-on-colour) are CSS custom
+properties `--brand-*`, put inline on `<html>` by `app/layout.tsx`. Neutrals and status colours
+(`--ui-*`: page, surface, ink, line, success, danger…) belong to the template, not the admin.
+
+**Rule for template code:** colour only through the Tailwind names in `globals.css`'s
+`@theme inline` block — `bg-primary`, `text-on-primary`, `bg-secondary`, `text-on-secondary-body`,
+`bg-accent`, `text-accent-ink`, `bg-surface`, `text-ink-muted`, `border-line`, `text-success`…
+Never a raw hex, never `text-white` on a brand colour (use `text-on-primary` etc.) — otherwise the
+template stops being re-colourable. Classic's legacy names (`navy`, `blue`, `amber`…) are aliases
+kept for its old components only.
+
+## Adding a template (checklist)
+
+1. `src/templates/<id>/` — components implementing the `StorefrontTemplate` contract in
+   `src/templates/types.ts` (Chrome, Home, Listing, ProductDetail, Checkout, NotFound). Routes stay
+   untouched; they already fetch data and hand it over.
+2. Its neutrals under `[data-template="<id>"] { --ui-page: …; }` and any base laws scoped the same
+   way in `globals.css` (never unscoped — Classic's zero-radius law is scoped for this reason).
+3. Fonts: its own `fonts.ts` with `next/font`; set `preload: false` so other templates' shops
+   don't preload them. Expose them via `htmlClassName`.
+4. Register it in `src/templates/registry.ts` (`pinnedColors: false`).
+5. Deploy the storefront, **then** allow the id in SERVER `src/lib/storefront-templates.ts` and add
+   it to NEXT/admin `src/lib/storefront-templates.ts` (name, description, defaults, role help).
+
+## Dev overrides
+
+`DEV_TEMPLATE=classic` and `DEV_THEME_COLORS={"primary":"#d71920","secondary":"#1b1b1f","accent":"#ffb400"}`
+force the look without touching the DB (see `src/lib/env.ts`). Blank in production.
+
+## Template 1 — "Classic" (Trylist)
+
+Built to `TRYLIST-BUILD-SPEC.md` + the reference screenshots. Its components live in
+`src/components/**` (they predate the template system) and are bound into the contract by
+`src/templates/classic/index.ts`. It is the default/fallback template and `pinnedColors: true`:
+its exact spec palette is the `:root` default in `globals.css`, so an un-recoloured store is
+pixel-identical to before templates existed.
 
 ### Where things are
 

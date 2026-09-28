@@ -29,7 +29,7 @@ export function TradeTile({ tradeTile = {} }: { tradeTile?: ThemeTradeTile }) {
       <p className="font-mono text-[11px] leading-[1.6] text-slate">{body}</p>
       <a
         href={cta.href}
-        className="mt-1 inline-flex w-fit items-center gap-2 bg-navy px-4 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[1.4px] text-white transition-colors hover:bg-blue"
+        className="mt-1 inline-flex w-fit items-center gap-2 bg-navy px-4 py-2.5 font-mono text-[11px] font-bold uppercase tracking-[1.4px] text-white transition-colors hover:bg-blue hover:text-on-primary"
       >
         {cta.label} <FiArrowRight size={13} />
       </a>

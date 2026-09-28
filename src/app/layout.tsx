@@ -1,24 +1,11 @@
+import type { CSSProperties } from "react";
 import type { Metadata } from "next";
-import { Archivo, JetBrains_Mono } from "next/font/google";
 import { CartRoot } from "@/components/CartRoot";
 import { getStore } from "@/lib/shop-api";
+import { loadLook } from "@/lib/store";
 import { parseTheme } from "@/lib/theme";
+import { getTemplate, templateCssVars } from "@/templates/registry";
 import "./globals.css";
-
-// Spec §2 — the two (and only two) type roles.
-const archivo = Archivo({
-  subsets: ["latin"],
-  weight: ["500", "600", "700", "800", "900"],
-  variable: "--font-archivo",
-  display: "swap",
-});
-
-const jbmono = JetBrains_Mono({
-  subsets: ["latin"],
-  weight: ["400", "500", "700"],
-  variable: "--font-jbmono",
-  display: "swap",
-});
 
 // Per-store title/description are set by `generateMetadata()` on each page. Here we resolve the
 // site-wide favicon from the tenant's uploaded brand logo (themeJson.brand.logoImageUrl).
@@ -32,10 +19,17 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 }
 
-export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+export default async function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
+  // Look & feel is decided once, here: `data-template` scopes each template's base CSS (globals.css)
+  // and the inline --brand-* vars recolour it. Both are server-rendered, so there's no flash of the
+  // default palette before hydration.
+  const look = await loadLook();
+  const template = getTemplate(look.template);
+  const brandVars = templateCssVars(template, look.colors) as CSSProperties;
+
   return (
-    <html lang="en" className={`${archivo.variable} ${jbmono.variable}`}>
-      <body className="bg-white text-navy">
+    <html lang="en" data-template={template.id} className={template.htmlClassName} style={brandVars}>
+      <body>
         <CartRoot>{children}</CartRoot>
       </body>
     </html>

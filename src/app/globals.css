@@ -1,9 +1,67 @@
 @import "tailwindcss";
 
-/* ─────────────────────────────────────────────────────────────────────────────
- * TRYLIST "Classic" theme — design tokens (Tailwind v4 CSS-first config).
- * Spec §1 colours, §2 fonts, §5 breakpoints. Do not drift from these values.
- * ────────────────────────────────────────────────────────────────────────── */
+/* ═════════════════════════════════════════════════════════════════════════════
+ * THE STANDARD COLOUR SYSTEM — shared by every storefront template.
+ *
+ *  --brand-*  derived from the store's 3 admin-picked colours (primary / secondary / accent).
+ *             Values below are the defaults (Classic's exact spec §1 palette). For a re-coloured
+ *             store, app/layout.tsx puts the overridden groups inline on <html>, computed by
+ *             src/lib/palette.ts — the ONLY place shades are derived.
+ *  --ui-*     neutrals + status colours, owned by each template (NOT admin-editable). A template
+ *             redefines them under its own [data-template="…"] block.
+ *
+ * Templates colour things ONLY through the Tailwind names in the `@theme inline` block below —
+ * never a raw hex — or they stop being re-colourable. See THEME.md.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* primary — the action colour: buttons, links, prices, highlights */
+  --brand-primary: #2f55e8;
+  --brand-primary-hover: #2847c3;
+  --brand-primary-soft: #eaeefd;
+  --brand-primary-ink: #2f55e8;
+  --brand-on-primary: #ffffff;
+  --brand-on-primary-muted: #c7d2ff;
+  --brand-on-primary-soft: #dce3ff;
+
+  /* secondary — the dark structural colour: header/footer/hero bands, heading + body ink */
+  --brand-secondary: #141a47;
+  --brand-secondary-deep: #0b0e28;
+  --brand-secondary-raised: #2a3070;
+  --brand-secondary-raised-2: #3a4185;
+  --brand-secondary-muted: #5f6382;
+  --brand-secondary-faint: #8a8fb5;
+  --brand-on-secondary: #efeae0;
+  --brand-on-secondary-soft: #c9cce6;
+  --brand-on-secondary-body: #b6bad8;
+  --brand-on-secondary-meta: #aeb3ce;
+  --brand-on-secondary-faint: #6e75a8;
+
+  /* accent — the pop colour: badges, stars, CTA shadows, hover states */
+  --brand-accent: #f5b21a;
+  --brand-accent-hover: #d89d17;
+  --brand-accent-soft: #fef4df;
+  --brand-accent-ink: #8a6206;
+  --brand-accent-ink-deep: #7a5504;
+  --brand-on-accent: #141a47;
+  --brand-on-accent-emphasis: #b3271a;
+
+  /* neutrals (template-owned) */
+  --ui-page: #ffffff;
+  --ui-surface: #ffffff;
+  --ui-surface-alt: #efeae0;
+  --ui-ink: var(--brand-secondary);
+  --ui-ink-muted: var(--brand-secondary-muted);
+  --ui-ink-faint: var(--brand-secondary-faint);
+  --ui-line: #e3dfd6;
+  --ui-line-strong: #dcd6c8;
+  --ui-hatch: #f3f1ec;
+
+  /* status (template-owned, never brand-driven — "in stock" is always green) */
+  --ui-success: #17945e;
+  --ui-danger: #d8402f;
+  --ui-danger-deep: #8e1f13;
+}
+
 @theme {
   /* Breakpoints — spec §5 (sm is 480, not Tailwind's default 640). */
   --breakpoint-sm: 480px;
@@ -14,33 +72,111 @@
   /* Type roles — spec §2. Archivo = headings/prices/names; JetBrains Mono = every label. */
   --font-sans: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, sans-serif;
   --font-mono: var(--font-jbmono), ui-monospace, "JetBrains Mono", "SFMono-Regular", monospace;
+}
 
-  /* Colour tokens — spec §1. */
-  --color-navy: #141a47;
-  --color-navy-900: #0b0e28;
-  --color-navy-700: #2a3070;
-  --color-navy-600: #3a4185;
-  --color-blue: #2f55e8;
-  --color-amber: #f5b21a;
-  --color-amber-ink: #8a6206;
-  --color-amber-dim: #7a5504;
-  --color-cream: #efeae0;
-  --color-cream-line: #dcd6c8;
-  --color-red: #d8402f;
-  --color-red-900: #8e1f13;
-  --color-green: #17945e;
-  --color-line: #e3dfd6;
-  --color-hatch: #f3f1ec;
-  --color-slate: #5f6382;
-  --color-slate-dim: #8a8fb5;
-  --color-ink-on-navy: #efeae0;
-  --color-body-on-navy: #b6bad8;
-  --color-meta-on-navy: #aeb3ce;
-  --color-faint-on-navy: #6e75a8;
-  --color-on-blue: #c7d2ff;
-  --color-on-blue-body: #dce3ff;
+/* `inline` = utilities reference the runtime var directly (bg-primary → var(--brand-primary)), so a
+ * per-store override on <html> recolours every utility, including /opacity variants. */
+@theme inline {
+  /* ── Standard names — what every template (from template 2 on) uses ── */
+  --color-primary: var(--brand-primary);
+  --color-primary-hover: var(--brand-primary-hover);
+  --color-primary-soft: var(--brand-primary-soft);
+  --color-primary-ink: var(--brand-primary-ink);
+  --color-on-primary: var(--brand-on-primary);
+  --color-on-primary-muted: var(--brand-on-primary-muted);
+  --color-on-primary-soft: var(--brand-on-primary-soft);
 
-  /* Law #1: ZERO border radius, everywhere. Kill every radius token. */
+  --color-secondary: var(--brand-secondary);
+  --color-secondary-deep: var(--brand-secondary-deep);
+  --color-secondary-raised: var(--brand-secondary-raised);
+  --color-secondary-raised-2: var(--brand-secondary-raised-2);
+  --color-secondary-muted: var(--brand-secondary-muted);
+  --color-secondary-faint: var(--brand-secondary-faint);
+  --color-on-secondary: var(--brand-on-secondary);
+  --color-on-secondary-soft: var(--brand-on-secondary-soft);
+  --color-on-secondary-body: var(--brand-on-secondary-body);
+  --color-on-secondary-meta: var(--brand-on-secondary-meta);
+  --color-on-secondary-faint: var(--brand-on-secondary-faint);
+
+  --color-accent: var(--brand-accent);
+  --color-accent-hover: var(--brand-accent-hover);
+  --color-accent-soft: var(--brand-accent-soft);
+  --color-accent-ink: var(--brand-accent-ink);
+  --color-accent-ink-deep: var(--brand-accent-ink-deep);
+  --color-on-accent: var(--brand-on-accent);
+  --color-on-accent-emphasis: var(--brand-on-accent-emphasis);
+
+  --color-page: var(--ui-page);
+  --color-surface: var(--ui-surface);
+  --color-surface-alt: var(--ui-surface-alt);
+  --color-ink: var(--ui-ink);
+  --color-ink-muted: var(--ui-ink-muted);
+  --color-ink-faint: var(--ui-ink-faint);
+  --color-line: var(--ui-line);
+  --color-line-strong: var(--ui-line-strong);
+  --color-hatch: var(--ui-hatch);
+  --color-success: var(--ui-success);
+  --color-danger: var(--ui-danger);
+  --color-danger-deep: var(--ui-danger-deep);
+
+  /* ── Classic's legacy names (spec §1) — aliases onto the standard tokens above. Classic's
+   * components predate the standard; new templates must NOT use these. ── */
+  --color-navy: var(--brand-secondary);
+  --color-navy-900: var(--brand-secondary-deep);
+  --color-navy-700: var(--brand-secondary-raised);
+  --color-navy-600: var(--brand-secondary-raised-2);
+  --color-blue: var(--brand-primary);
+  --color-blue-press: var(--brand-primary-hover);
+  --color-amber: var(--brand-accent);
+  --color-amber-ink: var(--brand-accent-ink);
+  --color-amber-dim: var(--brand-accent-ink-deep);
+  --color-cream: var(--ui-surface-alt);
+  --color-cream-line: var(--ui-line-strong);
+  --color-red: var(--ui-danger);
+  --color-red-900: var(--ui-danger-deep);
+  --color-green: var(--ui-success);
+  --color-slate: var(--brand-secondary-muted);
+  --color-slate-dim: var(--brand-secondary-faint);
+  --color-ink-on-navy: var(--brand-on-secondary);
+  --color-soft-on-navy: var(--brand-on-secondary-soft);
+  --color-body-on-navy: var(--brand-on-secondary-body);
+  --color-meta-on-navy: var(--brand-on-secondary-meta);
+  --color-faint-on-navy: var(--brand-on-secondary-faint);
+  --color-on-blue: var(--brand-on-primary-muted);
+  --color-on-blue-body: var(--brand-on-primary-soft);
+}
+
+/* Every template: page ground + ink come from the standard neutrals. */
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    background: var(--ui-page);
+    color: var(--ui-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  button {
+    font-family: inherit;
+  }
+
+  img {
+    max-width: 100%;
+    display: block;
+  }
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+ * Template: CLASSIC (Trylist) — its base laws are scoped to [data-template="classic"] so they can
+ * never leak into another template (template 2 has rounded corners, for one).
+ * ═══════════════════════════════════════════════════════════════════════════ */
+[data-template="classic"] {
+  /* Law #1: ZERO border radius, everywhere. Kill every radius token… */
   --radius-xs: 0px;
   --radius-sm: 0px;
   --radius-md: 0px;
@@ -52,62 +188,41 @@
 }
 
 @layer base {
-  /* Law #1, belt-and-braces: no stray class can sneak a curve in (incl. rounded-full). */
-  *,
-  *::before,
-  *::after {
+  /* …and belt-and-braces: no stray class can sneak a curve in (incl. rounded-full). */
+  [data-template="classic"] *,
+  [data-template="classic"] *::before,
+  [data-template="classic"] *::after {
     border-radius: 0 !important;
   }
 
-  html {
-    -webkit-text-size-adjust: 100%;
-  }
-
-  body {
-    margin: 0;
-    background: #ffffff;
-    color: var(--color-navy);
-    font-family: var(--font-sans);
-    -webkit-font-smoothing: antialiased;
-    text-rendering: optimizeLegibility;
-  }
-
-  /* Spec §6 — plain links: default blue, hover amber. `:where()` keeps specificity at 0 and the
+  /* Spec §6 — plain links: primary, hover accent. `:where()` keeps specificity at 0 and the
    * `:not([class*="text-"])` opt-out lets any explicitly-coloured link (nav items, buttons, tiles)
-   * keep its own Tailwind colour + hover instead of being forced blue/amber. */
-  a {
+   * keep its own Tailwind colour + hover instead of being forced primary/accent. */
+  [data-template="classic"] a {
     text-decoration: none;
   }
-  :where(a):not([class*="text-"]) {
-    color: var(--color-blue);
+  [data-template="classic"] :where(a):not([class*="text-"]) {
+    color: var(--brand-primary);
   }
-  :where(a):not([class*="text-"]):hover {
-    color: var(--color-amber);
-  }
-
-  button {
-    font-family: inherit;
+  [data-template="classic"] :where(a):not([class*="text-"]):hover {
+    color: var(--brand-accent);
   }
 
   /* Spec §9 — square focus ring, never rounded. */
-  :focus-visible {
-    outline: 2px solid var(--color-blue);
+  [data-template="classic"] :focus-visible {
+    outline: 2px solid var(--brand-primary);
     outline-offset: 2px;
-  }
-
-  img {
-    max-width: 100%;
-    display: block;
   }
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
- * Signature patterns — spec §3. Implement once here; components just add the class.
+ * Classic signature patterns — spec §3. Implement once here; components just add the class.
+ * Colours come from the brand tokens so a re-coloured Classic store follows along.
  * ────────────────────────────────────────────────────────────────────────── */
 
-/* Navy hero: 44px engineering grid (36px on mobile). */
+/* Secondary hero: 44px engineering grid (36px on mobile). */
 .bg-grid {
-  background-color: #141a47;
+  background-color: var(--brand-secondary);
   background-image:
     linear-gradient(rgba(255, 255, 255, 0.05) 1px, transparent 1px),
     linear-gradient(90deg, rgba(255, 255, 255, 0.05) 1px, transparent 1px);
@@ -121,31 +236,35 @@
 
 /* Image placeholder on white — diagonal hatch. */
 .ph-light {
-  background-color: #ffffff;
-  background-image: repeating-linear-gradient(135deg, #f3f1ec 0 6px, #ffffff 6px 12px);
+  background-color: var(--ui-surface);
+  background-image: repeating-linear-gradient(135deg, var(--ui-hatch) 0 6px, var(--ui-surface) 6px 12px);
 }
 
-/* Image placeholder on navy. */
+/* Image placeholder on the secondary ground. */
 .ph-dark {
-  background-color: #141a47;
+  background-color: var(--brand-secondary);
   background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0 6px, transparent 6px 12px);
 }
 
-/* The ONE shadow in the system — a hard amber offset block. Never blur, never rgba. */
+/* The ONE shadow in the system — a hard accent offset block. Never blur, never rgba. */
 .blk {
-  box-shadow: 5px 5px 0 #f5b21a;
+  box-shadow: 5px 5px 0 var(--brand-accent);
 }
 .blk-sm {
-  box-shadow: 4px 4px 0 #f5b21a;
+  box-shadow: 4px 4px 0 var(--brand-accent);
 }
 /* Spec §6 — .blk CTAs on :active translate 2px and shrink the shadow. */
 .blk:active,
 .blk-sm:active {
   transform: translate(2px, 2px);
-  box-shadow: 3px 3px 0 #f5b21a;
+  box-shadow: 3px 3px 0 var(--brand-accent);
 }
 
-/* Cart drawer slide-in — spec §5/§4. No radius, no blur. */
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Shared motion + utilities (every template).
+ * ────────────────────────────────────────────────────────────────────────── */
+
+/* Cart drawer slide-in — spec §5/§4. */
 @keyframes drawer-in {
   from {
     transform: translateX(100%);
@@ -188,7 +307,7 @@
   }
 }
 
-/* Utility: hide scrollbars on the mobile category ribbon (spec §4 CategoryRibbon). */
+/* Hide scrollbars on horizontally-scrolling rows (e.g. the mobile category ribbon). */
 .no-scrollbar {
   -ms-overflow-style: none;
   scrollbar-width: none;

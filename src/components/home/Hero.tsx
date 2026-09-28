@@ -83,7 +83,7 @@ export function Hero({
             <div className="mt-8 flex flex-col gap-3 sm:flex-row">
               <Link
                 href={primary.href}
-                className="blk inline-flex items-center justify-center gap-2 bg-blue px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[1.6px] text-white"
+                className="blk inline-flex items-center justify-center gap-2 bg-blue px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[1.6px] text-on-primary"
               >
                 <FiPlay size={11} /> {primary.label}
               </Link>

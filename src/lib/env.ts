@@ -8,3 +8,12 @@ export const SHOP_API_URL = process.env.SHOP_API_URL ?? "http://localhost:4000";
  * production — the genuine incoming `Host` is used.
  */
 export const DEV_STORE_DOMAIN = process.env.DEV_STORE_DOMAIN?.trim() ?? "";
+
+/**
+ * DEV / PREVIEW ONLY — force the look without touching the database:
+ *   DEV_TEMPLATE=classic
+ *   DEV_THEME_COLORS={"primary":"#d71920","secondary":"#1b1b1f","accent":"#ffb400"}
+ * Applied on top of whatever the store (or the sample preview) resolves to. Blank in production.
+ */
+export const DEV_TEMPLATE = process.env.DEV_TEMPLATE?.trim() ?? "";
+export const DEV_THEME_COLORS = process.env.DEV_THEME_COLORS?.trim() ?? "";

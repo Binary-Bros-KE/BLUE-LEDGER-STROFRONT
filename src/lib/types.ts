@@ -9,6 +9,12 @@ export type StorePayload = {
   subdomain: string;
   customDomain: string | null;
   domainStatus: "NONE" | "PENDING_DNS" | "VERIFYING_TLS" | "LIVE";
+  /** web_stores.templateId — which src/templates/ module renders the shop (admin-set). Absent on
+   * an older SERVER → the default template. */
+  template?: string;
+  /** web_stores.themeColorsJson — { primary?, secondary?, accent? } "#rrggbb" overrides (admin-set). */
+  colors?: Record<string, unknown>;
+  /** web_stores.themeJson — the CONTENT config (client-edited from the POS). */
   theme: Record<string, unknown>;
   delivery: Record<string, unknown>;
   paymentOptions: Record<string, unknown>;

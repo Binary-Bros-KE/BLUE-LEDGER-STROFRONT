@@ -101,7 +101,7 @@ export function ProductCard({ product }: { product: Product }) {
                 ? "border-[1.5px] border-slate-dim text-slate-dim"
                 : added
                   ? "bg-green text-white"
-                  : "bg-navy text-white group-hover:bg-blue"
+                  : "bg-navy text-white group-hover:bg-blue group-hover:text-on-primary"
             }`}
           >
             {soldOut ? "NOTIFY ME" : added ? "Added!" : "ADD TO CART"}
@@ -113,7 +113,7 @@ export function ProductCard({ product }: { product: Product }) {
             className={`hidden h-11 w-11 flex-none place-items-center border-[1.5px] transition-shadow duration-[140ms] lg:grid ${
               soldOut
                 ? "border-slate-dim text-slate-dim"
-                : "border-navy text-navy group-hover:shadow-[4px_4px_0_var(--color-amber)]"
+                : "border-navy text-navy group-hover:shadow-[4px_4px_0_var(--brand-accent)]"
             }`}
           >
             <FiMaximize2 size={16} />

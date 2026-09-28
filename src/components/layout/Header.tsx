@@ -70,7 +70,7 @@ export function Header({
               type="button"
               onClick={onCartClick}
               aria-label={`Open cart — ${cartCount} items, ${fmt(cartTotalCents)}`}
-              className="blk-sm flex h-11 items-center gap-2.5 bg-blue px-4 text-left text-white"
+              className="blk-sm flex h-11 items-center gap-2.5 bg-blue px-4 text-left text-on-primary"
             >
               <FiShoppingCart size={16} className="text-amber" />
               <span className="flex flex-col leading-none">
@@ -103,11 +103,11 @@ export function Header({
                 type="button"
                 onClick={onCartClick}
                 aria-label={`Open cart — ${cartCount} items`}
-                className="relative grid size-9 flex-none place-items-center bg-blue text-white"
+                className="relative grid size-9 flex-none place-items-center bg-blue text-on-primary"
               >
                 <FiShoppingCart size={15} className="text-amber" />
                 {cartCount > 0 ? (
-                  <span className="absolute -right-1.5 -top-1.5 grid size-[18px] place-items-center bg-amber font-mono text-[9px] font-bold leading-none text-navy">
+                  <span className="absolute -right-1.5 -top-1.5 grid size-[18px] place-items-center bg-amber font-mono text-[9px] font-bold leading-none text-on-accent">
                     {cartCount}
                   </span>
                 ) : null}

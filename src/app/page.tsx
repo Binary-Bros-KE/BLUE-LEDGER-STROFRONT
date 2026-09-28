@@ -1,10 +1,10 @@
 import type { Metadata } from "next";
-import { StoreChrome } from "@/components/StoreChrome";
-import { HomeSections, type HomeProductSection } from "@/components/home/HomeSections";
+import type { HomeProductSection } from "@/components/home/HomeSections";
 import { toThemeProduct } from "@/lib/adapter";
 import { PRODUCTS as SAMPLE_PRODUCTS } from "@/lib/products";
 import { getCatalog, getStore } from "@/lib/shop-api";
 import { loadShell } from "@/lib/store";
+import { getTemplate } from "@/templates/registry";
 
 // Tenant-specific, resolved from the request domain — never statically prerendered.
 export const dynamic = "force-dynamic";
@@ -60,14 +60,10 @@ export default async function Page() {
     }));
   }
 
+  const T = getTemplate(shell.templateId);
   return (
-    <StoreChrome {...shell}>
-      <HomeSections
-        products={products}
-        categories={shell.categories}
-        theme={shell.theme}
-        sections={sections}
-      />
-    </StoreChrome>
+    <T.Chrome {...shell}>
+      <T.Home products={products} categories={shell.categories} theme={shell.theme} sections={sections} />
+    </T.Chrome>
   );
 }

@@ -1,10 +1,9 @@
 import type { Metadata } from "next";
-import { StoreChrome } from "@/components/StoreChrome";
-import { ProductsListing } from "@/components/pages/ProductsListing";
 import { toThemeProduct } from "@/lib/adapter";
 import { PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
 import { getCatalog } from "@/lib/shop-api";
 import { loadShell } from "@/lib/store";
+import { getTemplate } from "@/templates/registry";
 
 export const dynamic = "force-dynamic";
 
@@ -22,6 +21,7 @@ export default async function ProductsPage({
   const page = Math.max(1, Number(pageParam) || 1);
 
   const { shell, preview } = await loadShell();
+  const T = getTemplate(shell.templateId);
 
   let products: Product[] = [];
   let total = 0;
@@ -43,8 +43,8 @@ export default async function ProductsPage({
   }
 
   return (
-    <StoreChrome {...shell}>
-      <ProductsListing
+    <T.Chrome {...shell}>
+      <T.Listing
         heading={q ? `Results for “${q}”` : "All products"}
         trail={
           q
@@ -59,6 +59,6 @@ export default async function ProductsPage({
         categories={shell.categories}
         heroImage={shell.theme.headerImageUrl}
       />
-    </StoreChrome>
+    </T.Chrome>
   );
 }

@@ -1,4 +1,5 @@
 import { headers } from "next/headers";
+import { cache } from "react";
 import { DEV_STORE_DOMAIN, SHOP_API_URL } from "./env";
 import type { CatalogItem, CatalogPage, DeliveryOption, ShopCategory, StorePayload } from "./types";
 
@@ -42,9 +43,9 @@ async function shopFetch<T>(path: string): Promise<T> {
   return res.json() as Promise<T>;
 }
 
-export function getStore(): Promise<StorePayload> {
-  return shopFetch<StorePayload>("/shop/store");
-}
+/** Deduped per request (React cache): the root layout (template + colours + favicon), metadata and
+ * the page itself all need the store row — one round-trip to SERVER serves them all. */
+export const getStore = cache((): Promise<StorePayload> => shopFetch<StorePayload>("/shop/store"));
 
 export function getCatalog(params?: {
   page?: number;

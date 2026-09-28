@@ -1,12 +1,11 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { notFound } from "next/navigation";
-import { StoreChrome } from "@/components/StoreChrome";
-import { ProductDetail } from "@/components/pages/ProductDetail";
 import { toThemeProduct } from "@/lib/adapter";
 import { PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
 import { getCatalog, getProduct, ShopApiError } from "@/lib/shop-api";
 import { loadShell } from "@/lib/store";
+import { getTemplate } from "@/templates/registry";
 import type { CatalogItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
@@ -63,14 +62,15 @@ function productJsonLd(p: CatalogItem, currency: string, url: string | null) {
 export default async function ProductPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = await params;
   const { shell, preview } = await loadShell();
+  const T = getTemplate(shell.templateId);
 
   if (preview) {
     const sample = SAMPLE_PRODUCTS.find((p) => p.id === id) ?? SAMPLE_PRODUCTS[0];
     const related = SAMPLE_PRODUCTS.filter((p) => p.id !== sample.id).slice(0, 4);
     return (
-      <StoreChrome {...shell}>
-        <ProductDetail product={sample} related={related} categoryName={sample.category.split(" · ")[0]} />
-      </StoreChrome>
+      <T.Chrome {...shell}>
+        <T.ProductDetail product={sample} related={related} categoryName={sample.category.split(" · ")[0]} />
+      </T.Chrome>
     );
   }
 
@@ -99,13 +99,13 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
   const canonical = host ? `https://${host}/product/${encodeURIComponent(item.id)}` : null;
 
   return (
-    <StoreChrome {...shell}>
+    <T.Chrome {...shell}>
       <script
         type="application/ld+json"
         // eslint-disable-next-line react/no-danger
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(item, shell.currency, canonical)) }}
       />
-      <ProductDetail
+      <T.ProductDetail
         product={product}
         related={related}
         categoryName={item.categoryName}
@@ -114,6 +114,6 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
           shell.theme.headerImageUrl
         }
       />
-    </StoreChrome>
+    </T.Chrome>
   );
 }
