@@ -2,7 +2,7 @@ import Link from "next/link";
 import { FiArrowRight } from "./icons";
 
 /** Builds `<basePath>?page=N`, preserving any query already on basePath's `?`. */
-function pageHref(basePath: string, page: number): string {
+export function pageHref(basePath: string, page: number): string {
   const [path, qs] = basePath.split("?");
   const params = new URLSearchParams(qs);
   if (page <= 1) params.delete("page");
@@ -12,7 +12,7 @@ function pageHref(basePath: string, page: number): string {
 }
 
 /** 1 … 4 5 [6] 7 8 … 20 */
-function windowPages(current: number, total: number): (number | "…")[] {
+export function windowPages(current: number, total: number): (number | "…")[] {
   if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
   const out: (number | "…")[] = [1];
   const from = Math.max(2, current - 1);

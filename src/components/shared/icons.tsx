@@ -259,3 +259,22 @@ export const FiTag = (p: IconProps) => (
     <path d="M7 7h.01" />
   </Line>
 );
+
+export const FiSliders = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" />
+  </Line>
+);
+
+export const FiCheckCircle = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" />
+    <path d="M22 4 12 14.01l-3-3" />
+  </Line>
+);
+
+export const FiCheck = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M20 6 9 17l-5-5" />
+  </Line>
+);

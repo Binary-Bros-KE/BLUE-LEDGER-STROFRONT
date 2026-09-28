@@ -71,5 +71,7 @@ export type CatalogPage = {
   page: number;
   pageSize: number;
   total: number;
+  /** min/max shopper price over the matching set BEFORE any price filter (absent on older SERVERs) */
+  priceRange?: { minCents: number; maxCents: number } | null;
   products: CatalogItem[];
 };

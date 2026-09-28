@@ -155,5 +155,10 @@ only when set), `hero.*`, `dealTile` (hero roundel + Hot Deals banner: first tit
 further lines = subtitle), `categoryImages`, `productSections`, `story`, `contact`, plus the new
 optional `brands` list (`{ name, logoUrl?, href? }[]`, POS editor pending).
 
-Status: chrome + home are Adia-designed. Listing, product detail and checkout still render Classic's
-page bodies inside Adia's chrome (token-recoloured, Adia fonts) — replaced in phases 3–4.
+Status: chrome, home, listing and product detail are Adia-designed. Checkout still renders Classic's
+page body inside Adia's chrome (token-recoloured, Adia fonts) — replaced in phase 4.
+
+Listing filters (any template can use them): `?sort=featured|price-asc|price-desc|newest&min=&max=`
+(whole currency units) — parsed/built only via `src/lib/listing-filters.ts`; SERVER `/shop/catalog`
+sorts/filters by the shopper price and returns `priceRange` (bounds before the price filter) for
+sliders. No brand filter: products have no brand field yet.

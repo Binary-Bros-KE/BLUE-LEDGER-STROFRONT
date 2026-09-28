@@ -109,6 +109,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
         product={product}
         related={related}
         categoryName={item.categoryName}
+        storeName={shell.storeName}
         headerImage={
           (item.categoryId ? shell.theme.categoryImages[item.categoryId] : undefined) ||
           shell.theme.headerImageUrl

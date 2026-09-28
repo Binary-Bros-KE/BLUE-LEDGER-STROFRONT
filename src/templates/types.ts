@@ -8,6 +8,7 @@
 import type { ComponentType, ReactNode } from "react";
 import type { StoreShell } from "@/components/StoreChrome";
 import type { HomeProductSection } from "@/components/home/HomeSections";
+import type { ListingFilters } from "@/lib/listing-filters";
 import type { BrandColors } from "@/lib/palette";
 import type { Category, Product } from "@/lib/products";
 import type { TrylistTheme } from "@/lib/theme";
@@ -39,6 +40,11 @@ export type ListingProps = {
   activeCategorySlug?: string;
   /** background image behind the page-header band (category image, else theme default) */
   heroImage?: string;
+  /** active sort + price filter (already applied to `products`/`total`); basePath carries them too,
+   * so pagination keeps them — build new filter links with lib/listing-filters listingHref() */
+  filters?: ListingFilters;
+  /** price bounds of the unfiltered set, for a price slider (null = no products / unknown) */
+  priceRange?: { minCents: number; maxCents: number } | null;
 };
 
 export type ProductDetailProps = {
@@ -46,6 +52,8 @@ export type ProductDetailProps = {
   related: Product[];
   categoryName: string | null;
   headerImage?: string;
+  /** for store-branded copy ("Why buy from …") */
+  storeName?: string;
 };
 
 export type CheckoutProps = { methods: DeliveryOption[] };

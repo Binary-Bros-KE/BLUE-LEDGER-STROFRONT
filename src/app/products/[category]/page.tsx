@@ -1,10 +1,12 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { toThemeProduct } from "@/lib/adapter";
+import { catalogParams, filterSample, listingHref, parseListingFilters, sampleRange } from "@/lib/listing-filters";
 import { CATEGORIES as SAMPLE_CATEGORIES, PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
 import { getCatalog, getCategories } from "@/lib/shop-api";
 import { slugify } from "@/lib/slug";
 import { loadShell } from "@/lib/store";
+import type { CatalogPage } from "@/lib/types";
 import { getTemplate } from "@/templates/registry";
 
 export const dynamic = "force-dynamic";
@@ -30,11 +32,13 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ category: string }>;
-  searchParams: Promise<{ page?: string }>;
+  searchParams: Promise<{ page?: string; sort?: string; min?: string; max?: string }>;
 }) {
   const { category: slug } = await params;
-  const { page: pageParam } = await searchParams;
-  const page = Math.max(1, Number(pageParam) || 1);
+  const sp = await searchParams;
+  const page = Math.max(1, Number(sp.page) || 1);
+  const filters = parseListingFilters(sp);
+  const rawBase = `/products/${slug}`;
 
   const { shell, preview } = await loadShell();
   const T = getTemplate(shell.templateId);
@@ -43,8 +47,9 @@ export default async function CategoryPage({
   if (preview) {
     const match = SAMPLE_CATEGORIES.find((c) => slugify(c.name) === slug);
     if (!match) notFound();
-    const filtered = SAMPLE_PRODUCTS.filter((p) => slugify(p.category.split(" · ")[0]) === slug);
-    const products = filtered.length ? filtered : SAMPLE_PRODUCTS;
+    const inCat = SAMPLE_PRODUCTS.filter((p) => slugify(p.category.split(" · ")[0]) === slug);
+    const base = inCat.length ? inCat : SAMPLE_PRODUCTS;
+    const products = filterSample(base, filters);
     return (
       <T.Chrome {...shell}>
         <T.Listing
@@ -54,10 +59,12 @@ export default async function CategoryPage({
           total={products.length}
           page={1}
           totalPages={1}
-          basePath={`/products/${slug}`}
+          basePath={listingHref(rawBase, filters)}
           categories={shell.categories}
           activeCategorySlug={slug}
           heroImage={shell.theme.categoryImages[match.id] || shell.theme.headerImageUrl}
+          filters={filters}
+          priceRange={sampleRange(base)}
         />
       </T.Chrome>
     );
@@ -68,10 +75,12 @@ export default async function CategoryPage({
 
   let products: Product[] = [];
   let total = 0;
+  let priceRange: CatalogPage["priceRange"] = null;
   try {
-    const catalog = await getCatalog({ categoryId: category.id, page, pageSize: PAGE_SIZE });
+    const catalog = await getCatalog({ categoryId: category.id, page, pageSize: PAGE_SIZE, ...catalogParams(filters) });
     products = catalog.products.map(toThemeProduct);
     total = catalog.total;
+    priceRange = catalog.priceRange ?? null;
   } catch {
     products = [];
     total = 0;
@@ -86,10 +95,12 @@ export default async function CategoryPage({
         total={total}
         page={page}
         totalPages={Math.max(1, Math.ceil(total / PAGE_SIZE))}
-        basePath={`/products/${slug}`}
+        basePath={listingHref(rawBase, filters)}
         categories={shell.categories}
         activeCategorySlug={slug}
         heroImage={shell.theme.categoryImages[category.id] || shell.theme.headerImageUrl}
+        filters={filters}
+        priceRange={priceRange}
       />
     </T.Chrome>
   );

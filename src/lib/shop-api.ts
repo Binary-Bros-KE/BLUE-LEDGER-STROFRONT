@@ -1,6 +1,7 @@
 import { headers } from "next/headers";
 import { cache } from "react";
 import { DEV_STORE_DOMAIN, SHOP_API_URL } from "./env";
+import type { CatalogSort } from "./listing-filters";
 import type { CatalogItem, CatalogPage, DeliveryOption, ShopCategory, StorePayload } from "./types";
 
 export class ShopApiError extends Error {
@@ -52,12 +53,18 @@ export function getCatalog(params?: {
   pageSize?: number;
   categoryId?: string;
   search?: string;
+  sort?: CatalogSort;
+  minPriceCents?: number;
+  maxPriceCents?: number;
 }): Promise<CatalogPage> {
   const qs = new URLSearchParams();
   if (params?.page) qs.set("page", String(params.page));
   if (params?.pageSize) qs.set("pageSize", String(params.pageSize));
   if (params?.categoryId) qs.set("categoryId", params.categoryId);
   if (params?.search) qs.set("search", params.search);
+  if (params?.sort && params.sort !== "featured") qs.set("sort", params.sort);
+  if (params?.minPriceCents !== undefined) qs.set("minPriceCents", String(params.minPriceCents));
+  if (params?.maxPriceCents !== undefined) qs.set("maxPriceCents", String(params.maxPriceCents));
   const q = qs.toString();
   return shopFetch<CatalogPage>(`/shop/catalog${q ? `?${q}` : ""}`);
 }
