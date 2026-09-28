@@ -41,6 +41,8 @@ type CartContextValue = {
   addToCart: (product: Product, qty?: number) => void;
   setQty: (id: string, qty: number) => void;
   removeLine: (id: string) => void;
+  /** empties the cart — after an order is placed */
+  clearCart: () => void;
   toggleFavourite: (id: string) => void;
   openCart: () => void;
   closeCart: () => void;
@@ -113,6 +115,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
     setLines((prev) => prev.filter((l) => l.id !== id));
   }, []);
 
+  const clearCart = useCallback(() => setLines([]), []);
+
   const toggleFavourite = useCallback((id: string) => {
     setFavourites((prev) => {
       const next = new Set(prev);
@@ -138,6 +142,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
     addToCart,
     setQty,
     removeLine,
+    clearCart,
     toggleFavourite,
     openCart,
     closeCart,

@@ -155,8 +155,16 @@ only when set), `hero.*`, `dealTile` (hero roundel + Hot Deals banner: first tit
 further lines = subtitle), `categoryImages`, `productSections`, `story`, `contact`, plus the new
 optional `brands` list (`{ name, logoUrl?, href? }[]`, POS editor pending).
 
-Status: chrome, home, listing and product detail are Adia-designed. Checkout still renders Classic's
-page body inside Adia's chrome (token-recoloured, Adia fonts) — replaced in phase 4.
+Status: complete — every page is Adia-designed (chrome, home, listing, product detail, checkout, 404,
+soft contact pop-up). The category bar shows only links that fit whole; the rest are in All Categories.
+
+## Orders (every template)
+
+Checkout places a REAL order: the browser posts to the same-origin `/api/orders` relay, which calls
+SERVER `POST /shop/orders` with the storefront key + the shopper's IP (Netlify's
+`x-nf-client-connection-ip`) for per-shopper spam limiting. SERVER re-prices everything; the order
+lands in the shop's POS "Online Orders" inbox. Payment is pay-on-delivery for now. Shared logic:
+`lib/use-place-order.ts` (templates only draw the form).
 
 Listing filters (any template can use them): `?sort=featured|price-asc|price-desc|newest&min=&max=`
 (whole currency units) — parsed/built only via `src/lib/listing-filters.ts`; SERVER `/shop/catalog`

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { FiChevronDown, FiMenu, FiZap } from "@/components/shared/icons";
@@ -8,11 +8,43 @@ import type { Category } from "@/lib/products";
 import { slugify } from "@/lib/slug";
 import { Container } from "./Container";
 
-/** Desktop category bar: "All Categories" dropdown, the first few categories, and a Hot Deals link. */
+const GAP = 28; // gap-7 between links
+
+/**
+ * Desktop category bar: "All Categories" dropdown, as many category links as fit WHOLE, and a Hot
+ * Deals link. Links are measured (an invisible copy of the full row) and the ones that don't fit are
+ * left out rather than clipped mid-word — every category stays reachable from the dropdown.
+ */
 export function NavBar({ categories, dealsHref }: { categories: Category[]; dealsHref: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
+  const navRef = useRef<HTMLElement>(null);
+  const measureRef = useRef<HTMLDivElement>(null);
+  const [fit, setFit] = useState(Math.min(categories.length, 5));
+
+  useLayoutEffect(() => {
+    const nav = navRef.current;
+    const measure = measureRef.current;
+    if (!nav || !measure) return;
+    const compute = () => {
+      const widths = Array.from(measure.children).map((c) => (c as HTMLElement).offsetWidth);
+      const room = nav.clientWidth;
+      let used = 0;
+      let n = 0;
+      for (const w of widths) {
+        const next = used + (n > 0 ? GAP : 0) + w;
+        if (next > room) break;
+        used = next;
+        n++;
+      }
+      setFit(n);
+    };
+    compute();
+    const ro = new ResizeObserver(compute);
+    ro.observe(nav);
+    return () => ro.disconnect();
+  }, [categories]);
 
   // eslint-disable-next-line react-hooks/set-state-in-effect
   useEffect(() => setOpen(false), [pathname]);
@@ -70,8 +102,16 @@ export function NavBar({ categories, dealsHref }: { categories: Category[]; deal
           ) : null}
         </div>
 
-        <nav aria-label="Categories" className="flex min-w-0 flex-1 items-center gap-7 overflow-hidden">
-          {categories.slice(0, 7).map((c) => {
+        <nav ref={navRef} aria-label="Categories" className="relative flex min-w-0 flex-1 items-center gap-7 overflow-hidden">
+          {/* invisible full-width copy used only to measure each link */}
+          <div ref={measureRef} aria-hidden="true" className="pointer-events-none invisible absolute top-0 left-0 flex gap-7 whitespace-nowrap">
+            {categories.map((c) => (
+              <span key={c.id} className="flex-none text-[14px] font-medium">
+                {c.name}
+              </span>
+            ))}
+          </div>
+          {categories.slice(0, fit).map((c) => {
             const href = `/products/${slugify(c.name)}`;
             return (
               <Link

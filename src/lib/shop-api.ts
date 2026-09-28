@@ -2,7 +2,15 @@ import { headers } from "next/headers";
 import { cache } from "react";
 import { DEV_STORE_DOMAIN, SHOP_API_URL, STOREFRONT_API_KEY } from "./env";
 import type { CatalogSort } from "./listing-filters";
-import type { CatalogItem, CatalogPage, DeliveryOption, ShopCategory, StorePayload } from "./types";
+import type {
+  CatalogItem,
+  CatalogPage,
+  DeliveryOption,
+  OrderConfirmation,
+  OrderRequest,
+  ShopCategory,
+  StorePayload,
+} from "./types";
 
 export class ShopApiError extends Error {
   status: number;
@@ -21,10 +29,17 @@ async function shopDomain(): Promise<string> {
   return (h.get("x-forwarded-host") ?? h.get("host") ?? "").toLowerCase();
 }
 
-async function shopFetch<T>(path: string): Promise<T> {
+async function shopFetch<T>(path: string, init?: { method?: string; body?: unknown; headers?: Record<string, string> }): Promise<T> {
   const domain = await shopDomain();
   const res = await fetch(`${SHOP_API_URL}${path}`, {
-    headers: { "X-Shop-Domain": domain, ...(STOREFRONT_API_KEY ? { "X-Storefront-Key": STOREFRONT_API_KEY } : {}) },
+    method: init?.method ?? "GET",
+    headers: {
+      "X-Shop-Domain": domain,
+      ...(STOREFRONT_API_KEY ? { "X-Storefront-Key": STOREFRONT_API_KEY } : {}),
+      ...(init?.body !== undefined ? { "Content-Type": "application/json" } : {}),
+      ...(init?.headers ?? {}),
+    },
+    ...(init?.body !== undefined ? { body: JSON.stringify(init.body) } : {}),
     // Every render is tenant-specific; never share a cached response across stores.
     cache: "no-store",
   });
@@ -75,6 +90,16 @@ export function getProduct(id: string): Promise<CatalogItem> {
 
 export function getCategories(): Promise<ShopCategory[]> {
   return shopFetch<ShopCategory[]>("/shop/categories");
+}
+
+/** Places a storefront order (POST /shop/orders). `shopperIp` lets SERVER rate-limit per shopper —
+ * it only trusts it alongside this deployment's storefront key. */
+export function placeOrder(body: OrderRequest, shopperIp: string | null): Promise<OrderConfirmation> {
+  return shopFetch<OrderConfirmation>("/shop/orders", {
+    method: "POST",
+    body,
+    headers: shopperIp ? { "X-Shopper-IP": shopperIp } : {},
+  });
 }
 
 export function getDeliveryMethods(): Promise<DeliveryOption[]> {

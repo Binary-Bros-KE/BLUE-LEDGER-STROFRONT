@@ -17,7 +17,7 @@ import { TopStrip } from "./TopStrip";
 export function AdiaChrome({ children, ...shell }: ChromeProps) {
   return (
     <CurrencyProvider currency={shell.currency}>
-      <ContactProvider contact={shell.theme.contact} fallbackPhone={shell.phone}>
+      <ContactProvider contact={shell.theme.contact} fallbackPhone={shell.phone} variant="soft">
         <Inner {...shell}>{children}</Inner>
       </ContactProvider>
     </CurrencyProvider>

@@ -8,14 +8,15 @@ import { FiArrowRight, FiCreditCard, FiPlay, FiShoppingCart, FiX } from "@/compo
 import { QtyStepper } from "@/components/cart/QtyStepper";
 import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
+import { usePlaceOrder } from "@/lib/use-place-order";
 import type { DeliveryOption } from "@/lib/types";
 
 // Single-page checkout (spec §4 aesthetic — zero radius, mono labels, one amber offset block on the
 // primary CTA). Guest only for now: name + phone, a delivery option (admin-defined), a payment
 // choice (visual only), an order summary, Complete order.
 //
-// Payment + order submission are NOT wired yet — "Complete order" shows a confirmation and nothing
-// is persisted. The delivery options ARE real (GET /shop/delivery). See ECOMMERCE-ARCHITECTURE.md.
+// "Complete order" places a real order (POST /api/orders → SERVER /shop/orders, priced server-side)
+// that lands in the shop's POS "Online Orders" inbox. No online payment yet — pay on delivery.
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
@@ -38,7 +39,8 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
   const [deliveryId, setDeliveryId] = useState<string>(methods[0]?.id ?? "");
   const [payment, setPayment] = useState<"mpesa" | "card">("mpesa");
   const [attempted, setAttempted] = useState(false);
-  const [placed, setPlaced] = useState<{ name: string; phone: string } | null>(null);
+  const { submit, submitting, error: submitError, confirmation } = usePlaceOrder();
+  const placed = confirmation ? { name: name.trim(), phone: phone.trim(), orderNumber: confirmation.orderNumber, totalCents: confirmation.totalCents } : null;
 
   const subtotal = useMemo(() => lines.reduce((s, l) => s + l.unitPriceCents * l.qty, 0), [lines]);
   const method = methods.find((m) => m.id === deliveryId) ?? null;
@@ -54,7 +56,12 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
   function placeOrder() {
     setAttempted(true);
     if (!canPlace) return;
-    setPlaced({ name: name.trim(), phone: phone.trim() });
+    void submit({
+      customerName: name.trim(),
+      customerPhone: phone.trim(),
+      deliveryAddress: address.trim() || null,
+      deliveryMethodId: method?.id ?? null,
+    });
   }
 
   // ── confirmation ──────────────────────────────────────────────────────────
@@ -68,13 +75,16 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
           <h1 className="mt-5 font-sans text-[26px] font-black leading-tight tracking-[-0.5px] text-navy">
             Order received
           </h1>
+          <p className="mt-2 font-mono text-[12px] uppercase tracking-[1.4px] text-slate">
+            Order <span className="font-bold text-navy">{placed.orderNumber}</span>
+          </p>
           <p className="mt-3 font-mono text-[12px] leading-[1.7] text-slate">
             Thanks, {placed.name.split(" ")[0]}. We&apos;ll call you on{" "}
             <span className="text-navy">{placed.phone}</span> to confirm and arrange{" "}
             {method ? method.name.toLowerCase() : "delivery"} and payment.
           </p>
           <p className="mt-4 font-mono text-[10px] uppercase tracking-[1.4px] text-slate">
-            Order total {fmt(total)}
+            Order total {fmt(placed.totalCents)}
           </p>
           <Link
             href="/products"
@@ -330,10 +340,16 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
               <button
                 type="button"
                 onClick={placeOrder}
-                className="blk flex w-full items-center justify-center gap-2 bg-blue py-3.5 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-on-primary"
+                disabled={submitting}
+                className="blk flex w-full items-center justify-center gap-2 bg-blue py-3.5 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-on-primary disabled:cursor-wait disabled:opacity-70"
               >
-                <FiPlay size={11} /> Complete order
+                <FiPlay size={11} /> {submitting ? "Placing order…" : "Complete order"}
               </button>
+              {submitError ? (
+                <p role="alert" className="mt-2 text-center font-mono text-[10px] uppercase tracking-[1.2px] text-red">
+                  {submitError}
+                </p>
+              ) : null}
               {attempted && !canPlace ? (
                 <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[1.2px] text-red">
                   {!nameOk || !phoneOk

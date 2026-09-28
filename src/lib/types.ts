@@ -67,6 +67,28 @@ export type DeliveryOption = {
   priceCents: number;
 };
 
+/** POST /shop/orders body — only ids + quantities; SERVER prices everything itself. */
+export type OrderRequest = {
+  customerName: string;
+  customerPhone: string;
+  customerEmail?: string | null;
+  deliveryAddress?: string | null;
+  notes?: string | null;
+  deliveryMethodId?: string | null;
+  paymentMethod: "pay_on_delivery";
+  items: { productId: string; qty: number }[];
+};
+
+/** What SERVER returns for a placed order — its own (authoritative) totals. */
+export type OrderConfirmation = {
+  orderNumber: string;
+  subtotalCents: number;
+  deliveryFeeCents: number;
+  totalCents: number;
+  currency: string;
+  items: { productId: string; name: string; unitPriceCents: number; qty: number; lineTotalCents: number }[];
+};
+
 export type CatalogPage = {
   page: number;
   pageSize: number;

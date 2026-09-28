@@ -1,11 +1,11 @@
 // Template 2 — "Adia" (built for ADIA Home Appliances, re-colourable for any retail shop). Rounded
 // cards on a light-grey page, Poppins headings, primary-gradient hero + Hot Deals countdown.
 //
-// Chrome, home, listing (filter sidebar + sort + price range) and product detail are Adia-designed.
-// Checkout still renders Classic's page body inside Adia's chrome until phase 4 replaces it.
+// Every page is Adia-designed: chrome, home, listing (filter sidebar + sort + price range), product
+// detail and checkout (real orders → the shop's POS "Online Orders" inbox).
 
-import { CheckoutView } from "@/components/pages/CheckoutView";
 import type { StorefrontTemplate } from "../types";
+import { Checkout } from "./checkout/Checkout";
 import { AdiaChrome } from "./components/AdiaChrome";
 import { inter, poppins } from "./fonts";
 import { Home } from "./home/Home";
@@ -32,6 +32,6 @@ export const adiaTemplate: StorefrontTemplate = {
   Home,
   Listing,
   ProductDetail,
-  Checkout: CheckoutView,
+  Checkout,
   NotFound: AdiaNotFound,
 };
