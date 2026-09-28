@@ -1,6 +1,6 @@
 import { headers } from "next/headers";
 import { cache } from "react";
-import { DEV_STORE_DOMAIN, SHOP_API_URL } from "./env";
+import { DEV_STORE_DOMAIN, SHOP_API_URL, STOREFRONT_API_KEY } from "./env";
 import type { CatalogSort } from "./listing-filters";
 import type { CatalogItem, CatalogPage, DeliveryOption, ShopCategory, StorePayload } from "./types";
 
@@ -24,7 +24,7 @@ async function shopDomain(): Promise<string> {
 async function shopFetch<T>(path: string): Promise<T> {
   const domain = await shopDomain();
   const res = await fetch(`${SHOP_API_URL}${path}`, {
-    headers: { "X-Shop-Domain": domain },
+    headers: { "X-Shop-Domain": domain, ...(STOREFRONT_API_KEY ? { "X-Storefront-Key": STOREFRONT_API_KEY } : {}) },
     // Every render is tenant-specific; never share a cached response across stores.
     cache: "no-store",
   });

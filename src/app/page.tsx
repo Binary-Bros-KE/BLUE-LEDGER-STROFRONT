@@ -14,7 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
     const store = await getStore();
     return { title: store.name, description: `Shop online at ${store.name}.` };
   } catch {
-    return { title: "TRYLIST" };
+    return { title: "Shop" };
   }
 }
 

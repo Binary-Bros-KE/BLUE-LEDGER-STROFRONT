@@ -1,6 +1,6 @@
 import type { StoreShell } from "@/components/StoreChrome";
 import { toThemeCategory } from "./adapter";
-import { DEV_TEMPLATE, DEV_THEME_COLORS } from "./env";
+import { ALLOW_SAMPLE_PREVIEW, DEV_TEMPLATE, DEV_THEME_COLORS } from "./env";
 import { parseColors, type ColorOverrides } from "./palette";
 import { CATEGORIES as SAMPLE_CATEGORIES } from "./products";
 import { getCategories, getStore, ShopApiError } from "./shop-api";
@@ -42,10 +42,12 @@ export async function loadLook(): Promise<StoreLook> {
 }
 
 /**
- * Resolves the header/footer/chrome data for the current request's tenant. On failure (no live
- * store at this host — e.g. localhost without DEV_STORE_DOMAIN, or SERVER down) it returns the
- * Trylist sample so the theme is always viewable. Every page calls this, then fetches its own
- * catalogue / product on top.
+ * Resolves the header/footer/chrome data for the current request's tenant. Every page calls this,
+ * then fetches its own catalogue / product on top.
+ *
+ * On failure (no live store at this host, SERVER down/limiting): in dev it returns the Trylist
+ * sample so templates are always viewable; in production it THROWS, and app/error.tsx shows a
+ * neutral "temporarily unavailable" page — never another business's sample products.
  */
 export async function loadShell(): Promise<{ shell: StoreShell; preview: boolean }> {
   const look = await loadLook();
@@ -65,6 +67,10 @@ export async function loadShell(): Promise<{ shell: StoreShell; preview: boolean
     };
   } catch (err) {
     const status = err instanceof ShopApiError ? err.status : "no response";
+    if (!ALLOW_SAMPLE_PREVIEW) {
+      console.error(`[storefront] /shop shell unavailable (${status}) — showing the unavailable page`);
+      throw new Error(`Store unavailable (${status})`);
+    }
     console.warn(`[storefront] /shop shell unavailable (${status}) — sample data`);
     return {
       shell: {
