@@ -36,7 +36,7 @@ export function HomeSections({
   return (
     <>
       <Hero hero={theme.hero} dealTile={theme.dealTile} tradeTile={theme.tradeTile} />
-      <TrustBar />
+      <TrustBar items={theme.trustBar} />
       <CategoryGrid categories={categories} images={theme.categoryImages} />
 
       {curated.length > 0 ? (

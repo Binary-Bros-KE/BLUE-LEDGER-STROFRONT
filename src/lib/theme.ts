@@ -58,6 +58,13 @@ export type ThemeTradeTile = {
 /** A "Top brands" strip entry (Adia template). Logo optional — the name renders as a wordmark. */
 export type ThemeBrandLogo = { name: string; logoUrl?: string; href?: string };
 
+/** Icon keys a trust-bar item may use (SERVER schemas/shop.ts TRUST_ICONS). Each template maps them. */
+export const TRUST_ICONS = ["truck", "shield", "phone", "returns", "card", "clock", "support", "tag", "zap", "star"] as const;
+export type TrustIcon = (typeof TRUST_ICONS)[number];
+
+/** One trust-bar cell — POS-edited. Empty list = the template's default wording. */
+export type ThemeTrustItem = { icon: TrustIcon; title: string; subtitle?: string };
+
 export type TrylistTheme = {
   brand: ThemeBrand;
   topBar: ThemeTopBar;
@@ -81,6 +88,8 @@ export type TrylistTheme = {
   tradeTile: ThemeTradeTile;
   /** Brands the shop carries (templates that show a brand strip). Content slot — POS-edited. */
   brands: ThemeBrandLogo[];
+  /** Up to 4 trust-bar cells (every template has a trust bar). Empty = template defaults. */
+  trustBar: ThemeTrustItem[];
 };
 
 export const EMPTY_THEME: TrylistTheme = {
@@ -94,6 +103,7 @@ export const EMPTY_THEME: TrylistTheme = {
   dealTile: {},
   tradeTile: {},
   brands: [],
+  trustBar: [],
 };
 
 function str(v: unknown): string | undefined {
@@ -196,6 +206,15 @@ export function parseTheme(raw: unknown): TrylistTheme {
         const bb = (b && typeof b === "object" ? b : {}) as Record<string, unknown>;
         const name = str(bb.name);
         return name ? [{ name, logoUrl: str(bb.logoUrl), href: str(bb.href) }] : [];
+      }),
+    trustBar: (Array.isArray(o.trustBar) ? o.trustBar : [])
+      .slice(0, 4)
+      .flatMap((t): ThemeTrustItem[] => {
+        const tt = (t && typeof t === "object" ? t : {}) as Record<string, unknown>;
+        const title = str(tt.title);
+        if (!title) return [];
+        const icon = (TRUST_ICONS as readonly string[]).includes(tt.icon as string) ? (tt.icon as TrustIcon) : "star";
+        return [{ icon, title, subtitle: str(tt.subtitle) }];
       }),
     tradeTile: {
       categoryLabel: str(tradeTileRaw.categoryLabel),

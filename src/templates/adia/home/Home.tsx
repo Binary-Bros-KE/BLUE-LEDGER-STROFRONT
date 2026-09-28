@@ -15,7 +15,7 @@ export function Home({ products, categories, theme, sections }: HomeProps) {
   return (
     <div className="pb-4">
       <Hero hero={theme.hero} deal={theme.dealTile} />
-      <TrustBar />
+      <TrustBar items={theme.trustBar} />
       <CategoryRow categories={categories} images={theme.categoryImages} />
       <HotDeals deal={theme.dealTile} />
 
