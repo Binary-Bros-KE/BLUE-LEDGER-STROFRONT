@@ -189,3 +189,73 @@ export const Diamond = (p: IconProps) => (
     <path d="M12 2l10 10-10 10L2 12z" />
   </Solid>
 );
+
+/* ── Added for the Adia template (same Feather geometry) ───────────────────── */
+
+export const FiTruck = (p: IconProps) => (
+  <Line {...p}>
+    <rect x="1" y="3" width="15" height="13" />
+    <path d="M16 8h4l3 3v5h-7V8z" />
+    <circle cx="5.5" cy="18.5" r="2.5" />
+    <circle cx="18.5" cy="18.5" r="2.5" />
+  </Line>
+);
+
+export const FiSmartphone = (p: IconProps) => (
+  <Line {...p}>
+    <rect x="5" y="2" width="14" height="20" rx="2" ry="2" />
+    <path d="M12 18h.01" />
+  </Line>
+);
+
+export const FiHeadphones = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M3 18v-6a9 9 0 0 1 18 0v6" />
+    <path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z" />
+  </Line>
+);
+
+export const FiChevronLeft = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M15 18l-6-6 6-6" />
+  </Line>
+);
+
+export const FiChevronRight = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M9 18l6-6-6-6" />
+  </Line>
+);
+
+export const FiHome = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" />
+    <path d="M9 22V12h6v10" />
+  </Line>
+);
+
+export const FiMapPin = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z" />
+    <circle cx="12" cy="10" r="3" />
+  </Line>
+);
+
+export const FiPhone = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.13.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.57 2.81.7A2 2 0 0 1 22 16.92z" />
+  </Line>
+);
+
+export const FiTrash2 = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M3 6h18M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2M10 11v6M14 11v6" />
+  </Line>
+);
+
+export const FiTag = (p: IconProps) => (
+  <Line {...p}>
+    <path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z" />
+    <path d="M7 7h.01" />
+  </Line>
+);

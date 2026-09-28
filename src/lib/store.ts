@@ -4,6 +4,7 @@ import { DEV_TEMPLATE, DEV_THEME_COLORS } from "./env";
 import { parseColors, type ColorOverrides } from "./palette";
 import { CATEGORIES as SAMPLE_CATEGORIES } from "./products";
 import { getCategories, getStore, ShopApiError } from "./shop-api";
+import { getTemplate } from "@/templates/registry";
 import { EMPTY_THEME, parseTheme } from "./theme";
 
 /** The store's look & feel (admin-set): which template, and its brand-colour overrides. */
@@ -70,7 +71,7 @@ export async function loadShell(): Promise<{ shell: StoreShell; preview: boolean
         storeName: "TRYLIST",
         currency: "KSH",
         categories: SAMPLE_CATEGORIES,
-        theme: EMPTY_THEME,
+        theme: { ...EMPTY_THEME, ...getTemplate(look.template).previewContent },
         templateId: look.template,
         preview: true,
       },

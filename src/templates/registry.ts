@@ -1,4 +1,5 @@
 import { brandCssVars, type ColorOverrides } from "@/lib/palette";
+import { adiaTemplate } from "./adia";
 import { classicTemplate } from "./classic";
 import type { StorefrontTemplate } from "./types";
 
@@ -9,6 +10,7 @@ import type { StorefrontTemplate } from "./types";
  */
 const TEMPLATES: Record<string, StorefrontTemplate> = {
   classic: classicTemplate,
+  adia: adiaTemplate,
 };
 
 export const DEFAULT_TEMPLATE = classicTemplate;

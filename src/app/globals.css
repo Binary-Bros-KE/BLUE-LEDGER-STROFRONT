@@ -68,15 +68,16 @@
   --breakpoint-md: 768px;
   --breakpoint-lg: 1024px;
   --breakpoint-xl: 1280px;
-
-  /* Type roles — spec §2. Archivo = headings/prices/names; JetBrains Mono = every label. */
-  --font-sans: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, sans-serif;
-  --font-mono: var(--font-jbmono), ui-monospace, "JetBrains Mono", "SFMono-Regular", monospace;
 }
 
 /* `inline` = utilities reference the runtime var directly (bg-primary → var(--brand-primary)), so a
  * per-store override on <html> recolours every utility, including /opacity variants. */
 @theme inline {
+  /* ── Type roles — each template sets --tpl-font-* in its [data-template] block (next/font vars) ── */
+  --font-sans: var(--tpl-font-sans);
+  --font-display: var(--tpl-font-display);
+  --font-mono: var(--tpl-font-mono);
+
   /* ── Standard names — what every template (from template 2 on) uses ── */
   --color-primary: var(--brand-primary);
   --color-primary-hover: var(--brand-primary-hover);
@@ -156,7 +157,7 @@
     margin: 0;
     background: var(--ui-page);
     color: var(--ui-ink);
-    font-family: var(--font-sans);
+    font-family: var(--tpl-font-sans, ui-sans-serif, system-ui, sans-serif);
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeLegibility;
   }
@@ -176,6 +177,11 @@
  * never leak into another template (template 2 has rounded corners, for one).
  * ═══════════════════════════════════════════════════════════════════════════ */
 [data-template="classic"] {
+  /* Type roles — spec §2. Archivo = headings/prices/names; JetBrains Mono = every label. */
+  --tpl-font-sans: var(--font-archivo), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --tpl-font-display: var(--tpl-font-sans);
+  --tpl-font-mono: var(--font-jbmono), ui-monospace, "JetBrains Mono", "SFMono-Regular", monospace;
+
   /* Law #1: ZERO border radius, everywhere. Kill every radius token… */
   --radius-xs: 0px;
   --radius-sm: 0px;
@@ -281,6 +287,22 @@
     transform: translateY(0);
   }
 }
+@keyframes drawer-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(0);
+  }
+}
+@keyframes sheet-down {
+  from {
+    transform: translateY(-100%);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
 @keyframes overlay-in {
   from {
     opacity: 0;
@@ -314,4 +336,40 @@
 }
 .no-scrollbar::-webkit-scrollbar {
   display: none;
+}
+
+/* ═════════════════════════════════════════════════════════════════════════════
+ * Template: ADIA — rounded, airy retail look (light-grey page, white cards). Neutrals + fonts +
+ * base rules only; every brand colour comes from the --brand-* tokens.
+ * ═══════════════════════════════════════════════════════════════════════════ */
+[data-template="adia"] {
+  --tpl-font-sans: var(--font-inter), ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --tpl-font-display: var(--font-poppins), var(--font-inter), ui-sans-serif, system-ui, sans-serif;
+  /* Adia has no mono role — anything that asks for one (shared widgets) gets the body face. */
+  --tpl-font-mono: var(--tpl-font-sans);
+
+  --ui-page: #f5f6f8;
+  --ui-surface: #ffffff;
+  --ui-surface-alt: #f1f2f5;
+  --ui-ink: var(--brand-secondary);
+  --ui-ink-muted: #5d6270;
+  --ui-ink-faint: #8f95a1;
+  --ui-line: #e6e8ec;
+  --ui-line-strong: #d4d7dd;
+  --ui-hatch: #eceef2;
+  --ui-success: #15803d;
+  --ui-danger: #dc2626;
+  --ui-danger-deep: #991b1b;
+}
+
+@layer base {
+  [data-template="adia"] a {
+    color: inherit;
+    text-decoration: none;
+  }
+  [data-template="adia"] :focus-visible {
+    outline: 2px solid var(--brand-primary);
+    outline-offset: 2px;
+    border-radius: 6px;
+  }
 }

@@ -142,3 +142,18 @@ still the Classic-theme default (not yet driven by `web_stores.themeJson`).
 npm install
 npm run dev   # http://localhost:3200
 ```
+
+## Template 2 — "Adia" (ADIA Home Appliances)
+
+`src/templates/adia/` — rounded retail look: light-grey page, white cards, Poppins headings + Inter
+body, primary-gradient hero with an "UP TO x% OFF" roundel, trust bar, category row, Hot Deals
+banner with a live end-of-week countdown, product rows, promo cards (story rows) and a Top Brands
+strip. Uses only standard tokens, so it re-colours cleanly (e.g. red for ADIA, blue for another shop).
+
+Content it reads (all POS-edited, shared with Classic): `brand`, `topBar.announcement` (strip shown
+only when set), `hero.*`, `dealTile` (hero roundel + Hot Deals banner: first title line = heading,
+further lines = subtitle), `categoryImages`, `productSections`, `story`, `contact`, plus the new
+optional `brands` list (`{ name, logoUrl?, href? }[]`, POS editor pending).
+
+Status: chrome + home are Adia-designed. Listing, product detail and checkout still render Classic's
+page bodies inside Adia's chrome (token-recoloured, Adia fonts) — replaced in phases 3–4.

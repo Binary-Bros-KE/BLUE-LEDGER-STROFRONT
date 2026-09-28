@@ -55,6 +55,9 @@ export type ThemeTradeTile = {
   imageUrl?: string;
 };
 
+/** A "Top brands" strip entry (Adia template). Logo optional — the name renders as a wordmark. */
+export type ThemeBrandLogo = { name: string; logoUrl?: string; href?: string };
+
 export type TrylistTheme = {
   brand: ThemeBrand;
   topBar: ThemeTopBar;
@@ -76,6 +79,8 @@ export type TrylistTheme = {
   productSections: ThemeProductSection[];
   dealTile: ThemeDealTile;
   tradeTile: ThemeTradeTile;
+  /** Brands the shop carries (templates that show a brand strip). Content slot — POS-edited. */
+  brands: ThemeBrandLogo[];
 };
 
 export const EMPTY_THEME: TrylistTheme = {
@@ -88,6 +93,7 @@ export const EMPTY_THEME: TrylistTheme = {
   productSections: [],
   dealTile: {},
   tradeTile: {},
+  brands: [],
 };
 
 function str(v: unknown): string | undefined {
@@ -184,6 +190,13 @@ export function parseTheme(raw: unknown): TrylistTheme {
       ctaHref: str(dealTileRaw.ctaHref),
       imageUrl: str(dealTileRaw.imageUrl),
     },
+    brands: (Array.isArray(o.brands) ? o.brands : [])
+      .slice(0, 24)
+      .flatMap((b): ThemeBrandLogo[] => {
+        const bb = (b && typeof b === "object" ? b : {}) as Record<string, unknown>;
+        const name = str(bb.name);
+        return name ? [{ name, logoUrl: str(bb.logoUrl), href: str(bb.href) }] : [];
+      }),
     tradeTile: {
       categoryLabel: str(tradeTileRaw.categoryLabel),
       title: str(tradeTileRaw.title),

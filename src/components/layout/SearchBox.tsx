@@ -1,11 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import type { SearchResults } from "@/app/api/search/route";
 import { FiChevronDown, FiGrid, FiSearch, FiX } from "@/components/shared/icons";
 import { useMoney } from "@/lib/currency";
+import { useProductSearch } from "@/lib/use-product-search";
 
 export function SearchBox({
   variant = "bar",
@@ -14,89 +12,9 @@ export function SearchBox({
   variant?: "bar" | "compact";
   autoFocus?: boolean;
 }) {
-  const router = useRouter();
   const fmt = useMoney();
-  const [q, setQ] = useState("");
-  const [open, setOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [results, setResults] = useState<SearchResults | null>(null);
-  const [activeIndex, setActiveIndex] = useState(-1);
-  const rootRef = useRef<HTMLDivElement>(null);
-
-  // Debounced fetch against the same-origin /api/search route.
-  useEffect(() => {
-    const query = q.trim();
-    if (query.length < 2) {
-      setResults(null);
-      setLoading(false);
-      return;
-    }
-    setLoading(true);
-    const ac = new AbortController();
-    const timer = setTimeout(() => {
-      fetch(`/api/search?q=${encodeURIComponent(query)}`, { signal: ac.signal })
-        .then((r) => r.json() as Promise<SearchResults>)
-        .then((data) => {
-          setResults(data);
-          setActiveIndex(-1);
-        })
-        .catch(() => {
-          if (!ac.signal.aborted) setResults({ query, categories: [], products: [] });
-        })
-        .finally(() => setLoading(false));
-    }, 250);
-    return () => {
-      clearTimeout(timer);
-      ac.abort();
-    };
-  }, [q]);
-
-  // Click outside → close.
-  useEffect(() => {
-    function onDown(e: MouseEvent) {
-      if (rootRef.current && !rootRef.current.contains(e.target as Node)) setOpen(false);
-    }
-    document.addEventListener("mousedown", onDown);
-    return () => document.removeEventListener("mousedown", onDown);
-  }, []);
-
-  const flat = useMemo(() => {
-    if (!results) return [] as string[];
-    return [
-      ...results.categories.map((c) => `/products/${c.slug}`),
-      ...results.products.map((p) => `/product/${encodeURIComponent(p.id)}`),
-    ];
-  }, [results]);
-
-  function goFullResults() {
-    if (q.trim().length < 2) return;
-    setOpen(false);
-    router.push(`/products?q=${encodeURIComponent(q.trim())}`);
-  }
-
-  function onKeyDown(e: React.KeyboardEvent) {
-    if (e.key === "Escape") {
-      setOpen(false);
-    } else if (e.key === "ArrowDown") {
-      e.preventDefault();
-      setOpen(true);
-      setActiveIndex((i) => Math.min(flat.length - 1, i + 1));
-    } else if (e.key === "ArrowUp") {
-      e.preventDefault();
-      setActiveIndex((i) => Math.max(-1, i - 1));
-    } else if (e.key === "Enter") {
-      e.preventDefault();
-      if (activeIndex >= 0 && flat[activeIndex]) {
-        setOpen(false);
-        router.push(flat[activeIndex]);
-      } else {
-        goFullResults();
-      }
-    }
-  }
-
-  const hasResults = Boolean(results && (results.categories.length > 0 || results.products.length > 0));
-  const showPanel = open && q.trim().length >= 2;
+  const { q, setQ, clear, setOpen, loading, results, activeIndex, rootRef, onKeyDown, goFullResults, hasResults, showPanel } =
+    useProductSearch();
   const submitW = variant === "bar" ? "w-[52px]" : "w-11";
 
   return (
@@ -118,10 +36,7 @@ export function SearchBox({
           // eslint-disable-next-line jsx-a11y/no-autofocus
           autoFocus={autoFocus}
           value={q}
-          onChange={(e) => {
-            setQ(e.target.value);
-            setOpen(true);
-          }}
+          onChange={(e) => setQ(e.target.value)}
           onFocus={() => setOpen(true)}
           onKeyDown={onKeyDown}
           type="text"
@@ -133,10 +48,7 @@ export function SearchBox({
         {q && (
           <button
             type="button"
-            onClick={() => {
-              setQ("");
-              setResults(null);
-            }}
+            onClick={clear}
             aria-label="Clear search"
             className="grid w-9 flex-none place-items-center text-slate transition-colors hover:text-navy"
           >

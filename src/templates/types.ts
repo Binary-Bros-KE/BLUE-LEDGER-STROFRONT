@@ -65,6 +65,9 @@ export type StorefrontTemplate = {
   pinnedColors: boolean;
   /** extra classes for <html> (next/font variables, …) */
   htmlClassName: string;
+  /** Sample CONTENT merged over the empty theme in preview mode only (no live store — local dev),
+   * so the template's content-driven sections (deal badge, brand strip…) are visible. */
+  previewContent?: Partial<TrylistTheme>;
   Chrome: ComponentType<ChromeProps>;
   Home: ComponentType<HomeProps>;
   Listing: ComponentType<ListingProps>;
