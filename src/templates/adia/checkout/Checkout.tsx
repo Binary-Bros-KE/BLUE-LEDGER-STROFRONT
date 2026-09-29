@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useContact } from "@/components/contact/ContactModal";
-import { FiArrowRight, FiCheck, FiLock, FiShoppingCart, FiSmartphone, FiTrash2, FiTruck } from "@/components/shared/icons";
+import { FiArrowRight, FiCheck, FiLock, FiMessageCircle, FiShoppingBag, FiShoppingCart, FiTrash2, FiTruck } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
 import { usePlaceOrder } from "@/lib/use-place-order";
@@ -81,6 +81,9 @@ export function Checkout({ methods }: CheckoutProps) {
   const [notes, setNotes] = useState("");
   const [save, setSave] = useState(true);
   const [deliveryId, setDeliveryId] = useState<string>(methods[0]?.id ?? "");
+  // Picked by the shopper — no default, so nobody ends up with a delivery they didn't ask for.
+  const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery" | null>(null);
+  const delivering = deliveryType === "delivery";
   const [attempted, setAttempted] = useState(false);
 
   // Prefill from a previous order on this device (after mount — localStorage isn't on the server).
@@ -95,7 +98,7 @@ export function Checkout({ methods }: CheckoutProps) {
   }, []);
 
   const subtotal = useMemo(() => lines.reduce((s, l) => s + l.unitPriceCents * l.qty, 0), [lines]);
-  const method = methods.find((m) => m.id === deliveryId) ?? null;
+  const method = delivering ? (methods.find((m) => m.id === deliveryId) ?? null) : null;
   const fee = method?.priceCents ?? 0;
   const count = lines.reduce((s, l) => s + l.qty, 0);
 
@@ -103,20 +106,22 @@ export function Checkout({ methods }: CheckoutProps) {
     name: name.trim().length < 2 ? "Enter your full name" : null,
     phone: phone.replace(/\D/g, "").length < 9 ? "Enter a valid phone number" : null,
     email: email.trim() && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim()) ? "Enter a valid email" : null,
-    address: !address.trim() ? "Enter your delivery address" : null,
-    delivery: methods.length > 0 && !method ? "Choose a delivery option" : null,
+    deliveryType: !deliveryType ? "Choose pick up or delivery" : null,
+    address: delivering && !address.trim() ? "Enter your delivery address" : null,
+    delivery: delivering && methods.length > 0 && !method ? "Choose a delivery option" : null,
   };
   const valid = Object.values(errors).every((e) => !e);
   const show = (e: string | null) => (attempted ? e : null);
 
   async function placeOrder() {
     setAttempted(true);
-    if (!valid || lines.length === 0) return;
+    if (!valid || lines.length === 0 || !deliveryType) return;
     const ok = await submit({
       customerName: name.trim(),
       customerPhone: phone.trim(),
       customerEmail: email.trim() || null,
-      deliveryAddress: address.trim(),
+      deliveryType,
+      deliveryAddress: delivering ? address.trim() : null,
       notes: notes.trim() || null,
       deliveryMethodId: method?.id ?? null,
     });
@@ -138,14 +143,14 @@ export function Checkout({ methods }: CheckoutProps) {
           <span className="mx-auto grid size-16 place-items-center rounded-full bg-success/10 text-success">
             <FiCheck size={32} strokeWidth={2.5} />
           </span>
-          <h1 className="mt-5 font-display text-[26px] font-bold text-ink">Thank you — order placed!</h1>
+          <h1 className="mt-5 font-display text-[26px] font-bold text-ink">Thank you — your order has been sent!</h1>
           <p className="mt-2 text-[15px] text-ink-muted">
             Your order number is{" "}
             <span className="font-display font-bold text-primary-ink">{confirmation.orderNumber}</span>
           </p>
           <p className="mx-auto mt-3 max-w-[440px] text-[14px] leading-relaxed text-ink-muted">
-            The shop will call you on <span className="font-semibold text-ink">{phone}</span> to confirm your order and
-            arrange delivery. You pay by M-Pesa or cash on delivery.
+            The shop will contact you on <span className="font-semibold text-ink">{phone}</span> to confirm your order and agree
+            on payment, then {confirmation.deliveryType === "pickup" ? "let you know when it's ready to pick up" : "arrange delivery"}.
           </p>
 
           <div className="mt-7 rounded-xl border border-line text-left">
@@ -163,8 +168,8 @@ export function Checkout({ methods }: CheckoutProps) {
                 <span>{fmt(confirmation.subtotalCents)}</span>
               </div>
               <div className="flex justify-between text-ink-muted">
-                <span>Delivery</span>
-                <span>{confirmation.deliveryFeeCents ? fmt(confirmation.deliveryFeeCents) : "Free"}</span>
+                <span>{confirmation.deliveryType === "pickup" ? "Pick up from the shop" : "Delivery"}</span>
+                <span>{confirmation.deliveryFeeCents ? fmt(confirmation.deliveryFeeCents) : confirmation.deliveryType === "pickup" ? "—" : "Free"}</span>
               </div>
               <div className="flex justify-between font-display text-[17px] font-bold text-ink">
                 <span>Total</span>
@@ -229,7 +234,7 @@ export function Checkout({ methods }: CheckoutProps) {
 
       <div className="mt-5 grid gap-6 lg:grid-cols-[minmax(0,1fr)_400px] lg:gap-8">
         <div className="flex flex-col gap-5">
-          <Section step={1} title="Delivery details">
+          <Section step={1} title="Your details">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Full name" error={show(errors.name)}>
                 <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Your full name" className={input(Boolean(show(errors.name)))} />
@@ -240,18 +245,6 @@ export function Checkout({ methods }: CheckoutProps) {
               <Field label="Email" optional error={show(errors.email)}>
                 <input value={email} onChange={(e) => setEmail(e.target.value)} autoComplete="email" inputMode="email" placeholder="you@example.com" className={input(Boolean(show(errors.email)))} />
               </Field>
-              <div className="sm:col-span-2">
-                <Field label="Delivery address" error={show(errors.address)}>
-                  <textarea
-                    value={address}
-                    onChange={(e) => setAddress(e.target.value)}
-                    autoComplete="street-address"
-                    rows={2}
-                    placeholder="Estate / building, street, town"
-                    className={`${input(Boolean(show(errors.address)))} h-auto py-2.5`}
-                  />
-                </Field>
-              </div>
               <div className="sm:col-span-2">
                 <Field label="Order notes" optional>
                   <textarea
@@ -270,11 +263,50 @@ export function Checkout({ methods }: CheckoutProps) {
             </label>
           </Section>
 
-          <Section step={2} title="Delivery option">
+          <Section step={2} title="Pick up or delivery">
+            <div className="grid gap-2.5 sm:grid-cols-2" role="radiogroup" aria-label="Pick up or delivery">
+              {(
+                [
+                  { id: "pickup", label: "Pick up from the shop", note: "Collect it yourself — no delivery fee", icon: <FiShoppingBag size={20} /> },
+                  { id: "delivery", label: "Deliver to me", note: "We bring it to your address", icon: <FiTruck size={20} /> },
+                ] as const
+              ).map((opt) => {
+                const active = deliveryType === opt.id;
+                return (
+                  <label
+                    key={opt.id}
+                    className={`flex cursor-pointer items-center gap-3 rounded-xl border-2 px-4 py-3 transition-colors ${
+                      active ? "border-primary bg-primary-soft" : show(errors.deliveryType) ? "border-danger" : "border-line hover:border-line-strong"
+                    }`}
+                  >
+                    <input type="radio" name="delivery-type" checked={active} onChange={() => setDeliveryType(opt.id)} className="size-4 accent-[var(--brand-primary)]" />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[14px] font-semibold text-ink">{opt.label}</span>
+                      <span className="block text-[13px] text-ink-muted">{opt.note}</span>
+                    </span>
+                    <span className="flex-none text-primary-ink">{opt.icon}</span>
+                  </label>
+                );
+              })}
+            </div>
+            {show(errors.deliveryType) ? <span className="mt-1.5 block text-[12px] font-medium text-danger">{errors.deliveryType}</span> : null}
+
+            {delivering ? (
+              <div className="mt-5 flex flex-col gap-4">
+                <Field label="Delivery address" error={show(errors.address)}>
+                  <textarea
+                    value={address}
+                    onChange={(e) => setAddress(e.target.value)}
+                    autoComplete="street-address"
+                    rows={2}
+                    placeholder="Estate / building, street, town"
+                    className={`${input(Boolean(show(errors.address)))} h-auto py-2.5`}
+                  />
+                </Field>
             {methods.length === 0 ? (
               <p className="flex items-start gap-2.5 rounded-lg bg-surface-alt px-4 py-3 text-[14px] text-ink-muted">
                 <FiTruck size={18} className="mt-0.5 flex-none text-primary-ink" />
-                The shop will contact you to arrange delivery or pick-up.
+                The shop will contact you to agree the delivery cost and time.
               </p>
             ) : (
               <div className="flex flex-col gap-2.5" role="radiogroup" aria-label="Delivery option">
@@ -299,22 +331,20 @@ export function Checkout({ methods }: CheckoutProps) {
                 {show(errors.delivery) ? <span className="text-[12px] font-medium text-danger">{errors.delivery}</span> : null}
               </div>
             )}
+              </div>
+            ) : null}
           </Section>
 
-          <Section step={3} title="Payment">
-            <div className="flex items-center gap-3 rounded-xl border-2 border-primary bg-primary-soft px-4 py-3">
-              <span className="grid size-5 place-items-center rounded-full border-2 border-primary">
-                <span className="size-2.5 rounded-full bg-primary" />
-              </span>
-              <span className="min-w-0 flex-1">
-                <span className="block text-[14px] font-semibold text-ink">Pay on delivery</span>
-                <span className="block text-[13px] text-ink-muted">M-Pesa or cash when your order arrives</span>
-              </span>
-              <FiSmartphone size={20} className="flex-none text-primary-ink" />
+          <Section step={3} title="What happens next">
+            <div className="flex items-start gap-3 rounded-xl bg-surface-alt px-4 py-3.5">
+              <FiMessageCircle size={20} className="mt-0.5 flex-none text-primary-ink" />
+              <p className="text-[14px] leading-relaxed text-ink-muted">
+                <span className="font-semibold text-ink">No payment is taken on this website.</span>{" "}
+                Send your order and the
+                shop will contact you to confirm it and agree on payment. Once that&rsquo;s settled, your order is
+                {deliveryType === "pickup" ? " made ready for you to pick up." : deliveryType === "delivery" ? " dispatched to you." : " made ready for pick up or dispatched."}
+              </p>
             </div>
-            <p className="mt-3 text-[13px] text-ink-muted">
-              No payment is taken now. The shop will call you to confirm your order before it&rsquo;s dispatched.
-            </p>
           </Section>
         </div>
 
@@ -357,8 +387,10 @@ export function Checkout({ methods }: CheckoutProps) {
               <span>{fmt(subtotal)}</span>
             </div>
             <div className="flex justify-between text-ink-muted">
-              <span>Delivery</span>
-              <span>{methods.length === 0 ? "To be arranged" : fee ? fmt(fee) : "Free"}</span>
+              <span>{deliveryType === "pickup" ? "Pick up from the shop" : "Delivery"}</span>
+              <span>
+                {deliveryType === "pickup" ? "—" : !delivering ? "—" : methods.length === 0 ? "To be agreed" : fee ? fmt(fee) : "Free"}
+              </span>
             </div>
             <div className="flex justify-between pt-1 font-display text-[19px] font-bold text-ink">
               <span>Total</span>
@@ -381,7 +413,7 @@ export function Checkout({ methods }: CheckoutProps) {
             disabled={submitting}
             className="mt-4 flex h-12 w-full items-center justify-center gap-2 rounded-lg bg-primary font-display text-[15px] font-semibold text-on-primary transition-colors hover:bg-primary-hover disabled:cursor-wait disabled:opacity-70"
           >
-            {submitting ? "Placing your order…" : "Place Order"}
+            {submitting ? "Sending your order…" : "Send Order"}
             {!submitting ? <FiArrowRight size={16} /> : null}
           </button>
           <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-ink-faint">

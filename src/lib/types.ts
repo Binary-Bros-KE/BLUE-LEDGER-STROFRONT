@@ -105,7 +105,9 @@ export type OrderRequest = {
   deliveryAddress?: string | null;
   notes?: string | null;
   deliveryMethodId?: string | null;
-  paymentMethod: "pay_on_delivery";
+  /** Customer collects from the shop, or wants it delivered. No payment is chosen online — the shop
+   * and the customer agree payment after the order arrives. */
+  deliveryType: "pickup" | "delivery";
   items: { productId: string; variantKey?: string | null; qty: number }[];
 };
 
@@ -114,6 +116,8 @@ export type OrderConfirmation = {
   orderNumber: string;
   subtotalCents: number;
   deliveryFeeCents: number;
+  /** absent from older SERVER builds */
+  deliveryType?: "pickup" | "delivery";
   totalCents: number;
   currency: string;
   items: { productId: string; name: string; unitPriceCents: number; qty: number; lineTotalCents: number }[];

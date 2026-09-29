@@ -4,7 +4,7 @@ import { useState } from "react";
 import { useCart } from "./cart";
 import type { OrderConfirmation, OrderRequest } from "./types";
 
-export type CheckoutDetails = Omit<OrderRequest, "items" | "paymentMethod">;
+export type CheckoutDetails = Omit<OrderRequest, "items">;
 
 /**
  * Submits the cart as an order (via the same-origin /api/orders relay) — shared by every template's
@@ -24,7 +24,6 @@ export function usePlaceOrder() {
     try {
       const body: OrderRequest = {
         ...details,
-        paymentMethod: "pay_on_delivery",
         items: lines.map((l) => ({ productId: l.productId ?? l.id, variantKey: l.variantKey ?? null, qty: l.qty })),
       };
       const res = await fetch("/api/orders", {

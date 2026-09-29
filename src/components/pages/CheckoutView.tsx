@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/shared/Container";
 import { Placeholder } from "@/components/shared/Placeholder";
-import { FiArrowRight, FiCreditCard, FiPlay, FiShoppingCart, FiX } from "@/components/shared/icons";
+import { FiArrowRight, FiPlay, FiShoppingBag, FiShoppingCart, FiTruck, FiX } from "@/components/shared/icons";
 import { QtyStepper } from "@/components/cart/QtyStepper";
 import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
@@ -12,11 +12,12 @@ import { usePlaceOrder } from "@/lib/use-place-order";
 import type { DeliveryOption } from "@/lib/types";
 
 // Single-page checkout (spec §4 aesthetic — zero radius, mono labels, one amber offset block on the
-// primary CTA). Guest only for now: name + phone, a delivery option (admin-defined), a payment
-// choice (visual only), an order summary, Complete order.
+// primary CTA). Guest only: name + phone, pick up or delivery (delivery: address + an admin-defined
+// option), an order summary, Send order.
 //
-// "Complete order" places a real order (POST /api/orders → SERVER /shop/orders, priced server-side)
-// that lands in the shop's POS "Online Orders" inbox. No online payment yet — pay on delivery.
+// "Send order" places a real order (POST /api/orders → SERVER /shop/orders, priced server-side) that
+// lands in the shop's POS "Online Orders" inbox. No payment is taken online — the shop and the
+// customer agree payment after the order arrives.
 
 function Label({ children }: { children: React.ReactNode }) {
   return (
@@ -37,29 +38,33 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
   const [phone, setPhone] = useState("");
   const [address, setAddress] = useState("");
   const [deliveryId, setDeliveryId] = useState<string>(methods[0]?.id ?? "");
-  const [payment, setPayment] = useState<"mpesa" | "card">("mpesa");
+  const [deliveryType, setDeliveryType] = useState<"pickup" | "delivery" | null>(null);
+  const delivering = deliveryType === "delivery";
   const [attempted, setAttempted] = useState(false);
   const { submit, submitting, error: submitError, confirmation } = usePlaceOrder();
   const placed = confirmation ? { name: name.trim(), phone: phone.trim(), orderNumber: confirmation.orderNumber, totalCents: confirmation.totalCents } : null;
 
   const subtotal = useMemo(() => lines.reduce((s, l) => s + l.unitPriceCents * l.qty, 0), [lines]);
-  const method = methods.find((m) => m.id === deliveryId) ?? null;
+  const method = delivering ? (methods.find((m) => m.id === deliveryId) ?? null) : null;
   const deliveryFee = method?.priceCents ?? 0;
   const total = subtotal + deliveryFee;
   const count = lines.reduce((s, l) => s + l.qty, 0);
 
   const nameOk = name.trim().length > 1;
   const phoneOk = phone.trim().replace(/\D/g, "").length >= 9;
-  const deliveryOk = methods.length === 0 || Boolean(method);
-  const canPlace = nameOk && phoneOk && deliveryOk && lines.length > 0;
+  const typeOk = deliveryType !== null;
+  const addressOk = !delivering || address.trim().length > 0;
+  const deliveryOk = !delivering || methods.length === 0 || Boolean(method);
+  const canPlace = nameOk && phoneOk && typeOk && addressOk && deliveryOk && lines.length > 0;
 
   function placeOrder() {
     setAttempted(true);
-    if (!canPlace) return;
+    if (!canPlace || !deliveryType) return;
     void submit({
       customerName: name.trim(),
       customerPhone: phone.trim(),
-      deliveryAddress: address.trim() || null,
+      deliveryType,
+      deliveryAddress: delivering ? address.trim() : null,
       deliveryMethodId: method?.id ?? null,
     });
   }
@@ -73,15 +78,15 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
             ✓
           </div>
           <h1 className="mt-5 font-sans text-[26px] font-black leading-tight tracking-[-0.5px] text-navy">
-            Order received
+            Order sent
           </h1>
           <p className="mt-2 font-mono text-[12px] uppercase tracking-[1.4px] text-slate">
             Order <span className="font-bold text-navy">{placed.orderNumber}</span>
           </p>
           <p className="mt-3 font-mono text-[12px] leading-[1.7] text-slate">
-            Thanks, {placed.name.split(" ")[0]}. We&apos;ll call you on{" "}
-            <span className="text-navy">{placed.phone}</span> to confirm and arrange{" "}
-            {method ? method.name.toLowerCase() : "delivery"} and payment.
+            Thanks, {placed.name.split(" ")[0]}. The shop will contact you on{" "}
+            <span className="text-navy">{placed.phone}</span> to confirm your order and agree on payment, then{" "}
+            {deliveryType === "pickup" ? "let you know when it's ready to pick up" : "arrange delivery"}.
           </p>
           <p className="mt-4 font-mono text-[10px] uppercase tracking-[1.4px] text-slate">
             Order total {fmt(placed.totalCents)}
@@ -168,12 +173,56 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
           {/* delivery */}
           <section>
             <h2 className="font-mono text-[12px] font-bold uppercase tracking-[2px] text-navy">
-              2 · Delivery
+              2 · Pick up or delivery
             </h2>
+
+            <div className={`mt-4 grid gap-3 sm:grid-cols-2 ${attempted && !typeOk ? "outline outline-[1.5px] outline-red" : ""}`}>
+              {(
+                [
+                  { id: "pickup", label: "Pick up from the shop", note: "No delivery fee", icon: <FiShoppingBag size={16} /> },
+                  { id: "delivery", label: "Deliver to me", note: "To your address", icon: <FiTruck size={16} /> },
+                ] as const
+              ).map((opt) => {
+                const active = deliveryType === opt.id;
+                return (
+                  <button
+                    key={opt.id}
+                    type="button"
+                    onClick={() => setDeliveryType(opt.id)}
+                    aria-pressed={active}
+                    className={`flex items-center gap-3 border-[1.5px] border-navy px-4 py-3.5 text-left transition-colors ${
+                      active ? "bg-cream" : "bg-white hover:bg-cream/50"
+                    }`}
+                  >
+                    <span className="flex-none text-navy">{opt.icon}</span>
+                    <span className="flex-1">
+                      <span className="block font-sans text-[13px] font-extrabold text-navy">{opt.label}</span>
+                      <span className="block font-mono text-[10px] uppercase tracking-[1px] text-slate">{opt.note}</span>
+                    </span>
+                    <span className={`grid size-4 flex-none place-items-center border-[1.5px] border-navy ${active ? "bg-blue" : "bg-white"}`}>
+                      {active ? <span className="size-1.5 bg-white" /> : null}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {delivering ? (
+            <>
+            <label className="mt-4 block">
+              <Label>Delivery address / landmark</Label>
+              <textarea
+                value={address}
+                onChange={(e) => setAddress(e.target.value)}
+                rows={2}
+                placeholder="Building, street, floor, anything that helps the rider find you"
+                className={`w-full resize-none border-[1.5px] border-navy bg-white p-3 font-mono text-[13px] text-navy outline-none placeholder:text-slate focus:border-blue ${invalid(!addressOk)}`}
+              />
+            </label>
 
             {methods.length === 0 ? (
               <p className="mt-4 border border-dashed border-line px-4 py-4 font-mono text-[11px] uppercase tracking-[1.2px] text-slate">
-                No delivery options set up yet — the shop will arrange this with you by phone.
+                The shop will agree the delivery cost and time with you by phone.
               </p>
             ) : (
               <div className={`mt-4 border-[1.5px] ${invalid(!deliveryOk)}`}>
@@ -212,61 +261,18 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
               </div>
             )}
 
-            <label className="mt-4 block">
-              <Label>Delivery address / landmark (optional)</Label>
-              <textarea
-                value={address}
-                onChange={(e) => setAddress(e.target.value)}
-                rows={2}
-                placeholder="Building, street, floor, anything that helps the rider find you"
-                className="w-full resize-none border-[1.5px] border-navy bg-white p-3 font-mono text-[13px] text-navy outline-none placeholder:text-slate focus:border-blue"
-              />
-            </label>
+            </>
+            ) : null}
           </section>
 
           {/* payment */}
           <section>
             <h2 className="font-mono text-[12px] font-bold uppercase tracking-[2px] text-navy">
-              3 · Payment
+              3 · What happens next
             </h2>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2">
-              {(
-                [
-                  { id: "mpesa", label: "M-Pesa", note: "Pay on confirmation" },
-                  { id: "card", label: "Card", note: "Pay on confirmation" }
-                ] as const
-              ).map((opt) => {
-                const active = payment === opt.id;
-                return (
-                  <button
-                    key={opt.id}
-                    type="button"
-                    onClick={() => setPayment(opt.id)}
-                    className={`flex items-center gap-3 border-[1.5px] border-navy px-4 py-3.5 text-left transition-colors ${
-                      active ? "bg-cream" : "bg-white hover:bg-cream/50"
-                    }`}
-                  >
-                    <FiCreditCard size={16} className="flex-none text-navy" />
-                    <span className="flex-1">
-                      <span className="block font-sans text-[13px] font-extrabold text-navy">{opt.label}</span>
-                      <span className="block font-mono text-[10px] uppercase tracking-[1px] text-slate">
-                        {opt.note}
-                      </span>
-                    </span>
-                    <span
-                      className={`grid size-4 flex-none place-items-center border-[1.5px] border-navy ${
-                        active ? "bg-blue" : "bg-white"
-                      }`}
-                    >
-                      {active ? <span className="size-1.5 bg-white" /> : null}
-                    </span>
-                  </button>
-                );
-              })}
-            </div>
-            <p className="mt-2 font-mono text-[10px] uppercase tracking-[1.2px] text-slate">
-              Online payment is coming soon — for now the shop confirms your order and takes payment
-              directly.
+            <p className="mt-4 border-[1.5px] border-navy bg-cream px-4 py-3.5 font-mono text-[11px] leading-[1.8] uppercase tracking-[1px] text-navy">
+              No payment is taken on this website. Send your order and the shop will contact you to confirm it
+              and agree on payment — then it&apos;s made ready for pick up or dispatched.
             </p>
           </section>
         </div>
@@ -330,7 +336,7 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
                 <span className="text-navy">{fmt(subtotal)}</span>
               </div>
               <div className="flex items-center justify-between font-mono text-[11px] uppercase tracking-[1px] text-slate">
-                <span>Delivery{method ? ` · ${method.name}` : ""}</span>
+                <span>{deliveryType === "pickup" ? "Pick up from the shop" : `Delivery${method ? ` · ${method.name}` : ""}`}</span>
                 <span className={deliveryFee === 0 ? "text-green" : "text-navy"}>
                   {method ? (deliveryFee === 0 ? "FREE" : fmt(deliveryFee)) : "—"}
                 </span>
@@ -348,7 +354,7 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
                 disabled={submitting}
                 className="blk flex w-full items-center justify-center gap-2 bg-blue py-3.5 font-mono text-[12px] font-bold uppercase tracking-[1.6px] text-on-primary disabled:cursor-wait disabled:opacity-70"
               >
-                <FiPlay size={11} /> {submitting ? "Placing order…" : "Complete order"}
+                <FiPlay size={11} /> {submitting ? "Sending order…" : "Send order"}
               </button>
               {submitError ? (
                 <p role="alert" className="mt-2 text-center font-mono text-[10px] uppercase tracking-[1.2px] text-red">
@@ -359,7 +365,11 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
                 <p className="mt-2 text-center font-mono text-[10px] uppercase tracking-[1.2px] text-red">
                   {!nameOk || !phoneOk
                     ? "Enter your name and phone"
-                    : !deliveryOk
+                    : !typeOk
+                      ? "Choose pick up or delivery"
+                      : !addressOk
+                        ? "Enter your delivery address"
+                        : !deliveryOk
                       ? "Choose a delivery option"
                       : "Your cart is empty"}
                 </p>

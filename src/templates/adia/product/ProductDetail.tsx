@@ -12,7 +12,7 @@ import {
   FiHeadphones,
   FiHeart,
   FiShield,
-  FiSmartphone,
+  FiShoppingBag,
   FiTruck,
 } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
@@ -329,7 +329,7 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
             {[
               { icon: <FiShield size={20} />, label: "Genuine products" },
               { icon: <FiTruck size={20} />, label: "Fast delivery" },
-              { icon: <FiSmartphone size={20} />, label: "Secure M-Pesa" },
+              { icon: <FiShoppingBag size={20} />, label: "Pick up or delivery" },
             ].map((b) => (
               <div key={b.label} className="flex flex-col items-center gap-1.5 text-[12px] font-medium text-ink-muted">
                 <span className="text-primary-ink">{b.icon}</span>
@@ -418,7 +418,7 @@ function WhyBuy({ storeName }: { storeName?: string }) {
     { icon: <FiCheckCircle size={18} />, text: "100% genuine products" },
     { icon: <FiCheckCircle size={18} />, text: "Competitive prices" },
     { icon: <FiHeadphones size={18} />, text: "Dedicated customer support" },
-    { icon: <FiSmartphone size={18} />, text: "Secure M-Pesa & card payments" },
+    { icon: <FiShoppingBag size={18} />, text: "Pick up in shop or get it delivered" },
   ];
   return (
     <aside className="h-fit rounded-2xl border border-primary/25 bg-primary-soft p-5 lg:p-6">
