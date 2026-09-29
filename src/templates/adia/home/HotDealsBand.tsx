@@ -5,7 +5,7 @@ import Link from "next/link";
 import type { Product } from "@/lib/products";
 import type { AdiaHome } from "../content";
 import { Container } from "../components/Container";
-import { ProductRail } from "./ProductRail";
+import { ProductGrid } from "./ProductGrid";
 import { SectionHead } from "./SectionHead";
 
 /** The shop's own end date when set and still ahead, else the end of this week (Sunday night) —
@@ -64,7 +64,7 @@ export function HotDealsBand({ row, products, href }: { row: AdiaHome["hotDeals"
             </div>
           </div>
         </div>
-        <ProductRail products={products} onDark />
+        <ProductGrid products={products} />
         <div className="mt-6 flex justify-center">
           <Link
             href={href}

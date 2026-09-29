@@ -9,7 +9,7 @@ import { Features } from "./Features";
 import { HeroCarousel } from "./HeroCarousel";
 import { HotDealsBand } from "./HotDealsBand";
 import { Newsletter } from "./Newsletter";
-import { ProductRail } from "./ProductRail";
+import { ProductGrid } from "./ProductGrid";
 import { PromoCards } from "./PromoCards";
 import { SectionHead } from "./SectionHead";
 import { Spaces } from "./Spaces";
@@ -49,7 +49,7 @@ function Row({ row, products, href }: { row: AdiaProductRow; products: Product[]
   return (
     <Container className="mt-12 lg:mt-16">
       <SectionHead title={row.title} subtitle={row.subtitle} href={href} cta={row.ctaLabel} />
-      <ProductRail products={products} />
+      <ProductGrid products={products} />
     </Container>
   );
 }
