@@ -109,6 +109,21 @@ export default async function Page() {
   }
 
   const T = getTemplate(shell.templateId);
+  // The template's own home rows (e.g. Adia's Best Sellers / Hot Deals …), fetched in parallel.
+  const rows: Record<string, ReturnType<typeof toThemeProduct>[]> = {};
+  const wantedRows = T.homeRows?.(shell.theme) ?? [];
+  if (wantedRows.length > 0) {
+    const fetched = await Promise.all(
+      wantedRows.map((r) =>
+        preview
+          ? Promise.resolve({ key: r.key, items: SAMPLE_PRODUCTS.slice(0, r.pageSize) })
+          : getCatalog({ pageSize: r.pageSize, ...(r.categoryId ? { categoryId: r.categoryId } : {}), ...(r.sort ? { sort: r.sort } : {}) })
+              .then((page) => ({ key: r.key, items: page.products.map(toThemeProduct) }))
+              .catch(() => ({ key: r.key, items: [] as ReturnType<typeof toThemeProduct>[] })),
+      ),
+    );
+    for (const f of fetched) rows[f.key] = f.items;
+  }
   const jsonLd = preview ? null : await homeJsonLd();
   return (
     <T.Chrome {...shell}>
@@ -119,7 +134,7 @@ export default async function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       ) : null}
-      <T.Home products={products} categories={shell.categories} theme={shell.theme} sections={sections} />
+      <T.Home products={products} categories={shell.categories} theme={shell.theme} sections={sections} rows={rows} />
     </T.Chrome>
   );
 }

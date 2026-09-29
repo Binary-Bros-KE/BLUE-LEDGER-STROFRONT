@@ -90,6 +90,9 @@ export type TrylistTheme = {
   brands: ThemeBrandLogo[];
   /** Up to 4 trust-bar cells (every template has a trust bar). Empty = template defaults. */
   trustBar: ThemeTrustItem[];
+  /** Adia-only page content (templates/adia/content.ts parses it) — raw here, so a template's own
+   * settings never leak into the shared theme shape. */
+  adia?: unknown;
 };
 
 export const EMPTY_THEME: TrylistTheme = {
@@ -216,6 +219,7 @@ export function parseTheme(raw: unknown): TrylistTheme {
         const icon = (TRUST_ICONS as readonly string[]).includes(tt.icon as string) ? (tt.icon as TrustIcon) : "star";
         return [{ icon, title, subtitle: str(tt.subtitle) }];
       }),
+    adia: o.adia && typeof o.adia === "object" ? o.adia : undefined,
     tradeTile: {
       categoryLabel: str(tradeTileRaw.categoryLabel),
       title: str(tradeTileRaw.title),

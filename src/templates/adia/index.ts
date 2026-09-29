@@ -8,6 +8,7 @@ import type { StorefrontTemplate } from "../types";
 import { Checkout } from "./checkout/Checkout";
 import { AdiaChrome } from "./components/AdiaChrome";
 import { inter, poppins } from "./fonts";
+import { adiaHomeRows } from "./content";
 import { Home } from "./home/Home";
 import { Listing } from "./listing/Listing";
 import { AdiaNotFound } from "./NotFound";
@@ -30,6 +31,7 @@ export const adiaTemplate: StorefrontTemplate = {
   },
   Chrome: AdiaChrome,
   Home,
+  homeRows: (theme) => adiaHomeRows(theme.adia),
   Listing,
   ProductDetail,
   Checkout,

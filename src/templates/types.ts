@@ -8,7 +8,7 @@
 import type { ComponentType, ReactNode } from "react";
 import type { StoreShell } from "@/components/StoreChrome";
 import type { HomeProductSection } from "@/components/home/HomeSections";
-import type { ListingFilters } from "@/lib/listing-filters";
+import type { CatalogSort, ListingFilters } from "@/lib/listing-filters";
 import type { BrandColors } from "@/lib/palette";
 import type { Category, Product } from "@/lib/products";
 import type { TrylistTheme } from "@/lib/theme";
@@ -26,7 +26,12 @@ export type HomeProps = {
   theme: TrylistTheme;
   /** curated category rows (themeJson.productSections), already resolved + fetched */
   sections: HomeProductSection[];
+  /** the template's own product rows (StorefrontTemplate.homeRows), fetched by the route, by key */
+  rows?: Record<string, Product[]>;
 };
+
+/** A product row a template's home page asks the route to fetch. */
+export type HomeRowRequest = { key: string; categoryId?: string | undefined; sort?: CatalogSort | undefined; pageSize: number };
 
 export type ListingProps = {
   heading: string;
@@ -80,6 +85,8 @@ export type StorefrontTemplate = {
   previewContent?: Partial<TrylistTheme>;
   Chrome: ComponentType<ChromeProps>;
   Home: ComponentType<HomeProps>;
+  /** Product rows this template's home page shows (the route fetches them into HomeProps.rows). */
+  homeRows?: (theme: TrylistTheme) => HomeRowRequest[];
   Listing: ComponentType<ListingProps>;
   ProductDetail: ComponentType<ProductDetailProps>;
   Checkout: ComponentType<CheckoutProps>;

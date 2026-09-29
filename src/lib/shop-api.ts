@@ -104,6 +104,15 @@ export function placeOrder(body: OrderRequest, shopperIp: string | null): Promis
   });
 }
 
+/** Newsletter sign-up (the Adia home's "Get the Latest Deals" box). */
+export function subscribeNewsletter(email: string, shopperIp: string | null): Promise<{ ok: boolean }> {
+  return shopFetch<{ ok: boolean }>("/shop/newsletter", {
+    method: "POST",
+    body: { email },
+    headers: shopperIp ? { "X-Shopper-IP": shopperIp } : {},
+  });
+}
+
 export function getDeliveryMethods(): Promise<DeliveryOption[]> {
   return shopFetch<DeliveryOption[]>("/shop/delivery");
 }

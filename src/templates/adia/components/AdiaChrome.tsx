@@ -11,6 +11,7 @@ import { MobileMenu } from "./MobileMenu";
 import { MobileTabBar } from "./MobileTabBar";
 import { NavBar } from "./NavBar";
 import { TopStrip } from "./TopStrip";
+import { parseAdiaHome } from "../content";
 
 /** Every Adia page renders inside this — header + category bar, footer, mobile tab bar, cart drawer
  * and menu, plus the currency/contact context. Cart state itself lives at the app root. */
@@ -22,6 +23,18 @@ export function AdiaChrome({ children, ...shell }: ChromeProps) {
       </ContactProvider>
     </CurrencyProvider>
   );
+}
+
+function topStripProps(theme: ChromeProps["theme"], categories: ChromeProps["categories"]) {
+  const c = parseAdiaHome(theme.adia, categories);
+  // the shared contact handles still count as socials when the Adia ones aren't set
+  const socials = {
+    ...c.socials,
+    facebook: c.socials.facebook ?? theme.contact.facebook,
+    instagram: c.socials.instagram ?? theme.contact.instagram,
+    whatsapp: c.socials.whatsapp ?? theme.contact.whatsappSalesNumber,
+  };
+  return { strip: c.topStrip, socials, announcement: theme.topBar.announcement };
 }
 
 function Inner({ children, storeName, address, phone, categories, theme, preview }: ChromeProps) {
@@ -36,7 +49,7 @@ function Inner({ children, storeName, address, phone, categories, theme, preview
         </div>
       ) : null}
 
-      <TopStrip announcement={theme.topBar.announcement} />
+      <TopStrip {...topStripProps(theme, categories)} />
 
       <div className="z-40 shadow-[0_1px_0_var(--ui-line)] lg:sticky lg:top-0">
         <Header
