@@ -6,7 +6,7 @@ import type { DeliveryOption } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-export const metadata: Metadata = { title: "Checkout" };
+export const metadata: Metadata = { title: "Checkout", robots: { index: false, follow: false } };
 
 export default async function CheckoutPage() {
   const { shell, preview } = await loadShell();

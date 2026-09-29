@@ -3,9 +3,11 @@ import { notFound } from "next/navigation";
 import { toThemeProduct } from "@/lib/adapter";
 import { catalogParams, filterSample, listingHref, parseListingFilters, sampleRange } from "@/lib/listing-filters";
 import { CATEGORIES as SAMPLE_CATEGORIES, PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
-import { getCatalog, getCategories } from "@/lib/shop-api";
+import { getCatalog, getCategories, getStore } from "@/lib/shop-api";
+import { pageOpenGraph } from "@/lib/seo";
 import { slugify } from "@/lib/slug";
 import { loadShell } from "@/lib/store";
+import { parseTheme } from "@/lib/theme";
 import type { CatalogPage } from "@/lib/types";
 import { getTemplate } from "@/templates/registry";
 
@@ -20,8 +22,23 @@ export async function generateMetadata({
 }): Promise<Metadata> {
   const { category } = await params;
   try {
-    const match = (await getCategories()).find((c) => slugify(c.name) === category);
-    return { title: match ? match.name : "Category" };
+    const [store, categories] = await Promise.all([getStore(), getCategories()]);
+    const match = categories.find((c) => slugify(c.name) === category);
+    if (!match) return { title: "Category" };
+    const image = parseTheme(store.theme).categoryImages[match.id];
+    const description = `Shop ${match.name} at ${store.name} — ${match.count} product${match.count === 1 ? "" : "s"}, delivered.`;
+    const url = `/products/${category}`;
+    return {
+      title: match.name,
+      description,
+      alternates: { canonical: url },
+      openGraph: pageOpenGraph(store, {
+        url,
+        title: match.name,
+        description,
+        ...(image ? { images: [{ url: image, alt: match.name }] } : {}),
+      }),
+    };
   } catch {
     return { title: "Category" };
   }

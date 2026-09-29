@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
-import { headers } from "next/headers";
 import { notFound } from "next/navigation";
 import { toThemeProduct } from "@/lib/adapter";
 import { PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
-import { getCatalog, getProduct, ShopApiError } from "@/lib/shop-api";
+import { getCatalog, getProduct, getStore, ShopApiError } from "@/lib/shop-api";
+import { pageOpenGraph } from "@/lib/seo";
+import { siteOrigin } from "@/lib/site-url";
 import { loadShell } from "@/lib/store";
 import { getTemplate } from "@/templates/registry";
 import type { CatalogItem } from "@/lib/types";
@@ -22,8 +23,22 @@ function metaDescription(p: CatalogItem): string {
 export async function generateMetadata({ params }: { params: Promise<{ id: string }> }): Promise<Metadata> {
   const { id } = await params;
   try {
-    const p = await getProduct(id);
-    return { title: p.name, description: metaDescription(p) };
+    const [p, store] = await Promise.all([getProduct(id), getStore()]);
+    const description = metaDescription(p);
+    const url = `/product/${encodeURIComponent(p.id)}`;
+    const images = p.images.slice(0, 4).map((i) => ({ url: i.url, alt: p.name }));
+    return {
+      title: p.name,
+      description,
+      alternates: { canonical: url },
+      openGraph: pageOpenGraph(store, { url, title: p.name, description, images }),
+      twitter: {
+        card: images.length ? "summary_large_image" : "summary",
+        title: p.name,
+        description,
+        ...(images.length ? { images: images.map((i) => i.url) } : {}),
+      },
+    };
   } catch {
     return { title: "Product" };
   }
@@ -94,9 +109,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     }
   }
 
-  const h = await headers();
-  const host = h.get("x-forwarded-host") ?? h.get("host");
-  const canonical = host ? `https://${host}/product/${encodeURIComponent(item.id)}` : null;
+  const canonical = `${await siteOrigin(await getStore().catch(() => null))}/product/${encodeURIComponent(item.id)}`;
 
   return (
     <T.Chrome {...shell}>

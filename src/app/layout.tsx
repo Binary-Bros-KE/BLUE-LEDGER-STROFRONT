@@ -2,18 +2,43 @@ import type { CSSProperties } from "react";
 import type { Metadata } from "next";
 import { CartRoot } from "@/components/CartRoot";
 import { getStore } from "@/lib/shop-api";
+import { siteOrigin } from "@/lib/site-url";
 import { loadLook } from "@/lib/store";
 import { parseTheme } from "@/lib/theme";
 import { getTemplate, templateCssVars } from "@/templates/registry";
 import "./globals.css";
 
-// Per-store title/description are set by `generateMetadata()` on each page. Here we resolve the
-// site-wide favicon from the tenant's uploaded brand logo (themeJson.brand.logoImageUrl).
+// Site-wide metadata for THIS shop: canonical base URL (its custom domain once live), a
+// "Page | Store" title template, the favicon from the uploaded logo, and default social-share
+// (Open Graph / X) details — every page inherits these and overrides what it knows better.
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const store = await getStore();
-    const logo = parseTheme(store.theme).brand.logoImageUrl;
-    return { title: "Shop", ...(logo ? { icons: { icon: logo, apple: logo } } : {}) };
+    const theme = parseTheme(store.theme);
+    const logo = theme.brand.logoImageUrl;
+    const shareImage = theme.hero.shotImageUrl || theme.hero.backgroundImageUrl || logo;
+    const description = theme.hero.sub || `Shop online at ${store.name}.`;
+    return {
+      metadataBase: new URL(await siteOrigin(store)),
+      title: { default: store.name, template: `%s | ${store.name}` },
+      description,
+      applicationName: store.name,
+      ...(logo ? { icons: { icon: logo, apple: logo } } : {}),
+      openGraph: {
+        type: "website",
+        siteName: store.name,
+        locale: "en_KE",
+        title: store.name,
+        description,
+        ...(shareImage ? { images: [{ url: shareImage, alt: store.name }] } : {}),
+      },
+      twitter: {
+        card: shareImage ? "summary_large_image" : "summary",
+        title: store.name,
+        description,
+        ...(shareImage ? { images: [shareImage] } : {}),
+      },
+    };
   } catch {
     return { title: "Shop" };
   }

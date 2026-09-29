@@ -3,7 +3,10 @@ import type { HomeProductSection } from "@/components/home/HomeSections";
 import { toThemeProduct } from "@/lib/adapter";
 import { PRODUCTS as SAMPLE_PRODUCTS } from "@/lib/products";
 import { getCatalog, getStore } from "@/lib/shop-api";
+import { pageOpenGraph } from "@/lib/seo";
+import { siteOrigin } from "@/lib/site-url";
 import { loadShell } from "@/lib/store";
+import { parseTheme } from "@/lib/theme";
 import { getTemplate } from "@/templates/registry";
 
 // Tenant-specific, resolved from the request domain — never statically prerendered.
@@ -12,9 +15,54 @@ export const dynamic = "force-dynamic";
 export async function generateMetadata(): Promise<Metadata> {
   try {
     const store = await getStore();
-    return { title: store.name, description: `Shop online at ${store.name}.` };
+    const description = parseTheme(store.theme).hero.sub || `Shop online at ${store.name}.`;
+    return {
+      title: { absolute: store.name },
+      description,
+      alternates: { canonical: "/" },
+      openGraph: pageOpenGraph(store, { url: "/", description }),
+    };
   } catch {
     return { title: "Shop" };
+  }
+}
+
+/** Organization + WebSite (with site search) structured data — lets Google show the shop's name,
+ * logo and a search box for it in results. */
+async function homeJsonLd() {
+  try {
+    const store = await getStore();
+    const origin = await siteOrigin(store);
+    const theme = parseTheme(store.theme);
+    const sameAs = [theme.contact.instagram, theme.contact.facebook]
+      .filter((v): v is string => Boolean(v))
+      .map((v) => (v.startsWith("http") ? v : null))
+      .filter((v): v is string => Boolean(v));
+    return [
+      {
+        "@context": "https://schema.org",
+        "@type": "Organization",
+        name: store.name,
+        url: origin,
+        ...(theme.brand.logoImageUrl ? { logo: theme.brand.logoImageUrl } : {}),
+        ...(store.contact.phone ? { telephone: store.contact.phone } : {}),
+        ...(store.contact.address ? { address: store.contact.address } : {}),
+        ...(sameAs.length ? { sameAs } : {}),
+      },
+      {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        name: store.name,
+        url: origin,
+        potentialAction: {
+          "@type": "SearchAction",
+          target: { "@type": "EntryPoint", urlTemplate: `${origin}/products?q={search_term_string}` },
+          "query-input": "required name=search_term_string",
+        },
+      },
+    ];
+  } catch {
+    return null;
   }
 }
 
@@ -61,8 +109,16 @@ export default async function Page() {
   }
 
   const T = getTemplate(shell.templateId);
+  const jsonLd = preview ? null : await homeJsonLd();
   return (
     <T.Chrome {...shell}>
+      {jsonLd ? (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+      ) : null}
       <T.Home products={products} categories={shell.categories} theme={shell.theme} sections={sections} />
     </T.Chrome>
   );

@@ -11,7 +11,19 @@ export const dynamic = "force-dynamic";
 
 const PAGE_SIZE = 24;
 
-export const metadata: Metadata = { title: "All products" };
+export async function generateMetadata({
+  searchParams,
+}: {
+  searchParams: Promise<{ q?: string; sort?: string; min?: string; max?: string; page?: string }>;
+}): Promise<Metadata> {
+  const sp = await searchParams;
+  const q = (sp.q ?? "").trim();
+  if (q) {
+    // Search results are endless near-duplicates — keep them out of the index, still crawlable.
+    return { title: `Results for "${q}"`, robots: { index: false, follow: true } };
+  }
+  return { title: "All products", alternates: { canonical: "/products" } };
+}
 
 export default async function ProductsPage({
   searchParams,
