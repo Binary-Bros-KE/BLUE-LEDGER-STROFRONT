@@ -334,7 +334,10 @@ export function Checkout({ methods }: CheckoutProps) {
                 </span>
                 <div className="flex min-w-0 flex-1 flex-col gap-1.5">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="line-clamp-2 text-[13px] leading-snug text-ink">{l.name}</p>
+                    <div className="min-w-0">
+                      <p className="line-clamp-2 text-[13px] leading-snug text-ink">{l.name}</p>
+                      {l.spec ? <p className="mt-0.5 text-[12px] text-ink-muted">{l.spec}</p> : null}
+                    </div>
                     <button type="button" onClick={() => removeLine(l.id)} aria-label={`Remove ${l.name}`} className="flex-none text-ink-faint hover:text-danger">
                       <FiTrash2 size={15} />
                     </button>

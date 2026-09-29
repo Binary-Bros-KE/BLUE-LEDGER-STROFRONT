@@ -34,6 +34,10 @@ export type Product = {
   imageCaption: string;
   /** manufacturer / brand, when the shop has set one */
   brand?: string | null;
+  /** set when the product has variants — cards show "From …" and link to the page to choose */
+  variantSummary?: { count: number; minPriceCents: number; maxPriceCents: number } | null;
+  /** product page only — see lib/variant-choice.ts */
+  variants?: import("./types").ShopVariants | null;
   /** real image URLs (from Product.onlineImageUrls) once the P3 upload pipeline lands */
   images?: string[];
   /** the product detail page needs a bit more than the card does */
@@ -58,7 +62,12 @@ export type Category = {
 };
 
 export type CartLine = {
+  /** line identity — the product id, or product id + variant key for a shared-stock variant */
   id: string;
+  /** the product to order (older stored carts: absent, then `id` is the product id) */
+  productId?: string;
+  /** shared-stock variant key — sent with the order, priced by the server */
+  variantKey?: string | null;
   name: string;
   spec?: string;
   lowStockNote?: string;

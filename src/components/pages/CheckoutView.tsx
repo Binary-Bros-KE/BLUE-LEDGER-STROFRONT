@@ -292,8 +292,13 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
                   )}
                   <div className="min-w-0 flex-1">
                     <div className="flex items-start justify-between gap-2">
-                      <span className="line-clamp-2 font-sans text-[12px] font-extrabold leading-snug text-navy">
-                        {line.name}
+                      <span className="min-w-0">
+                        <span className="line-clamp-2 font-sans text-[12px] font-extrabold leading-snug text-navy">
+                          {line.name}
+                        </span>
+                        {line.spec ? (
+                          <span className="mt-0.5 block font-mono text-[10px] uppercase tracking-[1.2px] text-slate">{line.spec}</span>
+                        ) : null}
                       </span>
                       <button
                         type="button"

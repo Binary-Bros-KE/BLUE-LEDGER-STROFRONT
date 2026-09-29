@@ -82,7 +82,10 @@ export function CartDrawer({
                 </span>
                 <div className="flex min-w-0 flex-1 flex-col gap-2">
                   <div className="flex items-start justify-between gap-2">
-                    <p className="line-clamp-2 text-[14px] font-medium leading-snug text-ink">{line.name}</p>
+                    <div className="min-w-0">
+                      <p className="line-clamp-2 text-[14px] font-medium leading-snug text-ink">{line.name}</p>
+                      {line.spec ? <p className="mt-0.5 text-[12px] text-ink-muted">{line.spec}</p> : null}
+                    </div>
                     <button
                       type="button"
                       onClick={() => onRemove(line.id)}

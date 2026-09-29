@@ -41,6 +41,9 @@ export function ProductCard({ product }: { product: Product }) {
   const image = product.images?.[0];
   const href = `/product/${encodeURIComponent(product.id)}`;
   const badge = badgeFor(product);
+  // A product with variants is chosen on its page — the card shows "From …" and links there.
+  const variants = product.variantSummary ?? null;
+  const fromRange = variants !== null && variants.minPriceCents !== variants.maxPriceCents;
 
   const [added, setAdded] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -103,16 +106,25 @@ export function ProductCard({ product }: { product: Product }) {
         </h3>
 
         <div className="flex flex-wrap items-baseline gap-x-2">
+          {fromRange ? <span className="text-[12px] text-ink-muted">From</span> : null}
           <span className={`font-display text-[15px] font-bold lg:text-[16px] ${soldOut ? "text-ink-faint" : "text-primary-ink"}`}>
-            {fmt(product.priceCents)}
+            {fmt(variants ? variants.minPriceCents : product.priceCents)}
           </span>
-          {product.compareCents && product.compareCents > product.priceCents ? (
+          {!variants && product.compareCents && product.compareCents > product.priceCents ? (
             <span className="text-[12px] text-ink-faint line-through">{fmt(product.compareCents)}</span>
           ) : null}
         </div>
 
         <Stars rating={product.rating} reviews={product.reviews} />
 
+        {variants ? (
+          <Link
+            href={href}
+            className="mt-auto grid h-10 place-items-center rounded-lg bg-primary font-display text-[13px] font-semibold text-on-primary transition-colors hover:bg-primary-hover"
+          >
+            Choose options
+          </Link>
+        ) : (
         <button
           type="button"
           onClick={handleAdd}
@@ -128,6 +140,7 @@ export function ProductCard({ product }: { product: Product }) {
         >
           {soldOut ? "Out of stock" : added ? "Added ✓" : "Add to Cart"}
         </button>
+        )}
       </div>
     </article>
   );

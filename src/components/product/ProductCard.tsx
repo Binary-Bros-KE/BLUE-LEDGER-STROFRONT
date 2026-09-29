@@ -86,12 +86,27 @@ export function ProductCard({ product }: { product: Product }) {
           <Rating rating={product.rating} reviews={product.reviews} muted={soldOut} />
         </div>
 
-        <PriceRow priceCents={product.priceCents} compareCents={product.compareCents} muted={soldOut} />
+        {product.variantSummary && product.variantSummary.minPriceCents !== product.variantSummary.maxPriceCents ? (
+          <span className="-mb-1 font-mono text-[10px] uppercase tracking-[1.2px] text-slate">From</span>
+        ) : null}
+        <PriceRow
+          priceCents={product.variantSummary ? product.variantSummary.minPriceCents : product.priceCents}
+          {...(product.variantSummary ? {} : { compareCents: product.compareCents })}
+          muted={soldOut}
+        />
 
         <StockLine state={product.stockState} label={product.stockLabel} />
 
         {/* action row */}
         <div className="mt-1 flex items-stretch gap-2">
+          {product.variantSummary ? (
+            <Link
+              href={href}
+              className="flex h-11 flex-1 items-center justify-center bg-navy px-3 font-mono text-[11px] font-bold uppercase tracking-[1.4px] text-white transition-colors duration-[140ms] group-hover:bg-blue group-hover:text-on-primary"
+            >
+              CHOOSE OPTIONS
+            </Link>
+          ) : (
           <button
             type="button"
             onClick={handleAdd}
@@ -106,6 +121,7 @@ export function ProductCard({ product }: { product: Product }) {
           >
             {soldOut ? "NOTIFY ME" : added ? "Added!" : "ADD TO CART"}
           </button>
+          )}
 
           <Link
             href={href}

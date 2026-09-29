@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import type { CartLine, Product } from "./products";
+import type { CartChoice } from "./variant-choice";
 
 // Cart survives a full page reload via localStorage (per-origin = per-tenant automatically). Read
 // AFTER mount, not in the initial state, so the server-rendered HTML and the client's first render
@@ -38,7 +39,9 @@ type CartContextValue = {
   hydrated: boolean;
   cartOpen: boolean;
   menuOpen: boolean;
-  addToCart: (product: Product, qty?: number) => void;
+  /** `choice` = the variant picked on the product page (lib/variant-choice.ts); omitted for a
+   * product without variants. */
+  addToCart: (product: Product, qty?: number, choice?: CartChoice | null) => void;
   setQty: (id: string, qty: number) => void;
   removeLine: (id: string) => void;
   /** empties the cart — after an order is placed */
@@ -85,18 +88,27 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const count = useMemo(() => lines.reduce((sum, l) => sum + l.qty, 0), [lines]);
   const totalCents = useMemo(() => lines.reduce((sum, l) => sum + l.unitPriceCents * l.qty, 0), [lines]);
 
-  const addToCart = useCallback((product: Product, qty = 1) => {
-    if (product.stockState === "out_of_stock" || qty < 1) return;
+  const addToCart = useCallback((product: Product, qty = 1, choice?: CartChoice | null) => {
+    // A product with variants can only go in with a variant chosen (cards link to the page instead).
+    if (product.variants?.variants.length && !choice) return;
+    const stock = choice?.stock ?? product.stockState;
+    if (stock === "out_of_stock" || qty < 1) return;
+    const productId = choice?.productId ?? product.id;
+    const variantKey = choice?.variantKey ?? null;
+    const id = variantKey ? `${productId}::${variantKey}` : productId;
     setLines((prev) => {
-      const existing = prev.find((l) => l.id === product.id);
-      if (existing) return prev.map((l) => (l.id === product.id ? { ...l, qty: l.qty + qty } : l));
+      const existing = prev.find((l) => l.id === id);
+      if (existing) return prev.map((l) => (l.id === id ? { ...l, qty: l.qty + qty } : l));
       return [
         ...prev,
         {
-          id: product.id,
-          name: product.name.split(" — ")[0],
+          id,
+          productId,
+          variantKey,
+          name: (choice?.name ?? product.name).split(" — ")[0],
+          ...(choice?.spec ? { spec: choice.spec } : {}),
           image: product.images?.[0],
-          unitPriceCents: product.priceCents,
+          unitPriceCents: choice?.priceCents ?? product.priceCents,
           qty,
         },
       ];

@@ -43,6 +43,8 @@ export function toThemeProduct(item: CatalogItem): Product {
     wholesalePriceCents: item.wholesalePriceCents,
     wholesaleMinQuantity: item.wholesaleMinQuantity,
     content: item.content,
+    variantSummary: item.variantSummary ?? null,
+    variants: item.variants ?? null,
   };
 }
 

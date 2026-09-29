@@ -13,6 +13,7 @@ import { Container } from "@/components/shared/Container";
 import { Placeholder } from "@/components/shared/Placeholder";
 import { FiArrowRight, FiPlay } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
+import { useVariantChoice } from "@/lib/variant-choice";
 import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
 import { slugify } from "@/lib/slug";
@@ -31,6 +32,7 @@ export function ProductDetail({
 }) {
   const fmt = useMoney();
   const { favourites, toggleFavourite, addToCart } = useCart();
+  const vc = useVariantChoice(product);
   const [qty, setQty] = useState(1);
   const [activeImg, setActiveImg] = useState(0);
   const [added, setAdded] = useState(false);
@@ -40,13 +42,18 @@ export function ProductDetail({
   }, []);
 
   function handleAdd() {
-    addToCart(product, qty);
+    if (!vc.choice) return;
+    addToCart(product, qty, vc.choice);
     setAdded(true);
     if (addedTimer.current) clearTimeout(addedTimer.current);
     addedTimer.current = setTimeout(() => setAdded(false), 1600);
   }
 
-  const soldOut = product.stockState === "out_of_stock";
+  const stockState = vc.stock ?? product.stockState;
+  const soldOut = stockState === "out_of_stock";
+  const needsChoice = !vc.choice;
+  const stockText =
+    stockState === "out_of_stock" ? "OUT OF STOCK" : stockState === "low" ? "LOW STOCK" : stockState === "made_to_order" ? "MADE TO ORDER" : "IN STOCK";
   const favourite = favourites.has(product.id);
   const images = product.images ?? [];
   const catSlug = categoryName ? slugify(categoryName) : null;
@@ -134,11 +141,14 @@ export function ProductDetail({
               </div>
 
               <div className="mt-5 flex items-baseline gap-3">
+                {vc.isFromPrice ? (
+                  <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-slate">From</span>
+                ) : null}
                 <span className={`font-sans text-[30px] font-black leading-none ${soldOut ? "text-slate-dim" : "text-navy"}`}>
-                  {fmt(product.priceCents)}
+                  {fmt(vc.priceCents)}
                 </span>
-                {product.compareCents ? (
-                  <span className="font-mono text-[14px] text-slate line-through">{fmt(product.compareCents)}</span>
+                {vc.compareCents ? (
+                  <span className="font-mono text-[14px] text-slate line-through">{fmt(vc.compareCents)}</span>
                 ) : null}
                 {product.unitOfMeasure ? (
                   <span className="font-mono text-[11px] uppercase tracking-[1.2px] text-slate">
@@ -148,7 +158,7 @@ export function ProductDetail({
               </div>
 
               <div className="mt-3">
-                <StockLine state={product.stockState} label={product.stockLabel} />
+                <StockLine state={stockState} label={stockText} />
               </div>
 
               {showWholesale ? (
@@ -185,6 +195,43 @@ export function ProductDetail({
                 </section>
               ) : null}
 
+              {vc.hasVariants ? (
+                <div className="mt-6 space-y-4">
+                  {vc.options.map((option) => (
+                    <div key={option.name}>
+                      <div className="font-mono text-[11px] font-bold uppercase tracking-[2px] text-slate">
+                        {option.name}
+                        {vc.selected[option.name] ? <span className="text-navy"> · {vc.selected[option.name]}</span> : null}
+                      </div>
+                      <div className="mt-2 flex flex-wrap gap-2">
+                        {option.values.map((value) => {
+                          const on = vc.selected[option.name] === value;
+                          const ok = vc.available(option.name, value);
+                          return (
+                            <button
+                              key={value}
+                              type="button"
+                              onClick={() => vc.choose(option.name, value)}
+                              disabled={!ok && !on}
+                              aria-pressed={on}
+                              className={`min-w-11 border-[1.5px] px-3 py-2 font-mono text-[12px] font-bold uppercase tracking-[1px] transition-colors ${
+                                on
+                                  ? "border-navy bg-navy text-white"
+                                  : ok
+                                    ? "border-line text-navy hover:border-navy"
+                                    : "cursor-not-allowed border-line text-slate-dim line-through"
+                              }`}
+                            >
+                              {value}
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              ) : null}
+
               {/* actions */}
               <div className="mt-7 flex flex-wrap items-center gap-3">
                 {!soldOut && (
@@ -192,10 +239,11 @@ export function ProductDetail({
                 )}
                 <button
                   type="button"
-                  onClick={() => (soldOut ? undefined : handleAdd())}
+                  onClick={() => (soldOut || needsChoice ? undefined : handleAdd())}
+                  disabled={needsChoice && !soldOut}
                   aria-live="polite"
                   className={`blk inline-flex h-12 items-center justify-center gap-2 px-8 font-mono text-[12px] font-bold uppercase tracking-[1.6px] transition-colors ${
-                    soldOut
+                    soldOut || needsChoice
                       ? "border-[1.5px] border-slate-dim text-slate-dim"
                       : added
                         ? "bg-green text-white"
@@ -203,7 +251,7 @@ export function ProductDetail({
                   }`}
                 >
                   {!soldOut && <FiPlay size={11} />}
-                  {soldOut ? "Notify me" : added ? "Added!" : "Add to cart"}
+                  {soldOut ? "Notify me" : needsChoice ? (vc.prompt ?? "Choose an option") : added ? "Added!" : "Add to cart"}
                 </button>
                 <FavouriteButton
                   active={favourite}

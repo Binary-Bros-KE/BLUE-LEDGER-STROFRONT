@@ -25,7 +25,7 @@ export function usePlaceOrder() {
       const body: OrderRequest = {
         ...details,
         paymentMethod: "pay_on_delivery",
-        items: lines.map((l) => ({ productId: l.id, qty: l.qty })),
+        items: lines.map((l) => ({ productId: l.productId ?? l.id, variantKey: l.variantKey ?? null, qty: l.qty })),
       };
       const res = await fetch("/api/orders", {
         method: "POST",

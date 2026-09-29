@@ -60,6 +60,32 @@ export type CatalogItem = {
   brand?: string | null;
   /** online "was" price, only when genuinely above priceCents */
   compareAtPriceCents?: number | null;
+  /** set when the product has variants: count + price range (cards show "From …") */
+  variantSummary?: { count: number; minPriceCents: number; maxPriceCents: number } | null;
+  /** product page only: every variant with its own price and stock */
+  variants?: ShopVariants | null;
+};
+
+export type ShopVariant = {
+  /** shared stock: the variant key · separate stock: the variant product's id */
+  key: string;
+  /** the product to order (separate stock: the variant's own product) */
+  productId: string;
+  name: string;
+  label: string;
+  values: Record<string, string>;
+  priceCents: number;
+  compareAtPriceCents: number | null;
+  stock: StockBadge;
+};
+
+export type ShopVariants = {
+  mode: "shared" | "separate";
+  title: string | null;
+  options: { name: string; values: string[] }[];
+  /** separate stock: the variant this page is · shared: null */
+  selectedKey: string | null;
+  variants: ShopVariant[];
 };
 
 export type ShopCategory = { id: string; name: string; count: number };
@@ -80,7 +106,7 @@ export type OrderRequest = {
   notes?: string | null;
   deliveryMethodId?: string | null;
   paymentMethod: "pay_on_delivery";
-  items: { productId: string; qty: number }[];
+  items: { productId: string; variantKey?: string | null; qty: number }[];
 };
 
 /** What SERVER returns for a placed order — its own (authoritative) totals. */

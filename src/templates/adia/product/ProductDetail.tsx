@@ -16,6 +16,7 @@ import {
   FiTruck,
 } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
+import { useVariantChoice } from "@/lib/variant-choice";
 import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
 import { slugify } from "@/lib/slug";
@@ -36,6 +37,47 @@ function allSpecs(product: Product): string[] {
   const c = product.content;
   if (!c) return [];
   return [...c.quickSpecs, ...c.blocks.filter((b) => b.type === "specs").flatMap((b) => b.items)].filter((s) => s.trim());
+}
+
+/** One row of option chips (Size: S M L …) — values nothing can be bought in are crossed out. */
+function VariantChips({ vc }: { vc: ReturnType<typeof useVariantChoice> }) {
+  if (!vc.hasVariants) return null;
+  return (
+    <div className="mt-5 space-y-4">
+      {vc.options.map((option) => (
+        <div key={option.name}>
+          <p className="text-[13px] font-semibold text-ink">
+            {option.name}
+            {vc.selected[option.name] ? <span className="font-normal text-ink-muted">: {vc.selected[option.name]}</span> : null}
+          </p>
+          <div className="mt-2 flex flex-wrap gap-2">
+            {option.values.map((value) => {
+              const on = vc.selected[option.name] === value;
+              const ok = vc.available(option.name, value);
+              return (
+                <button
+                  key={value}
+                  type="button"
+                  onClick={() => vc.choose(option.name, value)}
+                  disabled={!ok && !on}
+                  aria-pressed={on}
+                  className={`min-w-12 rounded-lg border-2 px-3.5 py-2 text-[14px] font-semibold transition-colors ${
+                    on
+                      ? "border-primary bg-primary-soft text-primary-ink"
+                      : ok
+                        ? "border-line-strong text-ink hover:border-primary"
+                        : "cursor-not-allowed border-line text-ink-faint line-through"
+                  }`}
+                >
+                  {value}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  );
 }
 
 function StockPill({ product }: { product: Product }) {
@@ -134,6 +176,7 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
   const fmt = useMoney();
   const router = useRouter();
   const { favourites, toggleFavourite, addToCart } = useCart();
+  const vc = useVariantChoice(product);
   const [qty, setQty] = useState(1);
   const [added, setAdded] = useState(false);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -144,23 +187,28 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
     [],
   );
 
-  const soldOut = product.stockState === "out_of_stock";
+  const stockState = vc.stock ?? product.stockState;
+  const soldOut = stockState === "out_of_stock";
+  const needsChoice = !vc.choice;
   const favourite = favourites.has(product.id);
   const catSlug = categoryName ? slugify(categoryName) : null;
   const specs = allSpecs(product);
   const prose = product.content?.blocks.filter((b) => b.type !== "specs" && b.body) ?? [];
   const showWholesale = product.wholesalePriceCents != null && (product.wholesaleMinQuantity ?? 0) > 1;
-  const save = product.compareCents && product.compareCents > product.priceCents ? product.compareCents - product.priceCents : null;
+  const compareCents = vc.compareCents;
+  const save = compareCents && compareCents > vc.priceCents ? compareCents - vc.priceCents : null;
 
   function handleAdd() {
-    addToCart(product, qty);
+    if (!vc.choice) return;
+    addToCart(product, qty, vc.choice);
     setAdded(true);
     if (timer.current) clearTimeout(timer.current);
     timer.current = setTimeout(() => setAdded(false), 1600);
   }
 
   function buyNow() {
-    addToCart(product, qty);
+    if (!vc.choice) return;
+    addToCart(product, qty, vc.choice);
     router.push("/checkout");
   }
 
@@ -197,16 +245,17 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
           </div>
 
           <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+            {vc.isFromPrice ? <span className="text-[15px] font-medium text-ink-muted">From</span> : null}
             <span className={`font-display text-[30px] font-bold leading-none lg:text-[34px] ${soldOut ? "text-ink-faint" : "text-primary-ink"}`}>
-              {fmt(product.priceCents)}
+              {fmt(vc.priceCents)}
             </span>
-            {save ? <span className="text-[16px] text-ink-faint line-through">{fmt(product.compareCents as number)}</span> : null}
+            {save ? <span className="text-[16px] text-ink-faint line-through">{fmt(compareCents as number)}</span> : null}
             {product.unitOfMeasure ? <span className="text-[13px] text-ink-muted">/ {product.unitOfMeasure}</span> : null}
           </div>
           {save ? <p className="mt-1.5 text-[13px] font-semibold text-success">You save {fmt(save)}</p> : null}
 
           <div className="mt-4">
-            <StockPill product={product} />
+            <StockPill product={{ ...product, stockState }} />
           </div>
 
           {showWholesale ? (
@@ -233,26 +282,28 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
             </ul>
           ) : null}
 
+          <VariantChips vc={vc} />
+
           <div className="mt-6 flex flex-wrap items-center gap-3">
             {!soldOut ? <QtyStepper qty={qty} onChange={(q) => setQty(Math.max(1, q))} /> : null}
             <button
               type="button"
               onClick={handleAdd}
-              disabled={soldOut}
+              disabled={soldOut || needsChoice}
               aria-live="polite"
               className={`h-12 min-w-[180px] flex-1 rounded-lg font-display text-[15px] font-semibold transition-colors ${
-                soldOut
+                soldOut || needsChoice
                   ? "cursor-not-allowed bg-surface-alt text-ink-faint"
                   : added
                     ? "bg-success text-white"
                     : "bg-primary text-on-primary hover:bg-primary-hover"
               }`}
             >
-              {soldOut ? "Out of stock" : added ? "Added to cart ✓" : "Add to Cart"}
+              {soldOut ? "Out of stock" : needsChoice ? (vc.prompt ?? "Choose an option") : added ? "Added to cart ✓" : "Add to Cart"}
             </button>
           </div>
           <div className="mt-3 flex gap-3">
-            {!soldOut ? (
+            {!soldOut && !needsChoice ? (
               <button
                 type="button"
                 onClick={buyNow}

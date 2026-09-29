@@ -62,16 +62,29 @@ function productJsonLd(p: CatalogItem, currency: string, url: string | null) {
     ...(specs.length
       ? { additionalProperty: specs.slice(0, 30).map((s) => ({ "@type": "PropertyValue", name: s })) }
       : {}),
-    offers: {
-      "@type": "Offer",
-      price: (p.priceCents / 100).toFixed(2),
-      priceCurrency: currency || "KES",
-      availability:
-        p.stock === "out_of_stock"
-          ? "https://schema.org/OutOfStock"
-          : "https://schema.org/InStock",
-      ...(url ? { url } : {}),
-    },
+    // Shared-stock variants are one product at several prices → an AggregateOffer with the range. (A
+    // separate-stock variant's page is its own product, so it keeps its own single Offer.)
+    offers:
+      p.variants?.mode === "shared" && p.variantSummary
+        ? {
+            "@type": "AggregateOffer",
+            lowPrice: (p.variantSummary.minPriceCents / 100).toFixed(2),
+            highPrice: (p.variantSummary.maxPriceCents / 100).toFixed(2),
+            offerCount: p.variantSummary.count,
+            priceCurrency: currency || "KES",
+            availability: p.stock === "out_of_stock" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
+            ...(url ? { url } : {}),
+          }
+        : {
+            "@type": "Offer",
+            price: (p.priceCents / 100).toFixed(2),
+            priceCurrency: currency || "KES",
+            availability:
+              p.stock === "out_of_stock"
+                ? "https://schema.org/OutOfStock"
+                : "https://schema.org/InStock",
+            ...(url ? { url } : {}),
+          },
   };
 }
 
