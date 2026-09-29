@@ -139,6 +139,7 @@ export function FilterPanel({
   activeCategorySlug,
   filters,
   priceRange,
+  brandFacets = [],
   basePath,
   onNavigate,
 }: {
@@ -146,6 +147,7 @@ export function FilterPanel({
   activeCategorySlug?: string;
   filters: ListingFilters;
   priceRange: { minCents: number; maxCents: number } | null;
+  brandFacets?: { name: string; count: number }[];
   basePath: string;
   /** mobile sheet: close after a navigation */
   onNavigate?: () => void;
@@ -155,7 +157,11 @@ export function FilterPanel({
   const bounds = priceRange
     ? { min: Math.floor(priceRange.minCents / 100), max: Math.ceil(priceRange.maxCents / 100) }
     : null;
-  const filtered = filters.minPrice !== undefined || filters.maxPrice !== undefined || filters.sort !== "featured";
+  const filtered =
+    filters.minPrice !== undefined || filters.maxPrice !== undefined || filters.sort !== "featured" || Boolean(filters.brand);
+  const [showAllBrands, setShowAllBrands] = useState(false);
+  const activeBrand = filters.brand?.toLowerCase();
+  const brandsShown = showAllBrands ? brandFacets : brandFacets.slice(0, 8);
 
   const row = (active: boolean) =>
     `flex items-center justify-between gap-2 rounded-lg px-2 py-1.5 text-[14px] transition-colors ${
@@ -215,6 +221,44 @@ export function FilterPanel({
               className="mt-2 px-2 text-[13px] font-semibold text-primary-ink hover:underline"
             >
               {showAll ? "Show less" : `Show ${categories.length - 8} more`}
+            </button>
+          ) : null}
+        </Group>
+      ) : null}
+
+      {brandFacets.length > 0 ? (
+        <Group title="Brand">
+          <ul className="flex flex-col gap-0.5">
+            <li>
+              <Link href={listingHref(basePath, { ...filters, brand: undefined })} onClick={onNavigate} className={row(!activeBrand)}>
+                <span className="flex items-center gap-2.5">
+                  <span className={dot(!activeBrand)}>{!activeBrand ? <span className="size-2 rounded-full bg-primary" /> : null}</span>
+                  All brands
+                </span>
+              </Link>
+            </li>
+            {brandsShown.map((b) => {
+              const active = b.name.toLowerCase() === activeBrand;
+              return (
+                <li key={b.name}>
+                  <Link href={listingHref(basePath, { ...filters, brand: b.name })} onClick={onNavigate} className={row(active)}>
+                    <span className="flex min-w-0 items-center gap-2.5">
+                      <span className={dot(active)}>{active ? <span className="size-2 rounded-full bg-primary" /> : null}</span>
+                      <span className="truncate">{b.name}</span>
+                    </span>
+                    <span className="flex-none text-[12px] text-ink-faint">({b.count})</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+          {brandFacets.length > 8 ? (
+            <button
+              type="button"
+              onClick={() => setShowAllBrands((v) => !v)}
+              className="mt-2 px-2 text-[13px] font-semibold text-primary-ink hover:underline"
+            >
+              {showAllBrands ? "Show less" : `Show ${brandFacets.length - 8} more`}
             </button>
           ) : null}
         </Group>

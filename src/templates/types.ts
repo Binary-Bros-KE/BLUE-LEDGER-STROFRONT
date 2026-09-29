@@ -45,6 +45,8 @@ export type ListingProps = {
   filters?: ListingFilters;
   /** price bounds of the unfiltered set, for a price slider (null = no products / unknown) */
   priceRange?: { minCents: number; maxCents: number } | null;
+  /** brands present in the listing (for a brand filter), most products first */
+  brandFacets?: { name: string; count: number }[];
 };
 
 export type ProductDetailProps = {

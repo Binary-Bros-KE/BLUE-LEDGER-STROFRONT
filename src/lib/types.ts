@@ -56,6 +56,10 @@ export type CatalogItem = {
   images: ProductImage[];
   content: OnlineContent;
   stock: StockBadge;
+  /** absent on older SERVERs */
+  brand?: string | null;
+  /** online "was" price, only when genuinely above priceCents */
+  compareAtPriceCents?: number | null;
 };
 
 export type ShopCategory = { id: string; name: string; count: number };
@@ -95,5 +99,7 @@ export type CatalogPage = {
   total: number;
   /** min/max shopper price over the matching set BEFORE any price filter (absent on older SERVERs) */
   priceRange?: { minCents: number; maxCents: number } | null;
+  /** brands in the matching set (ignoring the brand filter itself), most products first */
+  brands?: { name: string; count: number }[];
   products: CatalogItem[];
 };

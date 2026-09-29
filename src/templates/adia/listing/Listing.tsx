@@ -26,8 +26,9 @@ export function Listing({
   heroImage,
   filters = { sort: "featured" },
   priceRange = null,
+  brandFacets = [],
 }: ListingProps) {
-  const panel = { categories, activeCategorySlug, filters, priceRange, basePath };
+  const panel = { categories, activeCategorySlug, filters, priceRange, brandFacets, basePath };
   const hasPrice = filters.minPrice !== undefined || filters.maxPrice !== undefined;
   const units = (n: number) => n.toLocaleString("en-KE");
 
@@ -73,16 +74,27 @@ export function Listing({
             </div>
           </div>
 
-          {hasPrice ? (
+          {hasPrice || filters.brand ? (
             <div className="mt-3 flex flex-wrap gap-2">
+              {filters.brand ? (
+                <Link
+                  href={listingHref(basePath, { ...filters, brand: undefined })}
+                  className="flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary-soft px-3 py-1 text-[13px] font-medium text-primary-ink"
+                >
+                  Brand: {filters.brand}
+                  <FiX size={13} aria-label="Remove brand filter" />
+                </Link>
+              ) : null}
+              {hasPrice ? (
               <Link
-                href={listingHref(basePath, { sort: filters.sort })}
+                href={listingHref(basePath, { sort: filters.sort, brand: filters.brand })}
                 className="flex items-center gap-1.5 rounded-full border border-primary/40 bg-primary-soft px-3 py-1 text-[13px] font-medium text-primary-ink"
               >
                 Price: {filters.minPrice !== undefined ? units(filters.minPrice) : "0"} –{" "}
                 {filters.maxPrice !== undefined ? units(filters.maxPrice) : "any"}
                 <FiX size={13} aria-label="Remove price filter" />
               </Link>
+              ) : null}
             </div>
           ) : null}
 

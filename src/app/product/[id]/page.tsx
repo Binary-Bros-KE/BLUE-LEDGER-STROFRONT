@@ -58,6 +58,7 @@ function productJsonLd(p: CatalogItem, currency: string, url: string | null) {
     ...(p.description ? { description: p.description } : {}),
     ...(p.images.length ? { image: p.images.map((i) => i.url) } : {}),
     ...(p.categoryName ? { category: p.categoryName } : {}),
+    ...(p.brand ? { brand: { "@type": "Brand", name: p.brand } } : {}),
     ...(specs.length
       ? { additionalProperty: specs.slice(0, 30).map((s) => ({ "@type": "PropertyValue", name: s })) }
       : {}),

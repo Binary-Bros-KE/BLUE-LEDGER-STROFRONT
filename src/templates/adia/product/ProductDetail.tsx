@@ -179,11 +179,18 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
         <Gallery product={product} />
 
         <div className="flex flex-col">
-          {catSlug ? (
-            <Link href={`/products/${catSlug}`} className="text-[13px] font-medium text-primary-ink hover:underline">
-              {categoryName}
-            </Link>
-          ) : null}
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] font-medium">
+            {product.brand ? (
+              <Link href={`/products?brand=${encodeURIComponent(product.brand)}`} className="text-ink hover:text-primary-ink">
+                <span className="text-ink-muted">Brand:</span> {product.brand}
+              </Link>
+            ) : null}
+            {catSlug ? (
+              <Link href={`/products/${catSlug}`} className="text-primary-ink hover:underline">
+                {categoryName}
+              </Link>
+            ) : null}
+          </div>
           <h1 className="mt-1 font-display text-[22px] font-bold leading-snug text-ink lg:text-[28px]">{product.name}</h1>
           <div className="mt-2">
             <Stars rating={product.rating} reviews={product.reviews} />

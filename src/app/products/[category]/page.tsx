@@ -49,7 +49,7 @@ export default async function CategoryPage({
   searchParams,
 }: {
   params: Promise<{ category: string }>;
-  searchParams: Promise<{ page?: string; sort?: string; min?: string; max?: string }>;
+  searchParams: Promise<{ page?: string; sort?: string; min?: string; max?: string; brand?: string }>;
 }) {
   const { category: slug } = await params;
   const sp = await searchParams;
@@ -93,11 +93,13 @@ export default async function CategoryPage({
   let products: Product[] = [];
   let total = 0;
   let priceRange: CatalogPage["priceRange"] = null;
+  let brandFacets: NonNullable<CatalogPage["brands"]> = [];
   try {
     const catalog = await getCatalog({ categoryId: category.id, page, pageSize: PAGE_SIZE, ...catalogParams(filters) });
     products = catalog.products.map(toThemeProduct);
     total = catalog.total;
     priceRange = catalog.priceRange ?? null;
+    brandFacets = catalog.brands ?? [];
   } catch {
     products = [];
     total = 0;
@@ -118,6 +120,7 @@ export default async function CategoryPage({
         heroImage={shell.theme.categoryImages[category.id] || shell.theme.headerImageUrl}
         filters={filters}
         priceRange={priceRange}
+        brandFacets={brandFacets}
       />
     </T.Chrome>
   );

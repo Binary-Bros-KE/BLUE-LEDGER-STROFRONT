@@ -38,11 +38,15 @@ export function MobileFilters(props: {
   activeCategorySlug?: string;
   filters: ListingFilters;
   priceRange: { minCents: number; maxCents: number } | null;
+  brandFacets?: { name: string; count: number }[];
   basePath: string;
 }) {
   const [open, setOpen] = useState(false);
   useOverlay(open, () => setOpen(false));
-  const count = (props.filters.minPrice !== undefined || props.filters.maxPrice !== undefined ? 1 : 0) + (props.activeCategorySlug ? 1 : 0);
+  const count =
+    (props.filters.minPrice !== undefined || props.filters.maxPrice !== undefined ? 1 : 0) +
+    (props.activeCategorySlug ? 1 : 0) +
+    (props.filters.brand ? 1 : 0);
 
   return (
     <>

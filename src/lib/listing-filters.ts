@@ -18,6 +18,8 @@ export const SORT_OPTIONS: { value: CatalogSort; label: string }[] = [
 
 export type ListingFilters = {
   sort: CatalogSort;
+  /** exact brand name (case-insensitive on the server) */
+  brand?: string;
   /** whole currency units */
   minPrice?: number;
   maxPrice?: number;
@@ -29,26 +31,28 @@ function wholeUnits(raw: string | undefined): number | undefined {
   return Number.isFinite(n) && n >= 0 ? n : undefined;
 }
 
-export function parseListingFilters(sp: { sort?: string; min?: string; max?: string }): ListingFilters {
+export function parseListingFilters(sp: { sort?: string; min?: string; max?: string; brand?: string }): ListingFilters {
   const sort = SORT_OPTIONS.some((o) => o.value === sp.sort) ? (sp.sort as CatalogSort) : "featured";
   let minPrice = wholeUnits(sp.min);
   let maxPrice = wholeUnits(sp.max);
   // a reversed range is almost certainly a typo — swap rather than show nothing
   if (minPrice !== undefined && maxPrice !== undefined && minPrice > maxPrice) [minPrice, maxPrice] = [maxPrice, minPrice];
-  return { sort, minPrice, maxPrice };
+  const brand = sp.brand?.trim().slice(0, 60) || undefined;
+  return { sort, minPrice, maxPrice, ...(brand ? { brand } : {}) };
 }
 
 /** The /shop/catalog params for these filters. */
 export function catalogParams(f: ListingFilters) {
   return {
     sort: f.sort,
+    ...(f.brand ? { brand: f.brand } : {}),
     ...(f.minPrice !== undefined ? { minPriceCents: f.minPrice * 100 } : {}),
     ...(f.maxPrice !== undefined ? { maxPriceCents: f.maxPrice * 100 } : {}),
   };
 }
 
 export function hasActiveFilters(f: ListingFilters): boolean {
-  return f.sort !== "featured" || f.minPrice !== undefined || f.maxPrice !== undefined;
+  return f.sort !== "featured" || f.minPrice !== undefined || f.maxPrice !== undefined || Boolean(f.brand);
 }
 
 /**
@@ -59,8 +63,9 @@ export function listingHref(basePath: string, f: Partial<ListingFilters>): strin
   const [path, qs] = basePath.split("?");
   const params = new URLSearchParams(qs);
   params.delete("page");
-  for (const k of ["sort", "min", "max"]) params.delete(k);
+  for (const k of ["sort", "min", "max", "brand"]) params.delete(k);
   if (f.sort && f.sort !== "featured") params.set("sort", f.sort);
+  if (f.brand) params.set("brand", f.brand);
   if (f.minPrice !== undefined) params.set("min", String(f.minPrice));
   if (f.maxPrice !== undefined) params.set("max", String(f.maxPrice));
   const q = params.toString();

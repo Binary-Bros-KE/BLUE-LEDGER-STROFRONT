@@ -28,7 +28,7 @@ export async function generateMetadata({
 export default async function ProductsPage({
   searchParams,
 }: {
-  searchParams: Promise<{ page?: string; q?: string; sort?: string; min?: string; max?: string }>;
+  searchParams: Promise<{ page?: string; q?: string; sort?: string; min?: string; max?: string; brand?: string }>;
 }) {
   const sp = await searchParams;
   const q = (sp.q ?? "").trim();
@@ -41,6 +41,7 @@ export default async function ProductsPage({
   let products: Product[] = [];
   let total = 0;
   let priceRange: CatalogPage["priceRange"] = null;
+  let brandFacets: NonNullable<CatalogPage["brands"]> = [];
 
   if (preview) {
     const matched = q
@@ -60,6 +61,7 @@ export default async function ProductsPage({
       products = catalog.products.map(toThemeProduct);
       total = catalog.total;
       priceRange = catalog.priceRange ?? null;
+      brandFacets = catalog.brands ?? [];
     } catch {
       products = [];
       total = 0;
@@ -86,6 +88,7 @@ export default async function ProductsPage({
         heroImage={shell.theme.headerImageUrl}
         filters={filters}
         priceRange={priceRange}
+        brandFacets={brandFacets}
       />
     </T.Chrome>
   );

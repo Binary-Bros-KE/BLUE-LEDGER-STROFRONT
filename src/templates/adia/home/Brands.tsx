@@ -4,7 +4,7 @@ import { Container } from "../components/Container";
 import { SectionHeader } from "./SectionHeader";
 
 /** "Top Brands" strip — logos (or name wordmarks) from the shop's brands content (POS-edited). Each
- * tile links to its own link, else to a search for the brand name. Hidden if none. */
+ * tile links to its own link, else to the listing filtered to that brand. Hidden if none. */
 export function Brands({ brands }: { brands: ThemeBrandLogo[] }) {
   if (brands.length === 0) return null;
   return (
@@ -23,7 +23,7 @@ export function Brands({ brands }: { brands: ThemeBrandLogo[] }) {
           const cls =
             "group grid h-20 w-[36%] flex-none place-items-center rounded-xl border border-line bg-surface px-3 transition-shadow hover:shadow-md sm:w-[24%] lg:w-auto";
           return (
-            <Link key={b.name} href={b.href || `/products?q=${encodeURIComponent(b.name)}`} className={cls} aria-label={b.name}>
+            <Link key={b.name} href={b.href || `/products?brand=${encodeURIComponent(b.name)}`} className={cls} aria-label={b.name}>
               {inner}
             </Link>
           );
