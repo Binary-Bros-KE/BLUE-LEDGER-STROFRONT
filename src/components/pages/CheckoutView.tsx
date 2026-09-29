@@ -147,7 +147,7 @@ export function CheckoutView({ methods }: { methods: DeliveryOption[] }) {
                   className={`${inputClass} ${invalid(!nameOk)}`}
                   value={name}
                   onChange={(e) => setName(e.target.value)}
-                  placeholder="Jane Wanjiru"
+                  placeholder="Your full name"
                   autoComplete="name"
                 />
               </label>

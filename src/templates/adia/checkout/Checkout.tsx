@@ -232,7 +232,7 @@ export function Checkout({ methods }: CheckoutProps) {
           <Section step={1} title="Delivery details">
             <div className="grid gap-4 sm:grid-cols-2">
               <Field label="Full name" error={show(errors.name)}>
-                <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="e.g. Jane Wanjiku" className={input(Boolean(show(errors.name)))} />
+                <input value={name} onChange={(e) => setName(e.target.value)} autoComplete="name" placeholder="Your full name" className={input(Boolean(show(errors.name)))} />
               </Field>
               <Field label="Phone number" error={show(errors.phone)}>
                 <input value={phone} onChange={(e) => setPhone(e.target.value)} autoComplete="tel" inputMode="tel" placeholder="07XX XXX XXX" className={input(Boolean(show(errors.phone)))} />
