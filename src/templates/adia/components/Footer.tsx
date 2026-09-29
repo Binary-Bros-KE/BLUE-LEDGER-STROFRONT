@@ -6,6 +6,10 @@ import { slugify } from "@/lib/slug";
 import type { ThemeBrand } from "@/lib/theme";
 import { Container } from "./Container";
 import { Logo } from "./Logo";
+import type { AdiaHome } from "../content";
+import { SOCIAL_ICONS, socialHref, type SocialKey } from "../social-icons";
+
+const SOCIAL_ORDER: SocialKey[] = ["facebook", "instagram", "tiktok", "youtube", "x", "whatsapp"];
 
 const PAY = ["M-PESA", "VISA", "MASTERCARD"];
 
@@ -15,7 +19,12 @@ export function Footer({
   address,
   phone,
   categories,
+  footer,
+  socials,
 }: {
+  /** Adia content: tagline + about text (POS "Footer text") */
+  footer?: AdiaHome["footer"];
+  socials?: AdiaHome["socials"];
   storeName: string;
   brand?: ThemeBrand;
   address?: string | null;
@@ -31,9 +40,30 @@ export function Footer({
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
             <Logo storeName={storeName} brand={brand} onDark />
+            {footer?.tagline ? <p className="-mt-2 font-display text-[14px] font-semibold text-on-secondary">{footer.tagline}</p> : null}
             <p className="max-w-[300px] text-[14px] leading-relaxed text-on-secondary-body">
-              Genuine products, fair prices and reliable delivery — shop {storeName} online.
+              {footer?.about ?? `Genuine products, fair prices and reliable delivery — shop ${storeName} online.`}
             </p>
+            {socials && SOCIAL_ORDER.some((k) => socials[k]) ? (
+              <div className="flex items-center gap-3">
+                {SOCIAL_ORDER.flatMap((k) =>
+                  socials[k]
+                    ? [
+                        <a
+                          key={k}
+                          href={socialHref(k, socials[k]!)}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          aria-label={k}
+                          className="grid size-9 place-items-center rounded-full bg-on-secondary/10 text-on-secondary transition-colors hover:bg-primary"
+                        >
+                          {SOCIAL_ICONS[k](15)}
+                        </a>,
+                      ]
+                    : [],
+                )}
+              </div>
+            ) : null}
             <ul className="flex flex-col gap-2 text-[14px] text-on-secondary-body">
               {address ? (
                 <li className="flex items-start gap-2">

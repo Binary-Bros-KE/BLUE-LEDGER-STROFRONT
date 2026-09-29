@@ -66,7 +66,15 @@ function Inner({ children, storeName, address, phone, categories, theme, preview
 
       <main className="min-h-[50vh] pb-20 lg:pb-0">{children}</main>
 
-      <Footer storeName={storeName} brand={theme.brand} address={address} phone={phone} categories={categories} />
+      <Footer
+        storeName={storeName}
+        brand={theme.brand}
+        address={address}
+        phone={phone}
+        categories={categories}
+        footer={parseAdiaHome(theme.adia, categories).footer}
+        socials={topStripProps(theme, categories).socials}
+      />
 
       <MobileTabBar cartCount={cart.count} onCartClick={cart.openCart} />
       <CartDrawer
