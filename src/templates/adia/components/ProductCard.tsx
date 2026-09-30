@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FaHeart, FaStar, FiHeart } from "@/components/shared/icons";
+import { FaHeart, FaStar, FiHeart, FiShoppingCart } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
@@ -133,7 +133,8 @@ export function ProductCard({ product }: { product: Product }) {
           onClick={handleAdd}
           disabled={soldOut}
           aria-live="polite"
-          className={`h-10 min-w-0 flex-1 rounded-lg font-display text-[13px] font-semibold transition-colors ${
+          aria-label={added ? undefined : soldOut ? `${product.name} is sold out` : `Add ${product.name} to cart`}
+          className={`flex h-10 min-w-0 flex-1 items-center justify-center gap-1.5 rounded-lg font-display text-[13px] font-semibold transition-colors ${
             soldOut
               ? "cursor-not-allowed bg-surface-alt text-ink-faint"
               : added
@@ -141,7 +142,11 @@ export function ProductCard({ product }: { product: Product }) {
                 : "bg-primary text-on-primary hover:bg-primary-hover"
           }`}
         >
-          {soldOut ? "Out of stock" : added ? "Added ✓" : "Add to Cart"}
+          {soldOut ? "Sold out" : added ? "Added ✓" : (
+            <>
+              <FiShoppingCart size={15} /> Add
+            </>
+          )}
         </button>
         )}
         <WhatsAppButton
