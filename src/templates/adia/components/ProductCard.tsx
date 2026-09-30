@@ -6,6 +6,8 @@ import { FaHeart, FaStar, FiHeart } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
+import { productOrderMessage } from "@/lib/whatsapp-order";
+import { WhatsAppButton } from "./WhatsAppButton";
 
 export function Stars({ rating, reviews }: { rating: number; reviews?: number }) {
   const filled = Math.round(rating);
@@ -117,10 +119,11 @@ export function ProductCard({ product }: { product: Product }) {
 
         <Stars rating={product.rating} reviews={product.reviews} />
 
+        <div className="mt-auto flex gap-2">
         {variants ? (
           <Link
             href={href}
-            className="mt-auto grid h-10 place-items-center rounded-lg bg-primary font-display text-[13px] font-semibold text-on-primary transition-colors hover:bg-primary-hover"
+            className="grid h-10 min-w-0 flex-1 place-items-center rounded-lg bg-primary font-display text-[13px] font-semibold text-on-primary transition-colors hover:bg-primary-hover"
           >
             Choose options
           </Link>
@@ -130,7 +133,7 @@ export function ProductCard({ product }: { product: Product }) {
           onClick={handleAdd}
           disabled={soldOut}
           aria-live="polite"
-          className={`mt-auto h-10 rounded-lg font-display text-[13px] font-semibold transition-colors ${
+          className={`h-10 min-w-0 flex-1 rounded-lg font-display text-[13px] font-semibold transition-colors ${
             soldOut
               ? "cursor-not-allowed bg-surface-alt text-ink-faint"
               : added
@@ -141,6 +144,18 @@ export function ProductCard({ product }: { product: Product }) {
           {soldOut ? "Out of stock" : added ? "Added ✓" : "Add to Cart"}
         </button>
         )}
+        <WhatsAppButton
+          variant="icon"
+          label={`Order ${product.name} on WhatsApp`}
+          message={(origin) =>
+            productOrderMessage({
+              name: product.name,
+              price: `${fromRange ? "From " : ""}${fmt(variants ? variants.minPriceCents : product.priceCents)}`,
+              url: origin ? origin + href : undefined,
+            })
+          }
+        />
+        </div>
       </div>
     </article>
   );

@@ -3,6 +3,7 @@
 import { ContactProvider } from "@/components/contact/ContactModal";
 import { useCart } from "@/lib/cart";
 import { CurrencyProvider } from "@/lib/currency";
+import { WhatsAppOrderProvider } from "@/lib/whatsapp-order";
 import type { ChromeProps } from "../../types";
 import { CartDrawer } from "./CartDrawer";
 import { Footer } from "./Footer";
@@ -19,10 +20,20 @@ export function AdiaChrome({ children, ...shell }: ChromeProps) {
   return (
     <CurrencyProvider currency={shell.currency}>
       <ContactProvider contact={shell.theme.contact} fallbackPhone={shell.phone} variant="soft">
-        <Inner {...shell}>{children}</Inner>
+        <WhatsAppOrderProvider number={orderWhatsApp(shell)}>
+          <Inner {...shell}>{children}</Inner>
+        </WhatsAppOrderProvider>
       </ContactProvider>
     </CurrencyProvider>
   );
+}
+
+/** Where "Order on WhatsApp" goes: the sales WhatsApp, else the Adia WhatsApp social (a number or
+ * wa.me link), else the shop's phone. */
+function orderWhatsApp(shell: Omit<ChromeProps, "children">): string | null {
+  const social = parseAdiaHome(shell.theme.adia, shell.categories).socials.whatsapp;
+  const socialNumber = social?.match(/(\+?\d[\d\s-]{7,})/)?.[1] ?? null;
+  return shell.theme.contact.whatsappSalesNumber || socialNumber || shell.phone || null;
 }
 
 function topStripProps(theme: ChromeProps["theme"], categories: ChromeProps["categories"]) {

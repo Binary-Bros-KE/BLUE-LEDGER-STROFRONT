@@ -20,11 +20,13 @@ import { useVariantChoice } from "@/lib/variant-choice";
 import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
 import { slugify } from "@/lib/slug";
+import { productOrderMessage } from "@/lib/whatsapp-order";
 import type { ProductDetailProps } from "../../types";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { QtyStepper } from "../components/CartDrawer";
 import { Container } from "../components/Container";
 import { ProductCard, Stars } from "../components/ProductCard";
+import { WhatsAppButton } from "../components/WhatsAppButton";
 
 /** "Screen Size: 55 inches" → ["Screen Size", "55 inches"]; a line without a short label stays whole. */
 function splitSpec(line: string): [string, string] | [string] {
@@ -324,6 +326,19 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
               {favourite ? <FaHeart size={18} /> : <FiHeart size={18} />}
             </button>
           </div>
+          <WhatsAppButton
+            className="mt-3"
+            label={soldOut ? "Ask about it on WhatsApp" : "Order on WhatsApp"}
+            message={(origin) =>
+              productOrderMessage({
+                name: product.name,
+                options: vc.selected,
+                qty: soldOut ? undefined : qty,
+                price: `${vc.isFromPrice ? "From " : ""}${fmt(vc.priceCents)}`,
+                url: origin ? `${origin}/product/${encodeURIComponent(product.id)}` : undefined,
+              })
+            }
+          />
 
           <div className="mt-6 grid grid-cols-3 gap-2 border-t border-line pt-5 text-center">
             {[

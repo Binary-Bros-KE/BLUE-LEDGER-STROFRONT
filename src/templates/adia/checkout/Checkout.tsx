@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useContact } from "@/components/contact/ContactModal";
 import { FiArrowRight, FiCheck, FiLock, FiMessageCircle, FiShoppingBag, FiShoppingCart, FiTrash2, FiTruck } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
+import { cartOrderMessage } from "@/lib/whatsapp-order";
+import { WhatsAppButton } from "../components/WhatsAppButton";
 import { useMoney } from "@/lib/currency";
 import { usePlaceOrder } from "@/lib/use-place-order";
 import type { CheckoutProps } from "../../types";
@@ -416,6 +418,22 @@ export function Checkout({ methods }: CheckoutProps) {
             {submitting ? "Sending your order…" : "Send Order"}
             {!submitting ? <FiArrowRight size={16} /> : null}
           </button>
+          <WhatsAppButton
+            className="mt-2"
+            label="Or order via WhatsApp"
+            message={() =>
+              cartOrderMessage(lines, fmt, {
+                totalCents: subtotal + fee,
+                details: {
+                  name,
+                  phone,
+                  fulfilment: deliveryType === "pickup" ? "Pick up from the shop" : deliveryType === "delivery" ? "Deliver to me" : undefined,
+                  address: delivering ? address : "",
+                  notes,
+                },
+              })
+            }
+          />
           <p className="mt-3 flex items-center justify-center gap-1.5 text-[12px] text-ink-faint">
             <FiLock size={12} /> Your details are only shared with the shop
           </p>

@@ -5,6 +5,8 @@ import { FiMinus, FiPlus, FiShoppingCart, FiTrash2, FiX } from "@/components/sha
 import { useMoney } from "@/lib/currency";
 import type { CartLine } from "@/lib/products";
 import { useOverlay } from "@/lib/use-overlay";
+import { cartOrderMessage } from "@/lib/whatsapp-order";
+import { WhatsAppButton } from "./WhatsAppButton";
 
 export function QtyStepper({ qty, onChange }: { qty: number; onChange: (qty: number) => void }) {
   const btn = "grid size-8 place-items-center rounded-full text-ink transition-colors hover:bg-surface-alt";
@@ -121,6 +123,7 @@ export function CartDrawer({
               >
                 Proceed to Checkout
               </Link>
+              <WhatsAppButton className="mt-2" label="Order via WhatsApp" message={() => cartOrderMessage(lines, fmt)} />
             </>
           ) : null}
           <button
