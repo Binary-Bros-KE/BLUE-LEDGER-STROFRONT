@@ -102,14 +102,14 @@ function Tile({ category, image }: { category: Category; image?: string | undefi
           {category.name.charAt(0)}
         </span>
       )}
-      <div className="flex h-full items-end justify-between gap-2 p-4 lg:p-5">
+      <div className="flex h-full items-end justify-between gap-2 p-3 sm:p-4 lg:p-5">
         <div className="min-w-0">
-          <h2 className={`line-clamp-2 font-display text-[15px] font-bold leading-snug lg:text-[18px] ${image ? "text-white drop-shadow-sm" : "text-ink"}`}>
+          <h2 className={`line-clamp-2 font-display text-[14px] font-bold leading-snug [overflow-wrap:anywhere] sm:text-[15px] lg:text-[18px] ${image ? "text-white drop-shadow-sm" : "text-ink"}`}>
             {category.name}
           </h2>
           <p className={`mt-0.5 text-[12px] lg:text-[13px] ${image ? "text-white/85" : "text-ink-muted"}`}>{units(category.count)}</p>
         </div>
-        <span className="grid size-9 flex-none place-items-center rounded-full bg-primary text-on-primary shadow-md transition-transform group-hover:translate-x-1 lg:size-10">
+        <span className="grid size-8 flex-none place-items-center rounded-full bg-primary text-on-primary shadow-md transition-transform group-hover:translate-x-1 sm:size-9 lg:size-10">
           <FiArrowRight size={16} />
         </span>
       </div>
