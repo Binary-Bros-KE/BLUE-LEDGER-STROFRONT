@@ -18,6 +18,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const entries: MetadataRoute.Sitemap = [
     { url: `${origin}/`, changeFrequency: "daily", priority: 1 },
     { url: `${origin}/products`, changeFrequency: "daily", priority: 0.8 },
+    { url: `${origin}/categories`, changeFrequency: "weekly", priority: 0.7 },
   ];
 
   const categories = await getCategories().catch(() => []);

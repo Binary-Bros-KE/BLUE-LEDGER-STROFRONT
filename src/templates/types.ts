@@ -65,6 +65,18 @@ export type ProductDetailProps = {
 
 export type CheckoutProps = { methods: DeliveryOption[] };
 
+/** The category landing page (/categories): every category with its image + count, and a short
+ * "popular in" product row per category (fetched by the route). */
+export type CategoriesProps = {
+  categories: Category[];
+  /** category id → image URL (the shop's picks, themeJson.categoryImages) */
+  categoryImages: Record<string, string>;
+  rows: { category: Category; products: Product[] }[];
+  /** background behind the page-header band (theme default header image) */
+  heroImage?: string | undefined;
+  storeName: string;
+};
+
 export type StorefrontTemplate = {
   id: string;
   /** shown in the admin dashboard picker (mirrored there — see SERVER lib/storefront-templates.ts) */
@@ -90,5 +102,7 @@ export type StorefrontTemplate = {
   Listing: ComponentType<ListingProps>;
   ProductDetail: ComponentType<ProductDetailProps>;
   Checkout: ComponentType<CheckoutProps>;
+  /** optional — a template without one sends /categories to /products */
+  Categories?: ComponentType<CategoriesProps>;
   NotFound: ComponentType;
 };

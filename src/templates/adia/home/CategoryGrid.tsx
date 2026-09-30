@@ -22,7 +22,7 @@ export function CategoryGrid({
 
   return (
     <Container className="mt-12 lg:mt-16">
-      <SectionHead title={section.title} subtitle={section.subtitle} href="/products" cta={section.ctaLabel} />
+      <SectionHead title={section.title} subtitle={section.subtitle} href="/categories" cta={section.ctaLabel} />
       <div className="grid gap-4 lg:gap-5">
         <div className="grid gap-4 sm:grid-cols-2 lg:gap-5">
           {big.map((t) => (
