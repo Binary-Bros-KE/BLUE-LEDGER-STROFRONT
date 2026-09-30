@@ -35,7 +35,7 @@ export function Footer({
   const link = "text-left text-[14px] text-on-secondary-body transition-colors hover:text-on-secondary";
 
   return (
-    <footer className="mt-14 bg-secondary pt-12 pb-6">
+    <footer className="mt-14 bg-secondary pt-12 pb-24 lg:pb-6">
       <Container>
         <div className="grid grid-cols-2 gap-x-8 gap-y-10 md:grid-cols-[1.6fr_1fr_1fr_1fr]">
           <div className="col-span-2 flex flex-col gap-4 md:col-span-1">

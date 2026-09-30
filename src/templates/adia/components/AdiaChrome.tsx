@@ -64,7 +64,8 @@ function Inner({ children, storeName, address, phone, categories, theme, preview
         <NavBar categories={categories} dealsHref={dealsHref} />
       </div>
 
-      <main className="min-h-[50vh] pb-20 lg:pb-0">{children}</main>
+      {/* room for the phone tab bar lives at the bottom of the footer, not between page and footer */}
+      <main className="min-h-[50vh]">{children}</main>
 
       <Footer
         storeName={storeName}

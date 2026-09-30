@@ -26,7 +26,8 @@ export function Home({ categories, theme, rows = {} }: HomeProps) {
   const rowHref = (r: AdiaProductRow, fallback: string) => (r.categoryId ? categoryHref(r.categoryId, categories) : fallback);
 
   return (
-    <div className="pb-2">
+    // The red newsletter band is the last section: sit it flush on the footer (cancels the footer's top gap).
+    <div className={c.newsletter.enabled ? "-mb-14" : "pb-2"}>
       <HeroCarousel slides={c.heroSlides} />
       <Features items={theme.trustBar} />
       <CategoryGrid section={c.categories} categories={categories} categoryImages={images} />
