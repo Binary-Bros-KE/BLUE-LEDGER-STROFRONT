@@ -25,7 +25,7 @@ export function Hero({ hero = {}, storeName }: { hero?: TrylistTheme["hero"]; st
 
   return (
     <section
-      className={`relative isolate flex min-h-[340px] items-center overflow-hidden sm:min-h-[420px] lg:min-h-[500px] ${
+      className={`relative isolate flex min-h-[255px] items-center overflow-hidden sm:min-h-[315px] lg:min-h-[375px] ${
         hero.backgroundImageUrl ? "bg-navy" : "bg-grid"
       }`}
     >
@@ -38,7 +38,7 @@ export function Hero({ hero = {}, storeName }: { hero?: TrylistTheme["hero"]; st
         </>
       ) : null}
 
-      <Container className="py-12 lg:py-16">
+      <Container className="py-8 lg:py-10">
         <div className="flex max-w-[620px] flex-col">
           <span className="inline-flex w-fit items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1px] text-amber lg:text-[12px]">
             <Diamond size={8} /> Authorised dealer · Up to 12-month warranty
@@ -49,7 +49,7 @@ export function Hero({ hero = {}, storeName }: { hero?: TrylistTheme["hero"]; st
             <span className="text-amber">.</span>
           </h1>
 
-          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
+          <div className="mt-6 flex flex-wrap gap-3 lg:mt-8">
             <Link
               href={primary.href}
               className="blk inline-flex items-center justify-center gap-2 bg-blue px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[1.6px] text-on-primary"
