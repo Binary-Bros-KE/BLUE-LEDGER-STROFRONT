@@ -129,7 +129,7 @@ export function ProductCard({ product }: { product: Product }) {
             className={`hidden h-11 w-11 flex-none place-items-center border-[1.5px] transition-shadow duration-[140ms] lg:grid ${
               soldOut
                 ? "border-slate-dim text-slate-dim"
-                : "border-navy text-navy group-hover:shadow-[4px_4px_0_var(--brand-accent)]"
+                : "border-navy text-navy"
             }`}
           >
             <FiMaximize2 size={16} />

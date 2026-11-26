@@ -252,18 +252,11 @@
   background-image: repeating-linear-gradient(135deg, rgba(255, 255, 255, 0.07) 0 6px, transparent 6px 12px);
 }
 
-/* The ONE shadow in the system — a hard accent offset block. Never blur, never rgba. */
-.blk {
-  box-shadow: 5px 5px 0 var(--brand-accent);
-}
-.blk-sm {
-  box-shadow: 4px 4px 0 var(--brand-accent);
-}
-/* Spec §6 — .blk CTAs on :active translate 2px and shrink the shadow. */
+/* Primary CTAs. They used to carry a hard amber offset block (box-shadow) — removed at the client's
+ * request (2026-11-26): buttons are flat now. The class stays so every CTA keeps its press nudge. */
 .blk:active,
 .blk-sm:active {
-  transform: translate(2px, 2px);
-  box-shadow: 3px 3px 0 var(--brand-accent);
+  transform: translate(1px, 1px);
 }
 
 /* ─────────────────────────────────────────────────────────────────────────────
