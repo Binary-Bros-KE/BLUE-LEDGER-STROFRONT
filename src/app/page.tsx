@@ -134,7 +134,7 @@ export default async function Page() {
           dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
         />
       ) : null}
-      <T.Home products={products} categories={shell.categories} theme={shell.theme} sections={sections} rows={rows} />
+      <T.Home products={products} categories={shell.categories} theme={shell.theme} sections={sections} rows={rows} storeName={shell.storeName} />
     </T.Chrome>
   );
 }

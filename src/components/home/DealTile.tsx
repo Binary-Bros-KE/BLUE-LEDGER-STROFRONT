@@ -7,7 +7,8 @@ import { FiZap } from "@/components/shared/icons";
 
 const DEFAULT_TITLE = "Thermal printers\n25% off";
 
-// Spec §4 — hero right-rail tile 1. Red ground. On mobile it's a compact full-width strip.
+// Deal-of-the-week tile in FeatureCards (it was the hero's right rail until the hero became a plain
+// banner). Red ground.
 //
 // Client request: replaced the countdown timer with a real price-discount feature — the shop owner
 // sets a price + an offer price in the theme editor (DESKTOP's ThemePanel.tsx) and the discount
@@ -32,7 +33,7 @@ export function DealTile({ dealTile = {} }: { dealTile?: ThemeDealTile }) {
     : null;
 
   return (
-    <div className="relative flex flex-col gap-3 bg-red p-6 text-white lg:flex-1">
+    <div className="relative flex min-h-[260px] flex-col gap-3 bg-red p-6 text-white">
       <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.6px] text-white/85">
         <FiZap size={11} /> Deal of the week
       </span>

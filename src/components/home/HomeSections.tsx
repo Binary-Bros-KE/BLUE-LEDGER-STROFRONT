@@ -3,7 +3,7 @@ import type { Category, Product } from "@/lib/products";
 import type { TrylistTheme } from "@/lib/theme";
 import { CategoryGrid } from "./CategoryGrid";
 import { CategorySection } from "./CategorySection";
-import { Features } from "./Features";
+import { FeatureCards } from "./FeatureCards";
 import { Hero } from "./Hero";
 import { Newsletter } from "./Newsletter";
 import { ProductGrid } from "./ProductGrid";
@@ -24,18 +24,20 @@ export function HomeSections({
   categories,
   theme,
   sections,
+  storeName,
 }: {
   products: Product[];
   categories: Category[];
   theme: TrylistTheme;
   /** Curated category rows (themeJson.productSections, resolved + fetched in page.tsx). */
   sections: HomeProductSection[];
+  storeName?: string;
 }) {
   const curated = sections.filter((s) => s.products.length > 0);
 
   return (
     <>
-      <Hero hero={theme.hero} dealTile={theme.dealTile} tradeTile={theme.tradeTile} />
+      <Hero hero={theme.hero} storeName={storeName} />
       <TrustBar items={theme.trustBar} />
       <CategoryGrid categories={categories} images={theme.categoryImages} />
 
@@ -50,15 +52,19 @@ export function HomeSections({
               products={s.products}
               alt={i % 2 === 1}
             />
-            {i < curated.length - 1 ? <SectionDivider /> : null}
+            {/* the promo cards sit right after the first product row */}
+            {i === 0 ? <FeatureCards theme={theme} /> : null}
+            {i > 0 && i < curated.length - 1 ? <SectionDivider /> : null}
           </Fragment>
         ))
       ) : (
-        <ProductGrid products={products} />
+        <>
+          <ProductGrid products={products} />
+          <FeatureCards theme={theme} />
+        </>
       )}
 
       <StoryRows rows={theme.story} />
-      <Features />
       <Newsletter />
     </>
   );

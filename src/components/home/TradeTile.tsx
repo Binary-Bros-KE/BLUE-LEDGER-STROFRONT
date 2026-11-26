@@ -5,8 +5,8 @@ const DEFAULT_CATEGORY_LABEL = "Trade accounts";
 const DEFAULT_TITLE = "Buying for a whole branch?";
 const DEFAULT_BODY = "Tiered pricing, 30-day terms and LPO invoicing for registered businesses.";
 
-// Spec §4 — hero right-rail tile 2. Cream ground. Hidden on mobile (spec §4 Hero: mobile stack
-// ends with the red deal row, no trade tile).
+// Featured-category tile in FeatureCards (it was the hero's right rail, hidden on mobile, until the
+// hero became a plain banner). Cream ground.
 //
 // Client request: a single featured category highlight, not literally a "trade accounts" pitch —
 // categoryLabel replaces that kicker text with whichever category the shop owner wants to surface
@@ -21,7 +21,7 @@ export function TradeTile({ tradeTile = {} }: { tradeTile?: ThemeTradeTile }) {
   };
 
   return (
-    <div className="relative hidden flex-col gap-3 bg-cream p-6 lg:flex lg:flex-1">
+    <div className="relative flex min-h-[260px] flex-col gap-3 bg-cream p-6">
       <span className="flex items-center gap-1.5 font-mono text-[10px] uppercase tracking-[1.6px] text-green">
         <Diamond size={9} /> {categoryLabel}
       </span>

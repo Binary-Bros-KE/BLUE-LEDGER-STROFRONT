@@ -28,6 +28,7 @@ export type HomeProps = {
   sections: HomeProductSection[];
   /** the template's own product rows (StorefrontTemplate.homeRows), fetched by the route, by key */
   rows?: Record<string, Product[]>;
+  storeName?: string;
 };
 
 /** A product row a template's home page asks the route to fetch. */
