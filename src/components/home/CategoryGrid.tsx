@@ -21,7 +21,9 @@ export function CategoryGrid({
   if (categories.length === 0) return null;
 
   return (
-    <section className="bg-white py-14">
+    // almost no bottom padding: the next section's own top padding is the gap (client request —
+    // the categories → first product row gap was twice what it should be)
+    <section className="bg-white pb-1 pt-14 lg:pb-0">
       <Container>
         <SectionHead
           index="01"
