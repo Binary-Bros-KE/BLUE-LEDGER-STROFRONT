@@ -81,6 +81,7 @@ export function ProductDetail({
               ...(categoryName && catSlug ? [{ label: categoryName, href: `/products/${catSlug}` }] : []),
               { label: product.name },
             ]}
+            onDark={Boolean(headerImage)}
           />
         </Container>
       </div>

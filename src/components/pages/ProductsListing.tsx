@@ -44,7 +44,7 @@ export function ProductsListing({
           </>
         ) : null}
         <Container className={`py-10 ${heroImage ? "text-white [&_a]:text-white/75 [&_a:hover]:text-white" : ""}`}>
-          <Breadcrumb trail={trail} />
+          <Breadcrumb trail={trail} onDark={Boolean(heroImage)} />
           <h1
             className={`mt-3 font-sans text-[28px] font-black leading-[1.05] tracking-[-1px] sm:text-[36px] lg:text-[44px] ${
               heroImage ? "text-white" : "text-navy"
