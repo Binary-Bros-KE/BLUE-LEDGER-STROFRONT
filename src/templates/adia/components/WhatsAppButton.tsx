@@ -1,7 +1,7 @@
 "use client";
 
 import { useWhatsAppOrder } from "@/lib/whatsapp-order";
-import { SOCIAL_ICONS } from "../social-icons";
+import { SOCIAL_ICONS } from "@/components/shared/social-icons";
 
 /**
  * "Order on WhatsApp" — opens WhatsApp with `message` ready to send to the shop. `icon` is the

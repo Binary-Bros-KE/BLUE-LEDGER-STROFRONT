@@ -1,5 +1,6 @@
 import { ContactButton } from "@/components/contact/ContactButton";
 import { Container } from "@/components/shared/Container";
+import { SOCIAL_ICONS, type SocialKey } from "@/components/shared/social-icons";
 import { Logo } from "./Logo";
 
 const COLUMNS: { head: string; links: string[] }[] = [
@@ -9,7 +10,12 @@ const COLUMNS: { head: string; links: string[] }[] = [
   { head: "Company", links: ["About Trylist", "Careers", "Terms of sale", "Privacy", "Delivery policy"] },
 ];
 
-const SOCIALS = ["IG", "X", "FB", "WA"];
+const SOCIALS: { key: SocialKey; label: string }[] = [
+  { key: "instagram", label: "Instagram" },
+  { key: "x", label: "X" },
+  { key: "facebook", label: "Facebook" },
+  { key: "whatsapp", label: "WhatsApp" },
+];
 const PAY = ["M-PESA", "VISA", "MASTERCARD", "INVOICE"];
 
 // Spec §4 — navy, 52px 40px 26px. Grid 1.5fr 1fr 1fr 1fr 1fr. Amber mono 10px heads.
@@ -45,11 +51,11 @@ export function Footer({
             <div className="flex gap-2">
               {SOCIALS.map((s) => (
                 <ContactButton
-                  key={s}
-                  ariaLabel={`${s} — contact us`}
-                  className="grid size-8 place-items-center border border-navy-600 font-mono text-[10px] font-bold uppercase tracking-[1px] text-body-on-navy transition-colors hover:border-amber hover:text-amber"
+                  key={s.key}
+                  ariaLabel={`${s.label} — contact us`}
+                  className="grid size-8 place-items-center border border-navy-600 text-body-on-navy transition-colors hover:border-amber hover:text-amber"
                 >
-                  {s}
+                  {SOCIAL_ICONS[s.key](15)}
                 </ContactButton>
               ))}
             </div>

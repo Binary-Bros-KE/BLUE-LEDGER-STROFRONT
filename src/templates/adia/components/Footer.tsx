@@ -7,7 +7,7 @@ import type { ThemeBrand } from "@/lib/theme";
 import { Container } from "./Container";
 import { Logo } from "./Logo";
 import type { AdiaHome } from "../content";
-import { SOCIAL_ICONS, socialHref, type SocialKey } from "../social-icons";
+import { SOCIAL_ICONS, socialHref, type SocialKey } from "@/components/shared/social-icons";
 
 const SOCIAL_ORDER: SocialKey[] = ["facebook", "instagram", "tiktok", "youtube", "x", "whatsapp"];
 

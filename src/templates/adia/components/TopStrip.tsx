@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { AdiaHome } from "../content";
-import { SOCIAL_ICONS, socialHref, type SocialKey } from "../social-icons";
+import { SOCIAL_ICONS, socialHref, type SocialKey } from "@/components/shared/social-icons";
 import { Container } from "./Container";
 
 const ORDER: SocialKey[] = ["facebook", "instagram", "tiktok", "youtube", "x", "whatsapp"];

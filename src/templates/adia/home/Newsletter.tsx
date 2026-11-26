@@ -5,7 +5,7 @@ import { FiCheck } from "@/components/shared/icons";
 import { whatsappLink } from "@/lib/contact-links";
 import type { AdiaHome } from "../content";
 import { Container } from "../components/Container";
-import { SOCIAL_ICONS } from "../social-icons";
+import { SOCIAL_ICONS } from "@/components/shared/social-icons";
 
 function MailIcon() {
   return (
