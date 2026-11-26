@@ -38,7 +38,6 @@ export function HomeSections({
   return (
     <>
       <Hero hero={theme.hero} storeName={storeName} />
-      <TrustBar items={theme.trustBar} />
       <CategoryGrid categories={categories} images={theme.categoryImages} />
 
       {curated.length > 0 ? (
@@ -65,6 +64,7 @@ export function HomeSections({
       )}
 
       <StoryRows rows={theme.story} />
+      <TrustBar items={theme.trustBar} />
       <Newsletter />
     </>
   );

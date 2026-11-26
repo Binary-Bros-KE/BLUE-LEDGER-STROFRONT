@@ -3,9 +3,11 @@ import { Diamond, FiCreditCard, FiRepeat, FiZap } from "@/components/shared/icon
 import { trustIcon } from "@/components/shared/trust-icons";
 import type { ThemeTrustItem } from "@/lib/theme";
 
-// Spec §4 — white, 4 equal cells divided by hairlines, bottom hairline. Each eyebrow a different
-// accent. Mobile: 2×2. The shop can replace the wording (POS Online Store tab → Trust bar); the
-// defaults below are the original Trylist copy.
+// Up to 4 quiet, solid cream cards near the bottom of the home page (client request 2026-11-26:
+// separate cards, kept low-key so they don't pull attention from products — it used to be a
+// hairline strip under the hero). Each eyebrow a different accent. Mobile: 2×2. The shop can
+// replace the wording (POS Online Store tab → Trust bar); the defaults below are the original
+// Trylist copy.
 const TONES = ["text-blue", "text-red", "text-green", "text-amber-ink"];
 
 const DEFAULT_CELLS = [
@@ -21,19 +23,11 @@ export function TrustBar({ items = [] }: { items?: ThemeTrustItem[] }) {
       ? items.map((it) => ({ mark: trustIcon(it.icon, 11), eyebrow: it.title, line: it.subtitle ?? "" }))
       : DEFAULT_CELLS;
   return (
-    <div className="border-b border-line bg-white">
+    <section className="border-t border-line bg-white pt-10 lg:pt-12">
       <Container>
-        <div className="grid grid-cols-2 md:grid-cols-4">
+        <div className="grid grid-cols-2 gap-3 md:grid-cols-4 md:gap-[18px]">
           {cells.map((c, i) => (
-            <div
-              key={`${c.eyebrow}-${i}`}
-              className={[
-                "flex flex-col gap-1.5 py-5 md:px-6",
-                i % 2 === 1 ? "border-l border-line pl-4 md:pl-6" : "",
-                i > 0 ? "md:border-l md:border-line" : "",
-                i < 2 ? "border-b border-line md:border-b-0" : "",
-              ].join(" ")}
-            >
+            <div key={`${c.eyebrow}-${i}`} className="flex flex-col gap-1.5 bg-cream p-4 md:p-5">
               <span className={`flex items-center gap-1.5 font-mono text-[11px] uppercase tracking-[2px] ${TONES[i % TONES.length]}`}>
                 {c.mark}
                 {c.eyebrow}
@@ -43,6 +37,6 @@ export function TrustBar({ items = [] }: { items?: ThemeTrustItem[] }) {
           ))}
         </div>
       </Container>
-    </div>
+    </section>
   );
 }
