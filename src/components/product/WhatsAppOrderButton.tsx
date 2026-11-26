@@ -35,7 +35,7 @@ export function WhatsAppOrderButton({
         variant === "icon" ? "size-9 lg:size-11" : "h-12 px-6 text-[12px] tracking-[1.6px]"
       } ${className}`}
     >
-      {SOCIAL_ICONS.whatsapp(variant === "icon" ? 18 : 18)}
+      {SOCIAL_ICONS.whatsapp(18)}
       {variant === "full" ? label : null}
     </a>
   );
