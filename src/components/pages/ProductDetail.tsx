@@ -8,6 +8,7 @@ import { ProductCard } from "@/components/product/ProductCard";
 import { Carousel } from "@/components/shared/Carousel";
 import { Rating } from "@/components/product/Rating";
 import { StockLine } from "@/components/product/StockLine";
+import { WhatsAppOrderButton } from "@/components/product/WhatsAppOrderButton";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
 import { Container } from "@/components/shared/Container";
 import { Placeholder } from "@/components/shared/Placeholder";
@@ -17,6 +18,7 @@ import { useVariantChoice } from "@/lib/variant-choice";
 import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
 import { slugify } from "@/lib/slug";
+import { productOrderMessage } from "@/lib/whatsapp-order";
 
 export function ProductDetail({
   product,
@@ -261,6 +263,20 @@ export function ProductDetail({
                   label={favourite ? "Remove from favourites" : "Add to favourites"}
                 />
               </div>
+
+              <WhatsAppOrderButton
+                className="mt-3"
+                label={soldOut ? "Ask about it on WhatsApp" : "Order on WhatsApp"}
+                message={(origin) =>
+                  productOrderMessage({
+                    name: product.name,
+                    options: vc.selected,
+                    qty: soldOut ? undefined : qty,
+                    price: `${vc.isFromPrice ? "From " : ""}${fmt(vc.priceCents)}`,
+                    url: origin ? `${origin}/product/${encodeURIComponent(product.id)}` : undefined,
+                  })
+                }
+              />
 
               <p className="mt-6 font-mono text-[10px] uppercase leading-[1.7] tracking-[1.2px] text-slate">
                 M-Pesa · Card · Trade invoice · Delivered countrywide

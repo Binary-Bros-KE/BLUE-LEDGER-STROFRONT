@@ -12,6 +12,7 @@ import { TopBar } from "@/components/layout/TopBar";
 import { useCart } from "@/lib/cart";
 import { CurrencyProvider } from "@/lib/currency";
 import type { Category } from "@/lib/products";
+import { WhatsAppOrderProvider } from "@/lib/whatsapp-order";
 import type { TrylistTheme } from "@/lib/theme";
 
 export type StoreShell = {
@@ -39,7 +40,11 @@ export function StoreChrome({ children, ...shell }: StoreShell & { children: Rea
   return (
     <CurrencyProvider currency={shell.currency}>
       <ContactProvider contact={shell.theme.contact} fallbackPhone={shell.phone}>
-        <ChromeInner {...shell}>{children}</ChromeInner>
+        {/* "Order on WhatsApp" goes to the shop's sales WhatsApp (else support) — deliberately never
+            the Business Profile phone, which can be the owner's personal number */}
+        <WhatsAppOrderProvider number={shell.theme.contact.whatsappSalesNumber || shell.theme.contact.whatsappSupportNumber}>
+          <ChromeInner {...shell}>{children}</ChromeInner>
+        </WhatsAppOrderProvider>
       </ContactProvider>
     </CurrencyProvider>
   );

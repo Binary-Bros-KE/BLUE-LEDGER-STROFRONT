@@ -4,6 +4,8 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import type { Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
+import { useMoney } from "@/lib/currency";
+import { productOrderMessage } from "@/lib/whatsapp-order";
 import { Placeholder } from "@/components/shared/Placeholder";
 import { FiMaximize2 } from "@/components/shared/icons";
 import { Badge } from "./Badge";
@@ -11,6 +13,7 @@ import { FavouriteButton } from "./FavouriteButton";
 import { PriceRow } from "./PriceRow";
 import { Rating } from "./Rating";
 import { StockLine } from "./StockLine";
+import { WhatsAppOrderButton } from "./WhatsAppOrderButton";
 
 /**
  * Spec §4 — the centrepiece. White, 1px solid line, no radius, no shadow.
@@ -21,6 +24,8 @@ import { StockLine } from "./StockLine";
  */
 export function ProductCard({ product }: { product: Product }) {
   const { favourites, toggleFavourite, addToCart } = useCart();
+  const fmt = useMoney();
+  const fromRange = Boolean(product.variantSummary && product.variantSummary.minPriceCents !== product.variantSummary.maxPriceCents);
   const favourite = favourites.has(product.id);
   const soldOut = product.stockState === "out_of_stock";
   const image = product.images?.[0];
@@ -134,6 +139,18 @@ export function ProductCard({ product }: { product: Product }) {
           >
             <FiMaximize2 size={16} />
           </Link>
+
+          <WhatsAppOrderButton
+            variant="icon"
+            label={`Order ${product.name} on WhatsApp`}
+            message={(origin) =>
+              productOrderMessage({
+                name: product.name,
+                price: `${fromRange ? "From " : ""}${fmt(product.variantSummary ? product.variantSummary.minPriceCents : product.priceCents)}`,
+                url: origin ? origin + href : undefined,
+              })
+            }
+          />
         </div>
       </div>
     </article>
