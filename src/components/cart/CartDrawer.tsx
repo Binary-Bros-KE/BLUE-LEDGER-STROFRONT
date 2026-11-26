@@ -3,7 +3,10 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import type { CartLine } from "@/lib/products";
+import { WhatsAppOrderButton } from "@/components/product/WhatsAppOrderButton";
 import { FiPlay, FiShoppingCart, FiX } from "@/components/shared/icons";
+import { useMoney } from "@/lib/currency";
+import { cartOrderMessage, useWhatsAppOrder } from "@/lib/whatsapp-order";
 import { CartLineItem } from "./CartLineItem";
 import { CartSummary } from "./CartSummary";
 
@@ -24,6 +27,8 @@ export function CartDrawer({
   onQty: (id: string, qty: number) => void;
   onRemove: (id: string) => void;
 }) {
+  const fmt = useMoney();
+  const wa = useWhatsAppOrder();
   useEffect(() => {
     if (!open) return;
     const prev = document.body.style.overflow;
@@ -109,13 +114,19 @@ export function CartDrawer({
               <FiPlay size={11} /> Checkout
             </Link>
           ) : null}
-          <button
-            type="button"
-            onClick={onClose}
-            className="border-[1.5px] border-navy py-3 font-mono text-[11px] font-bold uppercase tracking-[1.4px] text-navy transition-colors hover:bg-navy hover:text-white"
-          >
-            {empty ? "Start shopping" : "Continue shopping"}
-          </button>
+          {/* the whole cart as one WhatsApp order; without a shop WhatsApp number (or with an empty
+              cart) the plain "keep shopping" button stays */}
+          {!empty && wa.enabled ? (
+            <WhatsAppOrderButton className="w-full" label="Order via WhatsApp" message={() => cartOrderMessage(lines, fmt)} />
+          ) : (
+            <button
+              type="button"
+              onClick={onClose}
+              className="border-[1.5px] border-navy py-3 font-mono text-[11px] font-bold uppercase tracking-[1.4px] text-navy transition-colors hover:bg-navy hover:text-white"
+            >
+              {empty ? "Start shopping" : "Continue shopping"}
+            </button>
+          )}
         </div>
       </div>
     </div>
