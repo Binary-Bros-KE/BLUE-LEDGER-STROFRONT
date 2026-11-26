@@ -21,7 +21,7 @@ export function Hero({ hero = {}, storeName }: { hero?: TrylistTheme["hero"]; st
     href: secondaryHref && secondaryHref !== "#" ? secondaryHref : null,
   };
   const secondaryClass =
-    "inline-flex items-center justify-center border-[1.5px] border-cream px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[1.6px] text-cream transition-colors hover:bg-cream hover:text-navy";
+    "inline-flex items-center justify-center border-[1.5px] border-cream px-4 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[1.2px] text-cream transition-colors hover:bg-cream hover:text-navy sm:px-6 sm:py-3.5 sm:text-[11px] sm:tracking-[1.6px]";
 
   return (
     <section
@@ -52,7 +52,7 @@ export function Hero({ hero = {}, storeName }: { hero?: TrylistTheme["hero"]; st
           <div className="mt-6 flex flex-wrap gap-3 lg:mt-8">
             <Link
               href={primary.href}
-              className="blk inline-flex items-center justify-center gap-2 bg-blue px-6 py-3.5 font-mono text-[11px] font-bold uppercase tracking-[1.6px] text-on-primary"
+              className="blk inline-flex items-center justify-center gap-2 bg-blue px-4 py-2.5 font-mono text-[10px] font-bold uppercase tracking-[1.2px] text-on-primary sm:px-6 sm:py-3.5 sm:text-[11px] sm:tracking-[1.6px]"
             >
               <FiPlay size={11} /> {primary.label}
             </Link>
