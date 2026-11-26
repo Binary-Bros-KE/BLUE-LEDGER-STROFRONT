@@ -53,7 +53,7 @@ export function HomeSections({
             />
             {/* the promo cards sit right after the first product row */}
             {i === 0 ? <FeatureCards theme={theme} /> : null}
-            {i > 0 && i < curated.length - 1 ? <SectionDivider /> : null}
+            {i > 0 && i < curated.length - 1 ? <SectionDivider label={storeName} /> : null}
           </Fragment>
         ))
       ) : (
