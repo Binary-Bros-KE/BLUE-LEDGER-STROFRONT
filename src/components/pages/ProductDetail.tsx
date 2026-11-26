@@ -99,7 +99,7 @@ export function ProductDetail({
                   <img
                     src={images[activeImg]}
                     alt={product.name}
-                    className="ph-light aspect-square w-full object-cover"
+                    className="ph-light aspect-square w-full object-contain p-4"
                   />
                 ) : (
                   <Placeholder caption={product.imageCaption} className="aspect-square w-full" />
@@ -116,7 +116,7 @@ export function ProductDetail({
                       className={`size-16 flex-none border ${i === activeImg ? "border-navy" : "border-line"}`}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={src} alt="" className="ph-light size-full object-cover" />
+                      <img src={src} alt="" className="ph-light size-full object-contain p-1" />
                     </button>
                   ))}
                 </div>

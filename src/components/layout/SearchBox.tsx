@@ -121,7 +121,7 @@ export function SearchBox({
                     <span className="size-10 flex-none border border-line">
                       {p.image ? (
                         // eslint-disable-next-line @next/next/no-img-element
-                        <img src={p.image} alt="" className="ph-light size-full object-cover" />
+                        <img src={p.image} alt="" className="ph-light size-full object-contain p-0.5" />
                       ) : (
                         <span className="ph-light flex size-full items-center justify-center font-mono text-[7px] uppercase text-slate">
                           IMG
