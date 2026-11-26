@@ -7,7 +7,6 @@ import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
 import { productOrderMessage } from "@/lib/whatsapp-order";
 import { Placeholder } from "@/components/shared/Placeholder";
-import { FiMaximize2 } from "@/components/shared/icons";
 import { Badge } from "./Badge";
 import { FavouriteButton } from "./FavouriteButton";
 import { PriceRow } from "./PriceRow";
@@ -127,18 +126,6 @@ export function ProductCard({ product }: { product: Product }) {
             {soldOut ? "NOTIFY ME" : added ? "Added!" : "ADD TO CART"}
           </button>
           )}
-
-          <Link
-            href={href}
-            aria-label={`View ${product.name}`}
-            className={`hidden h-11 w-11 flex-none place-items-center border-[1.5px] transition-shadow duration-[140ms] lg:grid ${
-              soldOut
-                ? "border-slate-dim text-slate-dim"
-                : "border-navy text-navy"
-            }`}
-          >
-            <FiMaximize2 size={16} />
-          </Link>
 
           <WhatsAppOrderButton
             variant="icon"
