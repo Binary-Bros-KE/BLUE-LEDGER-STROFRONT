@@ -4,6 +4,7 @@
 
 import { StoreChrome } from "@/components/StoreChrome";
 import { HomeSections } from "@/components/home/HomeSections";
+import { CategoriesView } from "@/components/pages/CategoriesView";
 import { CheckoutView } from "@/components/pages/CheckoutView";
 import { ProductDetail } from "@/components/pages/ProductDetail";
 import { ProductsListing } from "@/components/pages/ProductsListing";
@@ -23,5 +24,6 @@ export const classicTemplate: StorefrontTemplate = {
   Listing: ProductsListing,
   ProductDetail,
   Checkout: CheckoutView,
+  Categories: CategoriesView,
   NotFound: ClassicNotFound,
 };
