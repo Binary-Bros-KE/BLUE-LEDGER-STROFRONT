@@ -7,7 +7,8 @@ import { FiArrowRight } from "@/components/shared/icons";
 import { slugify } from "@/lib/slug";
 import type { Category } from "@/lib/products";
 
-// Browse-by-category — a horizontal carousel (4 tiles per slide on phones, up to 8 on desktop).
+// Browse-by-category — a horizontal carousel (2 tiles per slide on phones, 5 on laptops, 6 on wide
+// screens) — sized so a two-word name like "Best Sellers" plus its count fits on one line.
 // Every tile has an image on every breakpoint. `images` (themeJson.categoryImages, keyed by id)
 // replaces the hatch placeholder when set.
 export function CategoryGrid({
@@ -37,7 +38,7 @@ export function CategoryGrid({
         />
 
         <div className="mt-9">
-          <Carousel perView="4-6-8" ariaLabel="Product categories">
+          <Carousel perView="2-3-5-6" ariaLabel="Product categories">
             {categories.map((cat) => (
               <Link
                 key={cat.id}

@@ -14,7 +14,7 @@ import { FiArrowRight } from "@/components/shared/icons";
  *    keyboard focus, when the tab is hidden, and under prefers-reduced-motion.
  *  - Mouse drag-to-scrub; native touch swipe + momentum on phones. `lg` arrows nudge one slide.
  */
-type PerView = "2-3-4" | "2-2-3" | "1-2-4" | "3-4-6" | "4-6-8";
+type PerView = "2-3-4" | "2-2-3" | "1-2-4" | "3-4-6" | "2-3-5-6";
 
 const BASIS: Record<PerView, string> = {
   // gap is 12px (gap-3): basis = (100% − (n−1)·12px) / n
@@ -22,7 +22,9 @@ const BASIS: Record<PerView, string> = {
   "2-2-3": "basis-[calc((100%-12px)/2)] md:basis-[calc((100%-12px)/2)] lg:basis-[calc((100%-24px)/3)]",
   "1-2-4": "basis-full sm:basis-[calc((100%-12px)/2)] lg:basis-[calc((100%-36px)/4)]",
   "3-4-6": "basis-[calc((100%-24px)/3)] md:basis-[calc((100%-36px)/4)] lg:basis-[calc((100%-60px)/6)]",
-  "4-6-8": "basis-[calc((100%-36px)/4)] md:basis-[calc((100%-60px)/6)] lg:basis-[calc((100%-84px)/8)]",
+  // the last number is xl (≥1280px)
+  "2-3-5-6":
+    "basis-[calc((100%-12px)/2)] md:basis-[calc((100%-24px)/3)] lg:basis-[calc((100%-48px)/5)] xl:basis-[calc((100%-60px)/6)]",
 };
 
 export function Carousel({
