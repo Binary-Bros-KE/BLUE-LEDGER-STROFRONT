@@ -16,10 +16,10 @@ import { WhatsAppOrderButton } from "./WhatsAppOrderButton";
 
 /**
  * Spec §4 — the centrepiece. White, 1px solid line, no radius, no shadow.
- * Hover (spec §6): border line→navy, ADD TO CART→blue, quick-view square gains the amber offset
- * block. No lift, no scale. 140ms.
- * Responsive (spec §5): full card ≥ lg (172px thumb, rating, quick-view). Below lg it's the
- * compact card — 110px thumb, 13px name, 16px price, full-width ADD TO CART, no quick-view / rating.
+ * Hover (spec §6): border line→navy, ADD TO CART→blue. No lift, no scale. 140ms.
+ * Actions: ADD TO CART + the WhatsApp order square (image and name open the product — there's no
+ * separate quick-view button). Responsive (spec §5): full card ≥ lg (172px thumb, rating). Below
+ * lg it's the compact card — 110px thumb, 13px name, 16px price, no rating.
  */
 export function ProductCard({ product }: { product: Product }) {
   const { favourites, toggleFavourite, addToCart } = useCart();
