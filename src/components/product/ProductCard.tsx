@@ -7,6 +7,7 @@ import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
 import { productOrderMessage } from "@/lib/whatsapp-order";
 import { Placeholder } from "@/components/shared/Placeholder";
+import { FiShoppingCart } from "@/components/shared/icons";
 import { Badge } from "./Badge";
 import { FavouriteButton } from "./FavouriteButton";
 import { PriceRow } from "./PriceRow";
@@ -123,7 +124,19 @@ export function ProductCard({ product }: { product: Product }) {
                   : "bg-navy text-white group-hover:bg-blue group-hover:text-on-primary"
             }`}
           >
-            {soldOut ? "NOTIFY ME" : added ? "Added!" : "ADD TO CART"}
+            {soldOut ? (
+              "NOTIFY ME"
+            ) : added ? (
+              "Added!"
+            ) : (
+              <>
+                {/* phones: a short "[cart] Add" so it doesn't wrap beside the WhatsApp square */}
+                <span className="flex items-center gap-1.5 lg:hidden">
+                  <FiShoppingCart size={14} /> Add
+                </span>
+                <span className="hidden lg:inline">ADD TO CART</span>
+              </>
+            )}
           </button>
           )}
 
