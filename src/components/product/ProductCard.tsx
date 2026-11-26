@@ -107,7 +107,7 @@ export function ProductCard({ product }: { product: Product }) {
           {product.variantSummary ? (
             <Link
               href={href}
-              className="flex h-11 flex-1 items-center justify-center bg-navy px-3 font-mono text-[11px] font-bold uppercase tracking-[1.4px] text-white transition-colors duration-[140ms] group-hover:bg-blue group-hover:text-on-primary"
+              className="flex h-9 flex-1 items-center justify-center bg-navy px-3 font-mono lg:h-11 text-[11px] font-bold uppercase tracking-[1.4px] text-white transition-colors duration-[140ms] group-hover:bg-blue group-hover:text-on-primary"
             >
               CHOOSE OPTIONS
             </Link>
@@ -116,7 +116,7 @@ export function ProductCard({ product }: { product: Product }) {
             type="button"
             onClick={handleAdd}
             aria-live="polite"
-            className={`flex h-11 flex-1 items-center justify-center px-3 font-mono text-[11px] font-bold uppercase tracking-[1.4px] transition-colors duration-[140ms] ${
+            className={`flex h-9 flex-1 lg:h-11 items-center justify-center px-3 font-mono text-[11px] font-bold uppercase tracking-[1.4px] transition-colors duration-[140ms] ${
               soldOut
                 ? "border-[1.5px] border-slate-dim text-slate-dim"
                 : added

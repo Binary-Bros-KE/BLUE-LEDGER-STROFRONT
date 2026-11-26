@@ -32,10 +32,10 @@ export function WhatsAppOrderButton({
       aria-label={variant === "icon" ? label : undefined}
       title={variant === "icon" ? label : undefined}
       className={`inline-flex flex-none items-center justify-center gap-2 bg-[#25D366] font-mono font-bold uppercase text-white transition-colors hover:bg-[#1EBE5A] ${
-        variant === "icon" ? "size-11" : "h-12 px-6 text-[12px] tracking-[1.6px]"
+        variant === "icon" ? "size-9 lg:size-11" : "h-12 px-6 text-[12px] tracking-[1.6px]"
       } ${className}`}
     >
-      {SOCIAL_ICONS.whatsapp(variant === "icon" ? 20 : 18)}
+      {SOCIAL_ICONS.whatsapp(variant === "icon" ? 18 : 18)}
       {variant === "full" ? label : null}
     </a>
   );
