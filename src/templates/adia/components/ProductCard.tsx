@@ -2,27 +2,13 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { FaHeart, FaStar, FiHeart, FiShoppingCart } from "@/components/shared/icons";
+import { FaHeart, FiHeart, FiShoppingCart } from "@/components/shared/icons";
 import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
 import { productOrderMessage } from "@/lib/whatsapp-order";
 import { WhatsAppButton } from "./WhatsAppButton";
 import { productPath } from "@/lib/product-url";
-
-export function Stars({ rating, reviews }: { rating: number; reviews?: number }) {
-  const filled = Math.round(rating);
-  return (
-    <div className="flex items-center gap-1.5">
-      <span className="flex items-center gap-[1px] text-accent-ink" aria-label={`${rating.toFixed(1)} out of 5`}>
-        {Array.from({ length: 5 }).map((_, i) => (
-          <FaStar key={i} size={12} className={i < filled ? "" : "opacity-25"} />
-        ))}
-      </span>
-      {reviews !== undefined ? <span className="text-[12px] text-ink-faint">({reviews})</span> : null}
-    </div>
-  );
-}
 
 /** "-20%" when there's a compare-at price, else the product's own badge label. */
 function badgeFor(product: Product): string | null {
@@ -117,8 +103,6 @@ export function ProductCard({ product }: { product: Product }) {
             <span className="text-[12px] text-ink-faint line-through">{fmt(product.compareCents)}</span>
           ) : null}
         </div>
-
-        <Stars rating={product.rating} reviews={product.reviews} />
 
         <div className="mt-auto flex gap-2">
         {variants ? (

@@ -30,7 +30,9 @@ export function toThemeProduct(item: CatalogItem): Product {
     // The shop's online "was" price (only sent when it's above the real price) → strike-through + "-x%".
     compareCents: item.compareAtPriceCents ?? undefined,
     brand: item.brand ?? null,
-    // TODO(reviews): MOCK — no ratings/reviews in the data model yet. Not real numbers.
+    // TODO(reviews): MOCK — no ratings/reviews in the data model yet. Not real numbers, so NEVER
+    // rendered (and never in structured data): showing invented reviews is misrepresentation under
+    // Google Merchant Center policy. Wire real reviews in before displaying any rating again.
     rating: mockRating(item.id),
     reviews: mockReviews(item.id),
     stockState: item.stock,

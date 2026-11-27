@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getCatalog, getCategories, getStore } from "@/lib/shop-api";
 import { siteOrigin } from "@/lib/site-url";
 import { slugify } from "@/lib/slug";
+import { isProductMerchantReady, realImageUrls } from "@/lib/merchant-ready";
 import { productPath } from "@/lib/product-url";
 
 // Per shop (one deployment serves every tenant) — never cached across hosts.
@@ -10,7 +11,8 @@ export const dynamic = "force-dynamic";
 const PAGE_SIZE = 60; // SERVER /shop/catalog's max
 const MAX_PRODUCTS = 5000; // well past any real catalogue; keeps one sitemap file bounded
 
-/** Home, all-products, every category and every published product of THIS shop. */
+/** Home, all-products, every category and every merchant-ready product of THIS shop (lib/merchant-ready.ts —
+ * a product joins automatically once it has a photo, a price and a description). */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const store = await getStore().catch(() => null);
   if (!store) return [];
@@ -31,11 +33,13 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const batch = await getCatalog({ page, pageSize: PAGE_SIZE }).catch(() => null);
     if (!batch || batch.products.length === 0) break;
     for (const p of batch.products) {
+      if (!isProductMerchantReady(p)) continue;
       entries.push({
         url: origin + productPath(p),
+        ...(p.updatedAt ? { lastModified: p.updatedAt } : {}),
         changeFrequency: "weekly",
         priority: 0.6,
-        ...(p.images[0] ? { images: [p.images[0].url] } : {}),
+        images: realImageUrls(p).slice(0, 1),
       });
     }
     if (page * PAGE_SIZE >= batch.total) break;

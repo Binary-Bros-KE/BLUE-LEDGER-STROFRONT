@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound, permanentRedirect } from "next/navigation";
 import { toThemeProduct } from "@/lib/adapter";
 import { PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
+import { isProductMerchantReady, lowestPriceCents, productDescription, realImageUrls } from "@/lib/merchant-ready";
 import { productPath } from "@/lib/product-url";
 import { getCatalog, getProduct, getStore, ShopApiError } from "@/lib/shop-api";
 import { pageOpenGraph } from "@/lib/seo";
@@ -12,11 +13,13 @@ import type { CatalogItem } from "@/lib/types";
 
 export const dynamic = "force-dynamic";
 
-/** Prefer the curated description; fall back to the first paragraph block, then the quick specs. */
+/** Visible price as Google expects it: a plain decimal string, no symbols or separators. */
+const price = (cents: number) => (cents / 100).toFixed(2);
+
+/** Meta description: the product's plain-text description, else its quick specs. */
 function metaDescription(p: CatalogItem): string {
-  if (p.description?.trim()) return p.description.trim().slice(0, 300);
-  const para = p.content.blocks.find((b) => b.type !== "specs" && b.body)?.body;
-  if (para) return para.trim().slice(0, 300);
+  const text = productDescription(p);
+  if (text) return text.slice(0, 300);
   if (p.content.quickSpecs.length) return p.content.quickSpecs.join(" · ").slice(0, 300);
   return `Buy ${p.name} online.`;
 }
@@ -27,11 +30,15 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
     const [p, store] = await Promise.all([getProduct(id), getStore()]);
     const description = metaDescription(p);
     const url = productPath(p);
-    const images = p.images.slice(0, 4).map((i) => ({ url: i.url, alt: p.name }));
+    const images = realImageUrls(p).slice(0, 4).map((u) => ({ url: u, alt: p.name }));
+    const ready = isProductMerchantReady(p);
     return {
       title: p.name,
       description,
       alternates: { canonical: url },
+      // Incomplete products stay browsable but out of Google until they have a photo, a price and a
+      // description (lib/merchant-ready.ts) — they flip to indexable on the next request after that.
+      ...(ready ? {} : { robots: { index: false, follow: true } }),
       openGraph: pageOpenGraph(store, { url, title: p.name, description, images }),
       twitter: {
         card: images.length ? "summary_large_image" : "summary",
@@ -39,53 +46,62 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         description,
         ...(images.length ? { images: images.map((i) => i.url) } : {}),
       },
+      other: {
+        "product:price:amount": price(lowestPriceCents(p)),
+        "product:price:currency": store.currency || "KES",
+      },
     };
   } catch {
     return { title: "Product" };
   }
 }
 
-/** Product structured data for rich results — commerce fields (price/availability) plus the specs
- * as additionalProperty so the on-page list is machine-readable too. */
-function productJsonLd(p: CatalogItem, currency: string, url: string | null) {
+/** schema.org availability. Only stock actually on hand is InStock — a made-to-order item isn't ready
+ * to ship, so it's reported as OutOfStock (never InStock), as Merchant Center requires. */
+function availability(stock: CatalogItem["stock"]): string {
+  return stock === "in_stock" || stock === "low" ? "https://schema.org/InStock" : "https://schema.org/OutOfStock";
+}
+
+/** Product structured data (only for merchant-ready products): name = the page's <h1>, the real
+ * photos, a plain-text description, the stable product id as sku/productID (survives a rename that
+ * changes the slug), the brand (else the shop's name), and an Offer whose price and availability
+ * match what the page shows. No aggregateRating — the site has no real reviews yet. */
+function productJsonLd(p: CatalogItem, currency: string, url: string, storeName: string) {
   const specs = [
     ...p.content.quickSpecs,
     ...p.content.blocks.filter((b) => b.type === "specs").flatMap((b) => b.items),
   ];
+  const common = {
+    priceCurrency: currency || "KES",
+    availability: availability(p.stock),
+    itemCondition: "https://schema.org/NewCondition",
+    url,
+  };
   return {
-    "@context": "https://schema.org",
+    "@context": "https://schema.org/",
     "@type": "Product",
     name: p.name,
-    ...(p.description ? { description: p.description } : {}),
-    ...(p.images.length ? { image: p.images.map((i) => i.url) } : {}),
+    image: realImageUrls(p),
+    description: productDescription(p),
+    sku: p.id,
+    productID: p.id,
     ...(p.categoryName ? { category: p.categoryName } : {}),
-    ...(p.brand ? { brand: { "@type": "Brand", name: p.brand } } : {}),
+    brand: { "@type": "Brand", name: p.brand?.trim() || storeName },
     ...(specs.length
       ? { additionalProperty: specs.slice(0, 30).map((s) => ({ "@type": "PropertyValue", name: s })) }
       : {}),
-    // Shared-stock variants are one product at several prices → an AggregateOffer with the range. (A
-    // separate-stock variant's page is its own product, so it keeps its own single Offer.)
+    // Shared-stock variants are one product at several prices ("From …" on the page) → an
+    // AggregateOffer with the range. A separate-stock variant's page is its own product → one Offer.
     offers:
       p.variants?.mode === "shared" && p.variantSummary
         ? {
             "@type": "AggregateOffer",
-            lowPrice: (p.variantSummary.minPriceCents / 100).toFixed(2),
-            highPrice: (p.variantSummary.maxPriceCents / 100).toFixed(2),
+            lowPrice: price(p.variantSummary.minPriceCents),
+            highPrice: price(p.variantSummary.maxPriceCents),
             offerCount: p.variantSummary.count,
-            priceCurrency: currency || "KES",
-            availability: p.stock === "out_of_stock" ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
-            ...(url ? { url } : {}),
+            ...common,
           }
-        : {
-            "@type": "Offer",
-            price: (p.priceCents / 100).toFixed(2),
-            priceCurrency: currency || "KES",
-            availability:
-              p.stock === "out_of_stock"
-                ? "https://schema.org/OutOfStock"
-                : "https://schema.org/InStock",
-            ...(url ? { url } : {}),
-          },
+        : { "@type": "Offer", price: price(p.priceCents), ...common },
   };
 }
 
@@ -132,11 +148,14 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   return (
     <T.Chrome {...shell}>
-      <script
-        type="application/ld+json"
-        // eslint-disable-next-line react/no-danger
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(item, shell.currency, canonical)) }}
-      />
+      {/* Server-rendered in the initial HTML, and only for merchant-ready products */}
+      {isProductMerchantReady(item) ? (
+        <script
+          type="application/ld+json"
+          // eslint-disable-next-line react/no-danger
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(productJsonLd(item, shell.currency, canonical, shell.storeName)) }}
+        />
+      ) : null}
       <T.ProductDetail
         product={product}
         related={related}

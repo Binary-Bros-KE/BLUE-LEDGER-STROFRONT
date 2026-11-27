@@ -12,7 +12,6 @@ import { FiShoppingCart } from "@/components/shared/icons";
 import { Badge } from "./Badge";
 import { FavouriteButton } from "./FavouriteButton";
 import { PriceRow } from "./PriceRow";
-import { Rating } from "./Rating";
 import { StockLine } from "./StockLine";
 import { WhatsAppOrderButton } from "./WhatsAppOrderButton";
 
@@ -87,10 +86,6 @@ export function ProductCard({ product }: { product: Product }) {
             {product.name}
           </Link>
         </h3>
-
-        <div className="hidden lg:block">
-          <Rating rating={product.rating} reviews={product.reviews} muted={soldOut} />
-        </div>
 
         {product.variantSummary && product.variantSummary.minPriceCents !== product.variantSummary.maxPriceCents ? (
           <span className="-mb-1 font-mono text-[10px] uppercase tracking-[1.2px] text-slate">From</span>

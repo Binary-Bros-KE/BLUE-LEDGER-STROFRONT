@@ -64,6 +64,8 @@ export type CatalogItem = {
   compareAtPriceCents?: number | null;
   /** set when the product has variants: count + price range (cards show "From …") */
   variantSummary?: { count: number; minPriceCents: number; maxPriceCents: number } | null;
+  /** when the product was last edited (ISO) — sitemap <lastmod>. Absent on an older SERVER. */
+  updatedAt?: string;
   /** product page only: every variant with its own price and stock */
   variants?: ShopVariants | null;
 };

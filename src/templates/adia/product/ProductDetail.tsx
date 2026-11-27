@@ -25,7 +25,7 @@ import type { ProductDetailProps } from "../../types";
 import { Breadcrumbs } from "../components/Breadcrumbs";
 import { QtyStepper } from "../components/CartDrawer";
 import { Container } from "../components/Container";
-import { ProductCard, Stars } from "../components/ProductCard";
+import { ProductCard } from "../components/ProductCard";
 import { WhatsAppButton } from "../components/WhatsAppButton";
 import { productPath } from "@/lib/product-url";
 
@@ -243,9 +243,6 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
             ) : null}
           </div>
           <h1 className="mt-1 font-display text-[22px] font-bold leading-snug text-ink lg:text-[28px]">{product.name}</h1>
-          <div className="mt-2">
-            <Stars rating={product.rating} reviews={product.reviews} />
-          </div>
 
           <div className="mt-5 flex flex-wrap items-baseline gap-x-3 gap-y-1">
             {vc.isFromPrice ? <span className="text-[15px] font-medium text-ink-muted">From</span> : null}

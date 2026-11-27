@@ -88,7 +88,7 @@ function ChromeInner({
 
       <main className="pb-16 lg:pb-0">{children}</main>
 
-      <Footer storeName={storeName} address={address} phone={phone} tagline={theme.footerTagline} />
+      <Footer storeName={storeName} address={address} phone={phone} tagline={theme.footerTagline} categories={categories} />
 
       <MobileTabBar cartCount={cart.count} onCartClick={cart.openCart} />
 

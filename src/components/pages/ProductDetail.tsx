@@ -6,7 +6,6 @@ import { QtyStepper } from "@/components/cart/QtyStepper";
 import { FavouriteButton } from "@/components/product/FavouriteButton";
 import { ProductCard } from "@/components/product/ProductCard";
 import { Carousel } from "@/components/shared/Carousel";
-import { Rating } from "@/components/product/Rating";
 import { StockLine } from "@/components/product/StockLine";
 import { WhatsAppOrderButton } from "@/components/product/WhatsAppOrderButton";
 import { Breadcrumb } from "@/components/shared/Breadcrumb";
@@ -139,10 +138,6 @@ export function ProductDetail({
               <h1 className="mt-2 font-sans text-[26px] font-black leading-[1.1] tracking-[-0.8px] text-navy sm:text-[32px]">
                 {product.name}
               </h1>
-
-              <div className="mt-3">
-                <Rating rating={product.rating} reviews={product.reviews} muted={soldOut} />
-              </div>
 
               <div className="mt-5 flex items-baseline gap-3">
                 {vc.isFromPrice ? (

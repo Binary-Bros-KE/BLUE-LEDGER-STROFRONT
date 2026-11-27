@@ -12,8 +12,15 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     return { rules: { userAgent: "*", disallow: "/" } };
   }
   const origin = await siteOrigin(store);
+  // Product pages and their photos (served from the image host, which has its own robots.txt
+  // allowing search crawlers) are open to Google's web and image crawlers by name.
+  const disallow = ["/checkout", "/api/"];
   return {
-    rules: { userAgent: "*", allow: "/", disallow: ["/checkout", "/api/"] },
+    rules: [
+      { userAgent: "Googlebot", allow: ["/", "/product/"], disallow },
+      { userAgent: "Googlebot-Image", allow: "/" },
+      { userAgent: "*", allow: "/", disallow },
+    ],
     sitemap: `${origin}/sitemap.xml`,
     host: origin,
   };
