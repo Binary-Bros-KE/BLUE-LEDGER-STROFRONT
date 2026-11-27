@@ -28,11 +28,13 @@ export function Footer({
   address?: string | null;
   phone?: string | null;
 }) {
+  // Address + phone are the shop's real NAP (Business Profile) — never a stand-in, since a made-up
+  // address or hours here would contradict the shop's Google Business Profile. Missing = left out.
   const lines = [
     "Tech supply and POS hardware for Kenyan retail.",
-    address ?? "Biashara Street, Nairobi CBD",
-    phone ? `Tel · ${phone}` : "Mon–Sat · 8:30 – 18:00",
-  ];
+    address?.trim() || null,
+    phone?.trim() ? `Tel · ${phone.trim()}` : null,
+  ].filter((line): line is string => Boolean(line));
   return (
     <footer className="bg-navy pt-[52px] pb-[26px]">
       <Container>
