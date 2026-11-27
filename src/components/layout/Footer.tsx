@@ -96,7 +96,7 @@ export function Footer({
         {/* bottom rule */}
         <div className="mt-12 flex flex-col-reverse items-start justify-between gap-4 border-t border-navy-700 pt-5 md:flex-row md:items-center">
           <span className="font-mono text-[10px] uppercase tracking-[1.4px] text-faint-on-navy">
-            © {new Date().getFullYear()} {storeName} · PIN P05XXXXXXXX
+            © {new Date().getFullYear()} {storeName}
           </span>
           <div className="flex gap-2">
             {PAY.map((p, i) => (
