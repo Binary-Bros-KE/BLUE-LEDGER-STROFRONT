@@ -44,7 +44,7 @@ export function Hero({ hero = {}, storeName }: { hero?: TrylistTheme["hero"]; st
             <Diamond size={8} /> Authorised dealer · Up to 12-month warranty
           </span>
 
-          <h1 className="mt-5 font-sans text-[36px] font-black leading-[0.95] tracking-[-1.2px] text-ink-on-navy [text-wrap:balance] sm:text-[48px] lg:text-[60px] lg:tracking-[-2px]">
+          <h1 className="mt-5 font-sans text-[36px] uppercase font-black leading-[0.95] tracking-[-1.2px] text-ink-on-navy [text-wrap:balance] sm:text-[48px] lg:text-[60px] lg:tracking-[-2px]">
             {storeName?.trim() || "Shop online"}
             <span className="text-amber">.</span>
           </h1>
