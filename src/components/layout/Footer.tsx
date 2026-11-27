@@ -23,15 +23,18 @@ export function Footer({
   storeName = "TRYLIST",
   address,
   phone,
+  tagline,
 }: {
   storeName?: string;
   address?: string | null;
   phone?: string | null;
+  /** theme.footerTagline — the shop's own description (POS Online Store tab) */
+  tagline?: string | undefined;
 }) {
   // Address + phone are the shop's real NAP (Business Profile) — never a stand-in, since a made-up
   // address or hours here would contradict the shop's Google Business Profile. Missing = left out.
   const lines = [
-    "Tech supply and POS hardware for Kenyan retail.",
+    tagline?.trim() || null,
     address?.trim() || null,
     phone?.trim() ? `Tel · ${phone.trim()}` : null,
   ].filter((line): line is string => Boolean(line));
@@ -42,7 +45,7 @@ export function Footer({
           {/* brand column */}
           <div className="col-span-2 flex flex-col gap-4 md:col-span-1">
             <Logo name={storeName} onDark />
-            <p className="max-w-[240px] font-mono text-[11px] leading-[1.8] text-body-on-navy">
+            <p className="max-w-[300px] font-mono text-[11px] leading-[1.8] text-body-on-navy">
               {lines.map((line, i) => (
                 <span key={i}>
                   {line}
