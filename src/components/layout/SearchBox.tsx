@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FiChevronDown, FiGrid, FiSearch, FiX } from "@/components/shared/icons";
 import { useMoney } from "@/lib/currency";
 import { useProductSearch } from "@/lib/use-product-search";
+import { productPath } from "@/lib/product-url";
 
 export function SearchBox({
   variant = "bar",
@@ -114,7 +115,7 @@ export function SearchBox({
                 return (
                   <Link
                     key={p.id}
-                    href={`/product/${encodeURIComponent(p.id)}`}
+                    href={productPath(p)}
                     onClick={() => setOpen(false)}
                     className={`flex items-center gap-3 px-4 py-2.5 ${activeIndex === idx ? "bg-cream" : "hover:bg-cream"}`}
                   >

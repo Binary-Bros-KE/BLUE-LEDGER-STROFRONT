@@ -10,7 +10,7 @@ export const dynamic = "force-dynamic";
 export type SearchResults = {
   query: string;
   categories: { id: string; name: string; count: number; slug: string }[];
-  products: { id: string; name: string; category: string; priceCents: number; image: string | null; imageCaption: string }[];
+  products: { id: string; slug?: string; name: string; category: string; priceCents: number; image: string | null; imageCaption: string }[];
 };
 
 export async function GET(req: Request): Promise<NextResponse<SearchResults>> {
@@ -33,6 +33,7 @@ export async function GET(req: Request): Promise<NextResponse<SearchResults>> {
       .map((c) => ({ id: c.id, name: c.name, count: c.count, slug: slugify(c.name) })),
     products: catalog.products.map(toThemeProduct).map((p) => ({
       id: p.id,
+      ...(p.slug ? { slug: p.slug } : {}),
       name: p.name,
       category: p.category,
       priceCents: p.priceCents,

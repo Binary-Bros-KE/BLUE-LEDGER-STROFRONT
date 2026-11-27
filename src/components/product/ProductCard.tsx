@@ -5,6 +5,7 @@ import Link from "next/link";
 import type { Product } from "@/lib/products";
 import { useCart } from "@/lib/cart";
 import { useMoney } from "@/lib/currency";
+import { productPath } from "@/lib/product-url";
 import { productOrderMessage } from "@/lib/whatsapp-order";
 import { Placeholder } from "@/components/shared/Placeholder";
 import { FiShoppingCart } from "@/components/shared/icons";
@@ -29,7 +30,7 @@ export function ProductCard({ product }: { product: Product }) {
   const favourite = favourites.has(product.id);
   const soldOut = product.stockState === "out_of_stock";
   const image = product.images?.[0];
-  const href = `/product/${encodeURIComponent(product.id)}`;
+  const href = productPath(product);
 
   const [added, setAdded] = useState(false);
   const addedTimer = useRef<ReturnType<typeof setTimeout> | null>(null);

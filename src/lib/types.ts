@@ -42,6 +42,8 @@ export type OnlineContent = {
 
 export type CatalogItem = {
   id: string;
+  /** website URL slug (SERVER lib/product-slugs.ts) — /product/<slug> */
+  slug?: string;
   name: string;
   shortName: string | null;
   description: string | null;
@@ -71,6 +73,8 @@ export type ShopVariant = {
   key: string;
   /** the product to order (separate stock: the variant's own product) */
   productId: string;
+  /** that product's URL slug */
+  slug?: string;
   name: string;
   label: string;
   values: Record<string, string>;

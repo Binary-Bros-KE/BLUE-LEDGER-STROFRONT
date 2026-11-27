@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from "react";
 import { useRouter } from "next/navigation";
 import type { SearchResults } from "@/app/api/search/route";
+import { productPath } from "@/lib/product-url";
 
 /**
  * The header search box's behaviour, shared by every template (each draws its own markup):
@@ -60,7 +61,7 @@ export function useProductSearch() {
     if (!results) return [] as string[];
     return [
       ...results.categories.map((c) => `/products/${c.slug}`),
-      ...results.products.map((p) => `/product/${encodeURIComponent(p.id)}`),
+      ...results.products.map((p) => productPath(p)),
     ];
   }, [results]);
 

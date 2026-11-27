@@ -4,6 +4,7 @@ import Link from "next/link";
 import { FiGrid, FiSearch, FiX } from "@/components/shared/icons";
 import { useMoney } from "@/lib/currency";
 import { useProductSearch } from "@/lib/use-product-search";
+import { productPath } from "@/lib/product-url";
 
 /** Rounded search field with a primary button and a live-suggestions dropdown. */
 export function SearchBar({ autoFocus = false, placeholder }: { autoFocus?: boolean; placeholder?: string }) {
@@ -94,7 +95,7 @@ export function SearchBar({ autoFocus = false, placeholder }: { autoFocus?: bool
                 return (
                   <Link
                     key={p.id}
-                    href={`/product/${encodeURIComponent(p.id)}`}
+                    href={productPath(p)}
                     onClick={s.close}
                     className={`flex items-center gap-3 px-4 py-2 ${
                       s.activeIndex === idx ? "bg-surface-alt" : "hover:bg-surface-alt"

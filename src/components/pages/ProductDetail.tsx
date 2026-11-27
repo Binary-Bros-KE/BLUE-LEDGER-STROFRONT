@@ -19,6 +19,7 @@ import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
 import { slugify } from "@/lib/slug";
 import { productOrderMessage } from "@/lib/whatsapp-order";
+import { productPath } from "@/lib/product-url";
 
 export function ProductDetail({
   product,
@@ -273,7 +274,7 @@ export function ProductDetail({
                     options: vc.selected,
                     qty: soldOut ? undefined : qty,
                     price: `${vc.isFromPrice ? "From " : ""}${fmt(vc.priceCents)}`,
-                    url: origin ? `${origin}/product/${encodeURIComponent(product.id)}` : undefined,
+                    url: origin ? origin + productPath(product) : undefined,
                   })
                 }
               />

@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { notFound } from "next/navigation";
+import { notFound, permanentRedirect } from "next/navigation";
 import { toThemeProduct } from "@/lib/adapter";
 import { PRODUCTS as SAMPLE_PRODUCTS, type Product } from "@/lib/products";
+import { productPath } from "@/lib/product-url";
 import { getCatalog, getProduct, getStore, ShopApiError } from "@/lib/shop-api";
 import { pageOpenGraph } from "@/lib/seo";
 import { siteOrigin } from "@/lib/site-url";
@@ -25,7 +26,7 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
   try {
     const [p, store] = await Promise.all([getProduct(id), getStore()]);
     const description = metaDescription(p);
-    const url = `/product/${encodeURIComponent(p.id)}`;
+    const url = productPath(p);
     const images = p.images.slice(0, 4).map((i) => ({ url: i.url, alt: p.name }));
     return {
       title: p.name,
@@ -108,6 +109,10 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     throw err;
   });
 
+  // Old id URLs (/product/product_83574a81-…) and any non-canonical spelling permanently redirect
+  // to the slug URL, so search engines and shared links move over to /product/<slug>.
+  if (item.slug && decodeURIComponent(id) !== item.slug) permanentRedirect(productPath(item));
+
   const product = toThemeProduct(item);
 
   let related: Product[] = [];
@@ -123,7 +128,7 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
     }
   }
 
-  const canonical = `${await siteOrigin(await getStore().catch(() => null))}/product/${encodeURIComponent(item.id)}`;
+  const canonical = `${await siteOrigin(await getStore().catch(() => null))}${productPath(item)}`;
 
   return (
     <T.Chrome {...shell}>

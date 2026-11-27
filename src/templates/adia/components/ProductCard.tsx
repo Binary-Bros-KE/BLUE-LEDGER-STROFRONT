@@ -8,6 +8,7 @@ import { useMoney } from "@/lib/currency";
 import type { Product } from "@/lib/products";
 import { productOrderMessage } from "@/lib/whatsapp-order";
 import { WhatsAppButton } from "./WhatsAppButton";
+import { productPath } from "@/lib/product-url";
 
 export function Stars({ rating, reviews }: { rating: number; reviews?: number }) {
   const filled = Math.round(rating);
@@ -41,7 +42,7 @@ export function ProductCard({ product }: { product: Product }) {
   const favourite = favourites.has(product.id);
   const soldOut = product.stockState === "out_of_stock";
   const image = product.images?.[0];
-  const href = `/product/${encodeURIComponent(product.id)}`;
+  const href = productPath(product);
   const badge = badgeFor(product);
   // A product with variants is chosen on its page — the card shows "From …" and links there.
   const variants = product.variantSummary ?? null;

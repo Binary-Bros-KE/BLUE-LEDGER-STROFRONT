@@ -2,6 +2,7 @@ import type { MetadataRoute } from "next";
 import { getCatalog, getCategories, getStore } from "@/lib/shop-api";
 import { siteOrigin } from "@/lib/site-url";
 import { slugify } from "@/lib/slug";
+import { productPath } from "@/lib/product-url";
 
 // Per shop (one deployment serves every tenant) — never cached across hosts.
 export const dynamic = "force-dynamic";
@@ -31,7 +32,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     if (!batch || batch.products.length === 0) break;
     for (const p of batch.products) {
       entries.push({
-        url: `${origin}/product/${encodeURIComponent(p.id)}`,
+        url: origin + productPath(p),
         changeFrequency: "weekly",
         priority: 0.6,
         ...(p.images[0] ? { images: [p.images[0].url] } : {}),

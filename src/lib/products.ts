@@ -15,6 +15,8 @@ export type Badge = { kind: BadgeKind; label: string };
 
 export type Product = {
   id: string;
+  /** website URL slug — build links with lib/product-url.ts productPath() */
+  slug?: string;
   name: string;
   /** mono meta, e.g. `LAPTOPS · BUSINESS` — from the product's category name (uppercased) */
   category: string;

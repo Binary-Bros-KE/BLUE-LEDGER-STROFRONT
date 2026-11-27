@@ -27,6 +27,7 @@ import { QtyStepper } from "../components/CartDrawer";
 import { Container } from "../components/Container";
 import { ProductCard, Stars } from "../components/ProductCard";
 import { WhatsAppButton } from "../components/WhatsAppButton";
+import { productPath } from "@/lib/product-url";
 
 /** "Screen Size: 55 inches" → ["Screen Size", "55 inches"]; a line without a short label stays whole. */
 function splitSpec(line: string): [string, string] | [string] {
@@ -335,7 +336,7 @@ export function ProductDetail({ product, related, categoryName, storeName }: Pro
                 options: vc.selected,
                 qty: soldOut ? undefined : qty,
                 price: `${vc.isFromPrice ? "From " : ""}${fmt(vc.priceCents)}`,
-                url: origin ? `${origin}/product/${encodeURIComponent(product.id)}` : undefined,
+                url: origin ? origin + productPath(product) : undefined,
               })
             }
           />

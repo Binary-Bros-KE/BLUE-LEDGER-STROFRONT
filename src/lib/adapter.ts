@@ -23,6 +23,7 @@ export function toThemeProduct(item: CatalogItem): Product {
   const categoryLabel = (item.categoryName ?? "SHOP").toUpperCase();
   return {
     id: item.id,
+    ...(item.slug ? { slug: item.slug } : {}),
     name: item.name,
     category: categoryLabel,
     priceCents: item.priceCents,

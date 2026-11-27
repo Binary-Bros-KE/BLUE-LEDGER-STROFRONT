@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import type { Product, StockState } from "./products";
 import type { ShopVariant } from "./types";
+import { productPath } from "@/lib/product-url";
 
 // Headless variant selection for a product page (SERVER lib/variants.ts, DESKTOP docs/VARIANTS.md).
 // Every template draws its own chips; the rules live here so they behave identically:
@@ -67,7 +68,7 @@ export function useVariantChoice(product: Product) {
     setSelected(next);
     if (info?.mode === "separate") {
       const hit = variants.find((v) => options.every((o) => v.values[o.name] === next[o.name]));
-      if (hit && hit.productId !== product.id) router.replace(`/product/${encodeURIComponent(hit.productId)}`, { scroll: false });
+      if (hit && hit.productId !== product.id) router.replace(productPath({ id: hit.productId, slug: hit.slug }), { scroll: false });
     }
   }
 
