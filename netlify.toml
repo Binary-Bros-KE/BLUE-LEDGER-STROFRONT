@@ -1,0 +1,5 @@
+# Netlify Image CDN may fetch product photos from the R2 image host — the social poster route
+# (src/app/poster) converts them to PNG through /.netlify/images, since the poster renderer can't
+# read WebP.
+[images]
+  remote_images = ["https://images\\.blueledgerpos\\.app/.*"]
