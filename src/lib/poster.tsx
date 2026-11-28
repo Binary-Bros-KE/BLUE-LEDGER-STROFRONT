@@ -98,7 +98,6 @@ function Header({ brand, scale }: { brand: PosterBrand; scale: number }) {
       style={{
         display: "flex",
         alignItems: "center",
-        justifyContent: "space-between",
         padding: `${36 * scale}px 56px`,
         background: brand.secondary,
         color: "#ffffff",
@@ -111,7 +110,6 @@ function Header({ brand, scale }: { brand: PosterBrand; scale: number }) {
         ) : null}
         <div style={{ display: "flex", fontSize: 36 * scale, fontWeight: 800, letterSpacing: 1 }}>{brand.storeName.toUpperCase()}</div>
       </div>
-      <div style={{ display: "flex", fontSize: 26, fontWeight: 500, opacity: 0.85 }}>{brand.host}</div>
     </div>
   );
 }
