@@ -46,10 +46,6 @@ export async function generateMetadata({ params }: { params: Promise<{ id: strin
         description,
         ...(images.length ? { images: images.map((i) => i.url) } : {}),
       },
-      other: {
-        "product:price:amount": price(lowestPriceCents(p)),
-        "product:price:currency": store.currency || "KES",
-      },
     };
   } catch {
     return { title: "Product" };
@@ -148,6 +144,10 @@ export default async function ProductPage({ params }: { params: Promise<{ id: st
 
   return (
     <T.Chrome {...shell}>
+      {/* Open Graph product price — `property=` (Next's metadata `other` can only emit `name=`); React
+          hoists these <meta> tags into <head>. */}
+      <meta property="product:price:amount" content={price(lowestPriceCents(item))} />
+      <meta property="product:price:currency" content={shell.currency || "KES"} />
       {/* Server-rendered in the initial HTML, and only for merchant-ready products */}
       {isProductMerchantReady(item) ? (
         <script
