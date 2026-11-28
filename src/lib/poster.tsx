@@ -104,12 +104,13 @@ function Header({ brand, scale }: { brand: PosterBrand; scale: number }) {
         color: "#ffffff",
       }}
     >
-      {brand.logo ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img src={brand.logo} alt="" style={{ height: 64 * scale, maxWidth: 520, objectFit: "contain" }} />
-      ) : (
-        <div style={{ display: "flex", fontSize: 40 * scale, fontWeight: 800, letterSpacing: 1 }}>{brand.storeName.toUpperCase()}</div>
-      )}
+      <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
+        {brand.logo ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={brand.logo} alt="" style={{ height: 64 * scale, maxWidth: 240, objectFit: "contain" }} />
+        ) : null}
+        <div style={{ display: "flex", fontSize: 36 * scale, fontWeight: 800, letterSpacing: 1 }}>{brand.storeName.toUpperCase()}</div>
+      </div>
       <div style={{ display: "flex", fontSize: 26, fontWeight: 500, opacity: 0.85 }}>{brand.host}</div>
     </div>
   );

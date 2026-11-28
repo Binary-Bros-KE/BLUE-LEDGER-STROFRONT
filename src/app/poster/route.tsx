@@ -91,6 +91,9 @@ export async function GET(request: Request) {
         headers: {
           "Access-Control-Allow-Origin": "*",
           "Cache-Control": "public, max-age=300",
+          // Netlify's edge cache ignores the query string unless told — without this every size
+          // and product would get the first poster cached for /poster.
+          "Netlify-Vary": "query",
           "Content-Disposition": `inline; filename="${fileName}"`,
         },
       },
