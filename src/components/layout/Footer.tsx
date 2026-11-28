@@ -3,6 +3,7 @@ import { ContactButton } from "@/components/contact/ContactButton";
 import { Container } from "@/components/shared/Container";
 import { SOCIAL_ICONS, type SocialKey } from "@/components/shared/social-icons";
 import type { Category } from "@/lib/products";
+import { POLICY_PAGES } from "@/lib/policy-pages";
 import { slugify } from "@/lib/slug";
 import { Logo } from "./Logo";
 
@@ -10,7 +11,7 @@ type FooterLink = { label: string; href: string };
 
 /** Only links to pages that exist — the shop's own biggest categories, and real site pages. (These used
  * to be fixed Trylist wording pointing at "#", which search crawlers follow too.) */
-function footerColumns(categories: Category[]): { head: string; links: FooterLink[] }[] {
+function footerColumns(categories: Category[], hasPolicies: boolean): { head: string; links: FooterLink[] }[] {
   const top = [...categories].sort((a, b) => b.count - a.count).slice(0, 5);
   return [
     {
@@ -21,6 +22,8 @@ function footerColumns(categories: Category[]): { head: string; links: FooterLin
       head: "Help",
       links: [
         { label: "Contact us", href: "/contact" },
+        // policy pages exist only once the shop has saved its terms (lib/policies.tsx)
+        ...(hasPolicies ? POLICY_PAGES.map((p) => ({ label: p.label, href: p.href })) : []),
         { label: "All categories", href: "/categories" },
       ],
     },
@@ -42,6 +45,7 @@ export function Footer({
   phone,
   tagline,
   categories = [],
+  hasPolicies = false,
 }: {
   storeName?: string;
   address?: string | null;
@@ -49,6 +53,7 @@ export function Footer({
   /** theme.footerTagline — the shop's own description (POS Online Store tab) */
   tagline?: string | undefined;
   categories?: Category[];
+  hasPolicies?: boolean;
 }) {
   // Address + phone are the shop's real NAP (Business Profile) — never a stand-in, since a made-up
   // address or hours here would contradict the shop's Google Business Profile. Missing = left out.
@@ -86,7 +91,7 @@ export function Footer({
           </div>
 
           {/* link columns — mobile shows 2 */}
-          {footerColumns(categories).map((col) => (
+          {footerColumns(categories, hasPolicies).map((col) => (
             <div key={col.head} className="flex flex-col">
               <span className="mb-3 font-mono text-[10px] font-bold uppercase tracking-[1.8px] text-amber">
                 {col.head}

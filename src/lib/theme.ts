@@ -84,6 +84,8 @@ export type TrylistTheme = {
   headerImageUrl?: string;
   /** Footer description under the logo (Classic). Unset = no description line. */
   footerTagline?: string;
+  /** The shop's sales terms (lib/policies.ts) — null = the shop has no policy pages. */
+  policies: ShopPolicies | null;
   /** Curated home rows — each pulls one category's products. Empty = one default product grid. */
   productSections: ThemeProductSection[];
   dealTile: ThemeDealTile;
@@ -98,6 +100,7 @@ export type TrylistTheme = {
 };
 
 export const EMPTY_THEME: TrylistTheme = {
+  policies: null,
   brand: {},
   topBar: {},
   contact: {},
@@ -110,6 +113,30 @@ export const EMPTY_THEME: TrylistTheme = {
   brands: [],
   trustBar: [],
 };
+
+export type ShopPolicies = {
+  returnDays: number;
+  returnScope: "faulty_or_wrong" | "any_reason" | "none";
+  refund: "exchange_or_credit" | "original_method" | "customer_choice";
+  delivery: "courier_cost_agreed" | "local_only" | "flat_rates";
+  freeDeliveryArea: string | null;
+  payments: Array<"mpesa" | "cash" | "card" | "bank">;
+};
+
+function parsePolicies(v: unknown): ShopPolicies | null {
+  if (!v || typeof v !== "object") return null;
+  const o = v as Record<string, unknown>;
+  const pick = <T extends string>(x: unknown, allowed: readonly T[]): T | null => (allowed.includes(x as T) ? (x as T) : null);
+  const returnScope = pick(o.returnScope, ["faulty_or_wrong", "any_reason", "none"] as const);
+  const refund = pick(o.refund, ["exchange_or_credit", "original_method", "customer_choice"] as const);
+  const delivery = pick(o.delivery, ["courier_cost_agreed", "local_only", "flat_rates"] as const);
+  const returnDays = typeof o.returnDays === "number" && o.returnDays >= 0 ? Math.round(o.returnDays) : null;
+  if (!returnScope || !refund || !delivery || returnDays === null) return null;
+  const payments = (Array.isArray(o.payments) ? o.payments : []).filter((p): p is ShopPolicies["payments"][number] =>
+    ["mpesa", "cash", "card", "bank"].includes(p as string),
+  );
+  return { returnDays, returnScope, refund, delivery, freeDeliveryArea: str(o.freeDeliveryArea) ?? null, payments };
+}
 
 function str(v: unknown): string | undefined {
   return typeof v === "string" && v.trim() ? v : undefined;
@@ -190,6 +217,7 @@ export function parseTheme(raw: unknown): TrylistTheme {
     ),
     headerImageUrl: str(o.headerImageUrl),
     footerTagline: str(o.footerTagline),
+    policies: parsePolicies(o.policies),
     productSections: (Array.isArray(o.productSections) ? o.productSections : [])
       .slice(0, 6)
       .map((s): ThemeProductSection => {

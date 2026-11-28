@@ -3,7 +3,9 @@ import { getCatalog, getCategories, getStore } from "@/lib/shop-api";
 import { siteOrigin } from "@/lib/site-url";
 import { slugify } from "@/lib/slug";
 import { isProductMerchantReady, realImageUrls } from "@/lib/merchant-ready";
+import { POLICY_PAGES } from "@/lib/policy-pages";
 import { productPath } from "@/lib/product-url";
+import { parseTheme } from "@/lib/theme";
 
 // Per shop (one deployment serves every tenant) — never cached across hosts.
 export const dynamic = "force-dynamic";
@@ -22,6 +24,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { url: `${origin}/`, changeFrequency: "daily", priority: 1 },
     { url: `${origin}/products`, changeFrequency: "daily", priority: 0.8 },
     { url: `${origin}/categories`, changeFrequency: "weekly", priority: 0.7 },
+    { url: `${origin}/contact`, changeFrequency: "monthly", priority: 0.4 },
+    // policy pages exist only once the shop has saved its terms
+    ...(parseTheme(store.theme).policies
+      ? POLICY_PAGES.map((p) => ({ url: origin + p.href, changeFrequency: "monthly" as const, priority: 0.3 }))
+      : []),
   ];
 
   const categories = await getCategories().catch(() => []);
